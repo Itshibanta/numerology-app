@@ -1,0 +1,1240 @@
+/* ========= RESET & BASE ========= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Helvetica Neue", Arial, sans-serif;
+  background-color: #faf8f3; /* blanc crème */
+  color: #3e332d; /* brun doux */
+}
+
+/* ========= APP CONTAINER ========= */
+
+.app-root {
+  background-color: #faf8f3;
+  min-height: 100vh;
+}
+
+.app-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ========= NAVIGATION ========= */
+
+.site-header {
+  border-bottom: 1px solid #e0d7cc;
+  padding: 0.25rem 0; /* compact */
+  margin-bottom: 0.6rem;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.logo img {
+  height: 24px;
+  width: auto;
+  display: block;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #5a4b40;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+
+/* ========= TITLES / TEXT ========= */
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: #3b2e27; /* même couleur que ton gros titre */
+}
+
+h1.home-title {
+  font-size: clamp(2rem, 3.2vw, 2.6rem);
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+  margin-top: -4rem
+}
+
+h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.6rem;
+}
+
+p {
+  margin: 0 0 0.85rem 0;
+  line-height: 1.7;
+}
+
+/* ========= BUTTONS ========= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.05s ease, box-shadow 0.1s ease,
+    background-color 0.1s ease, color 0.1s ease;
+}
+
+.btn-primary {
+  background-color: #a6bba7; /* vert sauge */
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.btn-primary:hover {
+  background-color: #96ac98;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: #aec7c4; /* bleu céladon */
+  color: #2f2722;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary:hover {
+  background-color: #9db8b5;
+  transform: translateY(-1px);
+}
+
+/* ========= HERO ========= */
+
+.home-hero {
+  padding-top: 0.5rem;
+  padding-bottom: 2.2rem;
+}
+
+.home-hero-content {
+  max-width: 760px;
+}
+
+.home-subtitle {
+  font-size: 1rem;
+  color: #6b5b50;
+  margin-bottom: 1.3rem;
+}
+
+.hero-btn {
+  margin-top: 0.25rem;
+}
+
+/* ========= SECTIONS GÉNÉRALES ========= */
+
+.home-root {
+  width: 100%;
+  margin-top: 2.5rem;
+}
+
+.home-section {
+  margin-top: 0rem;
+}
+
+.home-section p {
+  max-width: 880px;
+}
+
+/* espacement entre certaines sections spécifiques */
+.home-section + .home-section {
+  margin-top: 2.4rem;
+}
+
+/* ========= SECTION : COMMENT ÇA FONCTIONNE ========= */
+
+.home-how {
+  /* pas de fond spécial ici, comme tu as demandé */
+}
+
+.steps-container {
+  margin-top: 1.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.step-card {
+  flex: 1;
+  min-width: 230px;
+  background-color: #fdfbf7;
+  border-radius: 22px;
+  padding: 1.4rem 1.6rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 2px solid #7a6b5e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+}
+
+.home-section-actions {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* ========= SECTION : SANS / AVEC GÉNÉRATEUR ========= */
+
+.comparison-section {
+  background-color: #f4efe6;
+  border-radius: 28px;
+  padding: 2rem 2rem 2.4rem;
+}
+
+.comparison-table {
+  margin-top: 1.8rem;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.comparison-column {
+  flex: 1;
+  min-width: 260px;
+  background-color: #fdfbf7;
+  border-radius: 22px;
+  padding: 1.4rem 1.6rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.comparison-column h3 {
+  margin-bottom: 0.8rem;
+}
+
+.comparison-column ul {
+  list-style: disc;
+  padding-left: 1.1rem;
+  margin: 0;
+}
+
+.comparison-column li {
+  margin-bottom: 0.45rem;
+}
+
+.comparison-column ul,
+.comparison-column li {
+  text-align: left;
+}
+
+
+/* ========= SECTION : POUR QUI ? ========= */
+
+.audience-grid {
+  margin-top: 1.6rem;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.audience-card {
+  background-color: #fdfbf7;
+  border-radius: 22px;
+  padding: 1.4rem 1.6rem;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.04);
+}
+
+/* ========= SECTION : CE QUE CONTIENT TON THÈME ========= */
+
+.theme-details {
+  background-color: #faf5ee;
+  border-radius: 28px;
+  padding: 2rem 2rem 2.4rem;
+}
+
+.theme-grid {
+  margin-top: 1.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.8rem;
+  justify-content: center;      /* chaque ligne est centrée */
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.theme-item {
+  background-color: #fdfbf7;
+  border-radius: 22px;
+  padding: 1.4rem 1.6rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  text-align: center;
+
+  /* 3 colonnes sur grand écran, 2 cartes en bas centrées */
+  flex: 0 1 calc(33.333% - 1.8rem);
+  max-width: 340px;
+}
+
+/* Layout 3 + 2 parfaitement centré */
+@media (max-width: 900px) {
+  .theme-grid {
+    justify-content: center;
+  }
+
+  .theme-item {
+    flex: 0 1 calc(50% - 1.8rem);  /* 2 colonnes */
+  }
+}
+
+@media (max-width: 600px) {
+  .theme-item {
+    flex: 0 1 100%;                 /* 1 colonne */
+  }
+}
+
+.theme-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.65rem;
+}
+
+.theme-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(166, 187, 167, 0.45); /* contour léger vert sauge */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+  background-color: #fdfbf7; /* fond identique aux cards */
+}
+
+.theme-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #a6bba7;           /* VERT SAUGE = même couleur que tes boutons */
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* ========= BANDEAU "ILS EN PARLENT" ========= */
+
+.highlight-strip {
+  background-color: #e9f3e2;
+  border-radius: 24px;
+  padding: 1.5rem 1.8rem;
+}
+
+.highlight-grid {
+  display: flex;
+  gap: 2.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.highlight-item {
+  text-align: center;
+}
+
+.highlight-number {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.highlight-label {
+  font-size: 0.95rem;
+}
+
+/* ========= SECTION PROS ========= */
+
+.pro-section p,
+.pro-section .text-block p {
+  margin-bottom: 1.4rem;
+}
+
+/* ========= SECTION CRÉATRICE ========= */
+
+.creator-card {
+  background-color: #fdfbf7;
+  border-radius: 28px;
+  padding: 2rem 2.2rem 2.4rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.creator-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: center;
+  margin: 1.4rem auto 1.2rem;
+  display: block;
+  border: 3px solid #e3c4bb; /* rose quartz */
+}
+
+.creator-intro {
+  margin-bottom: 1.2rem;
+}
+
+/* ========= TIMELINE HORIZONTALE ========= */
+
+.timeline {
+  margin-top: 2.2rem;
+  border-top: 1px solid #e0d7cc;
+  padding-top: 1.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  justify-content: center;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background-color: #7a6b5e;
+}
+
+.timeline-year {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.timeline-text {
+  font-size: 0.9rem;
+}
+
+/* ========= CTA FINAL ========= */
+
+.home-final-cta {
+  text-align: center;
+}
+
+.home-final-cta p {
+  margin: 0.9rem auto 1.4rem;
+  max-width: 720px;
+}
+
+
+/* ========= THEME GENERATOR PAGE ========= */
+
+.app-header {
+  margin-bottom: 1.6rem;
+  text-align: center;
+}
+
+.card {
+  background-color: #fdfbf7;
+  border-radius: 24px;
+  padding: 1.8rem 2rem;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.6rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem 1.4rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.theme-output {
+  border-radius: 12px;
+  border: 1px solid #d6cfc5;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.theme-output:focus {
+  outline: none;
+  border-color: #a6bba7;
+  box-shadow: 0 0 0 1px rgba(166, 187, 167, 0.4);
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.form-actions button {
+  @apply btn btn-primary;
+}
+
+/* comme on n'a pas Tailwind, on re-déclare le style du bouton ici */
+.form-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background-color: #a6bba7;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.form-actions button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.error-message {
+  color: #b04747;
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.theme-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-header button {
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background-color: #aec7c4;
+  color: #2f2722;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.theme-placeholder {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #6b5b50;
+}
+
+.theme-output {
+  margin-top: 1rem;
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 240px;
+}
+
+/* ========= RESPONSIVE ========= */
+
+@media (max-width: 768px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .app-container {
+    padding-inline: 1.1rem;
+  }
+
+  .comparison-section,
+  .theme-details,
+  .creator-card,
+  .highlight-strip {
+    padding-inline: 1.4rem;
+  }
+}
+
+/* ========= HOMEPAGE : TOUT CENTRÉ ========= */
+
+/* On centre tout ce qui est spécifique au HomePage */
+.home-root {
+  width: 100%;
+  text-align: center;
+}
+
+/* Sections du homepage */
+.home-root .home-hero,
+.home-root .home-section {
+  text-align: center;
+}
+
+/* Titres + paragraphes dans les sections du homepage */
+.home-root .home-hero h1,
+.home-root .home-hero h2,
+.home-root .home-hero h3,
+.home-root .home-section h2,
+.home-root .home-section h3,
+.home-root .home-section p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Conteneur du hero : centré et limité en largeur */
+.home-root .home-hero-content {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Boutons du homepage (ils seront centrés via le text-align du parent) */
+.home-root .home-hero .btn,
+.home-root .home-section .btn {
+  display: inline-flex;
+}
+
+/* ===== "Comment ça fonctionne" : steps ===== */
+
+.home-root .steps-container {
+  justify-content: center;
+}
+
+.home-root .step-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* ===== Section SANS / AVEC GÉNÉRATEUR ===== */
+
+.home-root .comparison-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.home-root .comparison-table {
+  justify-content: center;
+}
+
+.home-root .comparison-column {
+  text-align: center;
+}
+
+/* ===== Section POUR QUI ? ===== */
+
+.home-root .audience-grid {
+  justify-items: center;
+}
+
+.home-root .audience-card {
+  text-align: center;
+}
+
+/* ===== Section "Ce que contient ton thème" ===== */
+
+.home-root .theme-details {
+  text-align: center;
+}
+
+.home-root .theme-grid {
+  justify-items: center;
+}
+
+.home-root .theme-item {
+  text-align: center;
+}
+
+/* ===== Timeline horizontale ===== */
+
+.home-root .timeline {
+  justify-content: center;
+  text-align: center;
+}
+
+.home-root .timeline-item {
+  text-align: center;
+}
+
+/* ===== CTA final (déjà centré mais on renforce) ===== */
+
+.home-root .home-final-cta {
+  text-align: center;
+}
+
+/* ========= PRICING ========= */
+
+.pricing-root {
+  text-align: center;
+}
+
+.pricing-header {
+  max-width: 720px;
+  margin: 0 auto 2.8rem;
+}
+
+.pricing-title {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  margin-top: -4rem;
+  color: #3b2e27;
+}
+
+.pricing-subtitle {
+  font-size: 0.98rem;
+  color: #6b5b50;
+  line-height: 1.7;
+}
+
+/* grille 4 colonnes */
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.6rem;
+  max-width: 1120px;
+  margin: 0 auto 2.4rem;
+}
+
+/* cartes */
+
+.pricing-card {
+  background-color: #fdfbf7;                  /* même bg pour tous */
+  border: 1px solid rgba(190, 176, 160, 0.9); /* même couleur que la carte Essentiel */ /* même bordure */
+  border-radius: 26px;
+  padding: 1rem 1.6rem 2.4rem;
+  text-align: center;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* carte "Essentiel" un peu mise en avant, mais à la même hauteur que les autres */
+.pricing-card-featured {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+}
+
+/* header commun à toutes les cartes → garantit l’alignement des titres */
+.pricing-card-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 1.4rem;    /* laisse la place pour la tagline au-dessus */
+  margin-bottom: 0.6rem;
+  min-height: 5.6rem;     /* même hauteur pour toutes les cartes -> titres alignés */
+}
+
+.pricing-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #3b2e27;
+}
+
+.pricing-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #5a4b40;
+}
+
+/* tagline "IDÉAL POUR DÉMARRER" au-dessus du titre, sans pousser le titre vers le bas */
+.pricing-tagline {
+  /* ce que tu as déjà : */
+  position: absolute;
+  top: 0.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.78rem;        /* légèrement plus petit pour tenir sur une ligne */
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #b1a193;
+  margin: 0;
+
+  /* à ajouter pour forcer une seule ligne */
+  white-space: nowrap;
+}
+
+
+/* liste des features */
+
+.pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex-grow: 1;
+
+  align-items: center;   /* centre les lignes verticalement */
+  text-align: center;    /* nécessaire pour centrer l'inline-block */
+}
+
+.pricing-features li {
+  font-size: 0.92rem;
+  color: #6b5b50;
+  line-height: 1.5;
+}
+
+/* encadré "X thèmes / mois" : même fond que la carte, contour visible */
+/* encadré "X thèmes / mois" : même fond que la carte + contour visible */
+.pricing-feature-highlight {
+  display: inline-block;         /* combiné avec text-align:center du parent → centré */
+
+  padding: 0.45rem 0.7rem;       /* hauteur / largeur relatives au texte */
+  margin: 0.9rem 0.9rem;         /* même espace sous le prix dans toutes les cartes */
+
+  border-radius: 9px;
+  border: 1px solid rgba(190, 176, 160, 0.9);  /* même bordure que les cartes */
+  background-color: #fdfbf7;                   /* même fond que la carte → effet "no bg" */
+
+  color: #5a4b40;
+  font-weight: 600;
+  white-space: nowrap;           /* pas de retour à la ligne */
+}
+
+
+
+/* bouton */
+
+.btn-plan {
+  margin-top: 1.4rem;
+  background-color: #a6bba7;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 0.8rem 1.8rem;
+  font-size: 0.90rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  width: 100%;
+}
+
+.btn-plan:hover {
+  background-color: #96ac98;
+  transform: translateY(-1px);
+}
+
+.site-footer {
+  border-top: 1px solid #e0d7cc;
+  margin-top: -3rem;
+  padding-top: 1.3rem;
+  padding-bottom: 1.2rem;
+  font-size: 0.85rem;
+  color: #6b5b50;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  justify-content: center;
+  margin-bottom: 0.6rem;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: #6b5b50;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-note {
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* Centrage parfait du contenu des cartes */
+.theme-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* centre horizontalement */
+  text-align: center;      /* centre les textes */
+}
+
+/* S’assure que l’icône est vraiment centrée */
+.theme-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 1rem;
+}
+
+/* Optionnel : homogénéiser la taille visuelle */
+.theme-icon svg {
+  width: 40px;
+  height: 40px;
+}
+
+/* HEADER — même couleur que les cards */
+/* HEADER plein écran avec même couleur que les cards */
+/* HEADER plein écran */
+/* HEADER pleine largeur du viewport */
+.site-header {
+  width: 100%;
+  background-color: #fdfbf7;
+  border-bottom: 1px solid rgba(210, 200, 186, 0.55);
+}
+
+/* Conteneur interne centré */
+.header-inner {
+  width: 100%;
+  max-width: 1200px;      /* largeur du contenu */
+  margin: 0 auto;         /* centre le bloc */
+  padding: 1.5rem 2rem;     /* espace interne */
+  margin-top: 0.7rem;
+  margin-bottom: 0.2rem;
+  
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo aligné à gauche */
+.logo {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #4a3f37;
+}
+
+/* Navigation alignée à droite */
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #5a4b40;
+  font-size: 0.95rem;
+}
+
+.nav-links a:hover {
+  opacity: 0.7;
+}
+
+.auth-container {
+  max-width: 420px;
+  margin: 60px auto;
+  padding: 32px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-btn {
+  margin-top: 12px;
+  background-color: #d5e6d6;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.auth-error {
+  color: #b00020;
+  font-size: 0.9rem;
+}
+
+.theme-render {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 16px;
+}
+
+.theme-block {
+  padding: 0;              /* pas d’effet card */
+  border: none;
+  background: transparent;
+}
+
+.theme-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  letter-spacing: 0.2px;
+}
+
+.theme-text {
+  white-space: pre-line;   /* garde les retours à la ligne */
+  line-height: 1.7;
+  font-size: 15.5px;
+  color: #444;
+  padding-left: 2px;
+}
+
+.theme-block:not(:last-child) {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e7e0d8;
+}
+
+.theme-h1 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 32px 0 14px;
+  letter-spacing: 0.4px;
+}
+
+.theme-h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 22px 0 8px;
+  color: #2f2f2f;
+}
+
+.theme-text {
+  font-size: 15.5px;
+  line-height: 1.7;
+  margin: 0 0 10px;
+  color: #444;
+}
+
+.theme-render {
+  margin-top: 12px;
+}
+
+.theme-h1 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 28px 0 12px;
+  letter-spacing: 0.4px;
+}
+
+.theme-h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 18px 0 8px;
+}
+
+.theme-text {
+  font-size: 15.5px;
+  line-height: 1.7;
+  margin: 0 0 10px;
+  white-space: pre-line;
+}
+
+.profile-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+
+.profile-tab {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid #e7e0d8;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.profile-tab.active {
+  border-color: #b9c3b4;
+  background: #d7e0d4;
+}
+
+.profile-panel {
+  margin-top: 6px;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee6dc;
+}
+
+.profile-label {
+  opacity: 0.75;
+}
+
+.profile-value {
+  font-weight: 600;
+}
+
+.profile-hint {
+  margin-top: 12px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e7e0d8;
+  border-radius: 10px;
+}
+
+.history-title {
+  font-weight: 600;
+}
+
+.history-date {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-top: 4px;
+}
+
+.history-tag {
+  font-size: 13px;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.before-after-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.cta-btn {
+  padding: 12px 25px;
+  border-radius: 999px;
+  background-color: #b9cfc7; /* vert doux cohérent avec ton UI */
+  color: #1f2a26;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.cta-btn:hover {
+  background-color: #a9c1b8;
+  transform: translateY(-1px);
+}
+
+.logo img {
+  height: 70px;
+  width: auto;
+  display: block;
+}
+/* ========= NAVIGATION ========= */
+
+.site-header {
+  border-bottom: 1px solid #e0d7cc;
+  padding: 0;
+  margin: 0 0 0.5rem 0;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  height: 75px;       /* ✅ hauteur réelle du header */
+  overflow: visible;  /* le logo peut dépasser */
+}
+
+.logo img {
+  height: 70px;           /* taille visuelle conservée */
+  width: auto;
+  transform: translateY(0px); /* débordement contrôlé */
+  pointer-events: auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #5a4b40;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+

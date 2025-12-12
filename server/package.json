@@ -1,0 +1,23 @@
+{
+  "name": "numerology-server",
+  "version": "1.0.0",
+  "description": "Express API for numerology-app (OpenAI calls server-side only)",
+  "main": "index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20 <21"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "openai": "^6.9.1"
+  }
+}
+
