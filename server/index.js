@@ -47,8 +47,21 @@ app.use(
   })
 );
 
-// Préflight (OPTIONS)
-app.options("*", cors());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.error("CORS blocked for origin:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 /* ===========================================
    LOGS
