@@ -22,15 +22,37 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 app.use(helmet());
 app.use(express.json({ limit: "100kb" }));
 
-const allowedOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+/* ===========================================
+   CORS — ROBUSTE (Netlify + localhost)
+=========================================== */
+const allowedOrigins = [
+  process.env.CORS_ORIGIN,       // ex: https://classy-sfogliatella-0aecf9.netlify.app
+  "http://localhost:5173",
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: function (origin, callback) {
+      // origin peut être undefined (curl, server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.error("CORS blocked for origin:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
 
-// Log simple
+// Préflight (OPTIONS)
+app.options("*", cors());
+
+/* ===========================================
+   LOGS
+=========================================== */
 app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () => {
@@ -40,7 +62,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rate limit soft global (évite les abus bêtes)
+/* ===========================================
+   RATE LIMIT
+=========================================== */
 app.use(
   rateLimit({
     windowMs: 60 * 1000,
@@ -50,7 +74,6 @@ app.use(
   })
 );
 
-// Rate limit strict sur génération (le plus important)
 const generateLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 12,
@@ -58,7 +81,9 @@ const generateLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// --- Health
+/* ===========================================
+   HEALTH
+=========================================== */
 app.get("/__ping", (req, res) => res.json({ ok: true }));
 
 if (NODE_ENV !== "production") {
@@ -73,7 +98,7 @@ if (NODE_ENV !== "production") {
 }
 
 /* ===========================================
-   FAKE DB (mémoire)
+   FAKE DB
 =========================================== */
 const users = [];
 
@@ -132,8 +157,6 @@ app.post("/auth/login", (req, res) => {
 
 /* ===========================================
    PROFILE - ME
-   GET /me?email=...
-   (OK pour dev local. En prod, on passera à token/Supabase)
 =========================================== */
 app.get("/me", (req, res) => {
   const email = String(req.query.email || "").trim();
@@ -197,7 +220,6 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
 
     const user = email ? users.find((u) => u.email === email) : null;
 
-    // Plan free => résumé
     if (user && user.plan === "free") {
       const summaryText = await generateNumerologySummary({
         prenom,
@@ -217,7 +239,6 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       return res.json({ success: true, summary: summaryText });
     }
 
-    // Sinon thème complet
     const themeTexte = await generateNumerologyTheme({
       prenom,
       secondPrenom,
@@ -248,7 +269,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
 console.log("BOOT FILE:", __filename);
 console.log("PORT:", port);
 console.log("ENV:", NODE_ENV);
-console.log("CORS_ORIGIN:", allowedOrigin);
+console.log("CORS_ORIGIN:", process.env.CORS_ORIGIN);
 
 app.listen(port, () => {
   console.log(`🚀 Serveur numerology-app lancé sur http://localhost:${port}`);
