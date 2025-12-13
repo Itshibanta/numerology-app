@@ -148,27 +148,49 @@ app.post("/auth/login", async (req, res) => {
     const token = data.session?.access_token;
     if (!token) return res.status(500).json({ msg: "no session token" });
 
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("first_name, last_name, plan")
-      .eq("id", data.user.id)
-      .single();
+let { data: profile, error: pErr } = await supabaseAdmin
+  .from("profiles")
+  .select("first_name, last_name, plan")
+  .eq("id", data.user.id)
+  .single();
 
-    res.json({
-      msg: "ok",
-      token,
-      user: {
-        firstName: profile.first_name,
-        lastName: profile.last_name,
-        email: data.user.email,
-        plan: profile.plan,
-      },
-    });
-  } catch (e) {
-    console.error("LOGIN error:", e);
-    res.status(500).json({ msg: "Erreur interne serveur" });
+// Si pas de profil (trigger absent/raté), on le crée
+if (pErr || !profile) {
+  const meta = data.user.user_metadata || {};
+  const firstName = meta.firstName || "";
+  const lastName = meta.lastName || "";
+
+  const { data: inserted, error: iErr } = await supabaseAdmin
+    .from("profiles")
+    .insert({
+      id: data.user.id,
+      first_name: firstName,
+      last_name: lastName,
+      plan: "free",
+    })
+    .select("first_name, last_name, plan")
+    .single();
+
+  if (iErr || !inserted) {
+    console.error("PROFILE create failed:", iErr);
+    return res.status(500).json({ msg: "profile create failed" });
   }
+
+  profile = inserted;
+}
+
+return res.json({
+  msg: "ok",
+  token,
+  user: {
+    firstName: profile.first_name,
+    lastName: profile.last_name,
+    email: data.user.email,
+    plan: profile.plan,
+  },
 });
+
+
 
 /* ===========================================
    PROFILE - ME
