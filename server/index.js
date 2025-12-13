@@ -176,8 +176,14 @@ app.post("/auth/login", async (req, res) => {
 
       if (iErr || !inserted) {
         console.error("PROFILE create failed:", iErr);
-        return res.status(500).json({ msg: "profile create failed" });
+        return res.status(500).json({
+          msg: "profile create failed",
+          detail: iErr?.message || String(iErr),
+          code: iErr?.code,
+          hint: iErr?.hint,
+        });
       }
+
 
       profile = inserted;
     }
