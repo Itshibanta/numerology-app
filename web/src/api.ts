@@ -24,11 +24,18 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers,
   });
 
+  if (res.status === 401) {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("user");
+    window.location.href = "/signin";
+    throw new Error("Session expirée. Reconnecte-toi.");
+  }
+
   const text = await res.text();
   if (!res.ok) {
     throw new Error(text || `Erreur serveur (${res.status})`);
   }
-
+  
   // Certaines routes peuvent renvoyer du texte brut
   try {
     return JSON.parse(text) as T;
