@@ -1,39 +1,40 @@
 // web/src/api.ts
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || "http://localhost:3001";
-
-type Json = Record<string, any>;
-
-async function readJsonSafe(res: Response): Promise<Json> {
-  const text = await res.text();
-  if (!text) return {};
-  try {
-    return JSON.parse(text) as Json;
-  } catch {
-    return { raw: text };
-  }
-}
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-  });
+  const token = localStorage.getItem("auth_token");
 
-  const data = await readJsonSafe(res);
+  const headers: Record<string, string> = {
+    ...(options.headers as Record<string, string> | undefined),
+  };
 
-  if (!res.ok) {
-    // Ton backend renvoie parfois { msg }, parfois { error }, parfois du texte
-    const message =
-      (data && (data.error || data.msg || data.message)) ||
-      `Erreur serveur (${res.status})`;
-    throw new Error(message);
+  // Ajoute Content-Type si body JSON
+  if (options.body && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
   }
 
-  return data as T;
+  // Ajoute Bearer token si dispo
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers,
+  });
+
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(text || `Erreur serveur (${res.status})`);
+  }
+
+  // Certaines routes peuvent renvoyer du texte brut
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return text as unknown as T;
+  }
 }
 
 export type ThemeFormData = {
@@ -44,20 +45,18 @@ export type ThemeFormData = {
   dateNaissance: string;
   lieuNaissance: string;
   heureNaissance: string;
-  email?: string;
 };
 
 export async function generateTheme(formData: ThemeFormData): Promise<string> {
-  const token = localStorage.getItem("auth_token");
-
-  const data = await request<{ success: boolean; summary?: string; theme?: string; error?: string }>(
-    "/generate-theme",
-    {
-      method: "POST",
-      body: JSON.stringify(formData),
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    }
-  );
+  const data = await request<{
+    success: boolean;
+    summary?: string;
+    theme?: string;
+    error?: string;
+  }>("/generate-theme", {
+    method: "POST",
+    body: JSON.stringify(formData),
+  });
 
   if (!data.success) throw new Error(data.error || "Impossible de générer.");
   return (data.summary || data.theme || "") as string;
@@ -75,7 +74,7 @@ export interface LoginPayload {
   password: string;
 }
 
-export function registerUser(payload: RegisterPayload) {
+export async function registerUser(payload: RegisterPayload) {
   return request<{ msg: string }>("/auth/register", {
     method: "POST",
     body: JSON.stringify(payload),
@@ -83,13 +82,14 @@ export function registerUser(payload: RegisterPayload) {
 }
 
 export async function loginUser(payload: LoginPayload) {
-  const data = await request<{ msg: string; token: string; user: any }>("/auth/login", {
+  return request<{
+    msg: string;
+    token: string;
+    user: { firstName: string; lastName: string; email: string; plan: string };
+  }>("/auth/login", {
     method: "POST",
     body: JSON.stringify(payload),
   });
-
-  localStorage.setItem("auth_token", data.token);
-  return data;
 }
 
 export type MeResponse = {
@@ -98,13 +98,12 @@ export type MeResponse = {
   history: { date: string; type: "summary" | "theme"; label: string }[];
 };
 
-export function getMe(): Promise<MeResponse> {
-  const token = localStorage.getItem("auth_token");
-  if (!token) throw new Error("Not authenticated");
-
-  return request<MeResponse>("/me", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export async function getMe(): Promise<MeResponse> {
+  return request<MeResponse>("/me");
 }
 
-export { API_BASE_URL };
+// petit helper optionnel
+export function logout() {
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("user");
+}

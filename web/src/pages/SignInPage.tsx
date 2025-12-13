@@ -3,9 +3,9 @@ import { loginUser } from "../api";
 import "../App.css";
 
 export default function SignInPage() {
-  const [email, setEmail]       = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError]       = useState("");
+  const [error, setError] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -13,13 +13,18 @@ export default function SignInPage() {
 
     try {
       const res = await loginUser({ email, password });
-      // 🔐 On stocke le user pour pouvoir envoyer son email au backend ensuite
-      if (res && res.user) {
+
+      if (res?.token) {
+        localStorage.setItem("auth_token", res.token);
+      }
+
+      if (res?.user) {
         localStorage.setItem("user", JSON.stringify(res.user));
       }
+
       window.location.href = "/theme";
     } catch (err: any) {
-      setError(err.message || "Email ou mot de passe incorrect.");
+      setError(err?.message || "Email ou mot de passe incorrect.");
     }
   }
 
@@ -33,7 +38,7 @@ export default function SignInPage() {
           type="email"
           required
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <label>Mot de passe</label>
@@ -41,7 +46,7 @@ export default function SignInPage() {
           type="password"
           required
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         {error && <p className="auth-error">{error}</p>}

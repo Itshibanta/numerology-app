@@ -15,14 +15,8 @@ import ProfilePage from "./pages/ProfilePage";
 import logo from "./assets/logo.png";
 
 function isLoggedIn(): boolean {
-  const stored = localStorage.getItem("user");
-  if (!stored) return false;
-  try {
-    const u = JSON.parse(stored);
-    return !!(u && typeof u.email === "string" && u.email.trim().length > 0);
-  } catch {
-    return false;
-  }
+  const token = localStorage.getItem("auth_token");
+  return !!token;
 }
 
 export default function App() {
