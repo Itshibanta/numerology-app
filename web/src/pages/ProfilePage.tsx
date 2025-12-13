@@ -18,30 +18,21 @@ function formatPlan(plan: string) {
   return { name: plan || "Inconnu", limit: "?" as const };
 }
 
+function logoutAndRedirect() {
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("user");
+  window.location.href = "/signin";
+}
+
 export default function ProfilePage() {
   const [tab, setTab] = useState<TabKey>("profile");
   const [state, setState] = useState<ViewState>({ status: "loading" });
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (!stored) {
+    // Si pas de token, inutile d'appeler /me
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
       setState({ status: "error", message: "Tu n’es pas connecté." });
-      return;
-    }
-
-    let email = "";
-    try {
-      const u = JSON.parse(stored);
-      if (u && typeof u.email === "string") email = u.email;
-    } catch {
-      // ignore
-    }
-
-    if (!email) {
-      setState({
-        status: "error",
-        message: "Email utilisateur introuvable (localStorage).",
-      });
       return;
     }
 
@@ -52,11 +43,6 @@ export default function ProfilePage() {
         setState({ status: "error", message });
       });
   }, []);
-
-  function handleLogout() {
-    localStorage.removeItem("user");
-    window.location.href = "/signin";
-  }
 
   const content = useMemo(() => {
     if (state.status !== "ready") return null;
@@ -96,7 +82,7 @@ export default function ProfilePage() {
             </span>
           </div>
           <div className="profile-hint">
-            (Pour l’instant c’est une fake DB : si tu redémarres le serveur, tu perds tout.)
+            Ton historique est stocké dans Supabase (persistant).
           </div>
         </div>
       );
@@ -109,22 +95,19 @@ export default function ProfilePage() {
           <p>Aucune génération pour le moment.</p>
         ) : (
           <div className="history-list">
-            {history
-              .slice()
-              .reverse()
-              .map((h, idx) => (
-                <div className="history-item" key={`${h.date}-${idx}`}>
-                  <div className="history-main">
-                    <div className="history-title">{h.label}</div>
-                    <div className="history-date">
-                      {new Date(h.date).toLocaleString()}
-                    </div>
-                  </div>
-                  <div className="history-tag">
-                    {h.type === "summary" ? "Gratuit" : "Complet"}
+            {history.map((h, idx) => (
+              <div className="history-item" key={`${h.date}-${idx}`}>
+                <div className="history-main">
+                  <div className="history-title">{h.label}</div>
+                  <div className="history-date">
+                    {new Date(h.date).toLocaleString()}
                   </div>
                 </div>
-              ))}
+                <div className="history-tag">
+                  {h.type === "summary" ? "Gratuit" : "Complet"}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -137,7 +120,7 @@ export default function ProfilePage() {
         <section className="card">
           <div className="theme-header">
             <h2>Mon profil</h2>
-            <button type="button" onClick={handleLogout}>
+            <button type="button" onClick={logoutAndRedirect}>
               Se déconnecter
             </button>
           </div>
@@ -153,7 +136,7 @@ export default function ProfilePage() {
         <section className="card">
           <div className="theme-header">
             <h2>Mon profil</h2>
-            <button type="button" onClick={handleLogout}>
+            <button type="button" onClick={logoutAndRedirect}>
               Se déconnecter
             </button>
           </div>
@@ -168,7 +151,7 @@ export default function ProfilePage() {
       <section className="card">
         <div className="theme-header">
           <h2>Mon profil</h2>
-          <button type="button" onClick={handleLogout}>
+          <button type="button" onClick={logoutAndRedirect}>
             Se déconnecter
           </button>
         </div>
