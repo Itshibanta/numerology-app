@@ -48,13 +48,18 @@ export type ThemeFormData = {
 };
 
 export async function generateTheme(formData: ThemeFormData): Promise<string> {
+  const token = localStorage.getItem("auth_token");
+
   const data = await request<{ success: boolean; summary?: string; theme?: string; error?: string }>(
     "/generate-theme",
-    { method: "POST", body: JSON.stringify(formData) }
+    {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    }
   );
 
   if (!data.success) throw new Error(data.error || "Impossible de générer.");
-
   return (data.summary || data.theme || "") as string;
 }
 
@@ -77,11 +82,14 @@ export function registerUser(payload: RegisterPayload) {
   });
 }
 
-export function loginUser(payload: LoginPayload) {
-  return request<{ msg: string; user?: { firstName: string; lastName: string; email: string; plan: string } }>(
-    "/auth/login",
-    { method: "POST", body: JSON.stringify(payload) }
-  );
+export async function loginUser(payload: LoginPayload) {
+  const data = await request<{ msg: string; token: string; user: any }>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  localStorage.setItem("auth_token", data.token);
+  return data;
 }
 
 export type MeResponse = {
@@ -90,8 +98,13 @@ export type MeResponse = {
   history: { date: string; type: "summary" | "theme"; label: string }[];
 };
 
-export function getMe(email: string): Promise<MeResponse> {
-  return request<MeResponse>(`/me?email=${encodeURIComponent(email)}`);
+export function getMe(): Promise<MeResponse> {
+  const token = localStorage.getItem("auth_token");
+  if (!token) throw new Error("Not authenticated");
+
+  return request<MeResponse>("/me", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }
 
 export { API_BASE_URL };

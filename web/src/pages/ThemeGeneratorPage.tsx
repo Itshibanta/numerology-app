@@ -191,7 +191,7 @@ export default function ThemeGeneratorPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="nomMarital">Nom après mariage</label>
+            <label htmlFor="nomMarital">Nom Marital</label>
             <input
               id="nomMarital"
               name="nomMarital"
