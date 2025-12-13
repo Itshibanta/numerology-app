@@ -45,7 +45,7 @@ export default function ProfilePage() {
       return;
     }
 
-    getMe(email)
+    getMe()
       .then((data) => setState({ status: "ready", data }))
       .catch((e: unknown) => {
         const message = e instanceof Error ? e.message : "Erreur inconnue.";
