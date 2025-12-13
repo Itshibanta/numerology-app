@@ -14,18 +14,6 @@ const {
 
 const app = express();
 
-app.get("/__supabase", (req, res) => {
-  const url = process.env.SUPABASE_URL || "";
-  // ex: https://abcdxyz.supabase.co -> "abcdxyz"
-  const projectRef = url.replace("https://", "").replace(".supabase.co", "");
-  res.json({
-    ok: true,
-    supabaseUrl: url,
-    projectRef,
-  });
-});
-
-
 app.set("trust proxy", 1);
 
 const port = process.env.PORT || 3001;
@@ -111,6 +99,18 @@ const generateLimiter = rateLimit({
    HEALTH
 =========================================== */
 app.get("/__ping", (req, res) => res.json({ ok: true }));
+
+app.get("/__supabase", (req, res) => {
+  const url = process.env.SUPABASE_URL || "";
+  // ex: https://abcdxyz.supabase.co -> "abcdxyz"
+  const projectRef = url.replace("https://", "").replace(".supabase.co", "");
+  res.json({
+    ok: true,
+    supabaseUrl: url,
+    projectRef,
+  });
+});
+
 
 if (NODE_ENV !== "production") {
   app.get("/__whoami", (req, res) =>
