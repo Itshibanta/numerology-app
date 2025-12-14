@@ -1238,3 +1238,24 @@ p {
   text-decoration: underline;
 }
 
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 9999;
+}
+.modal-card{
+  background:#fff;
+  border-radius:12px;
+  padding:16px;
+  width:min(520px, 92vw);
+}
+.modal-actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}

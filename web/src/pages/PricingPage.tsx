@@ -7,7 +7,7 @@ const PricingPage = () => {
             Choisissez le plan adapté à votre pratique
           </h1>
           <p className="pricing-subtitle">
-            Tous les plans sont pensés pour s&apos;adapter à ton niveau de
+            Tous les plans sont pensés pour s&apos;adapter à votre niveau de
             pratique, de la découverte aux accompagnements professionnels
             réguliers.
           </p>

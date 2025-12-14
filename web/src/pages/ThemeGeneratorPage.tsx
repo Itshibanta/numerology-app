@@ -1,5 +1,4 @@
 // web/src/pages/ThemeGeneratorPage.tsx
-
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { generateTheme } from "../api";
@@ -8,13 +7,12 @@ type FormData = {
   prenom: string;
   secondPrenom: string;
   nomFamille: string;
-  nomMarital: string; // nom après mariage
+  nomMarital: string;
   dateNaissance: string;
   villeNaissance: string;
   paysNaissance: string;
   lieuNaissance: string; // combiné envoyé au backend
   heureNaissance: string;
-  email?: string;
 };
 
 type Block =
@@ -31,25 +29,18 @@ function parseThemeBlocks(raw: string): Block[] {
     if (!trimmed) continue;
 
     if (trimmed.startsWith("===") && trimmed.endsWith("===")) {
-      blocks.push({
-        type: "h1",
-        title: trimmed.replace(/===/g, "").trim(),
-      });
+      blocks.push({ type: "h1", title: trimmed.replace(/===/g, "").trim() });
       continue;
     }
 
     if (trimmed.startsWith("---") && trimmed.endsWith("---")) {
-      blocks.push({
-        type: "h2",
-        title: trimmed.replace(/---/g, "").trim(),
-      });
+      blocks.push({ type: "h2", title: trimmed.replace(/---/g, "").trim() });
       continue;
     }
 
     blocks.push({ type: "text", content: line });
   }
 
-  // fallback : si le modèle n'a pas respecté le format, on rend en texte simple (sans titre)
   if (blocks.length === 0 && raw.trim()) {
     blocks.push({ type: "text", content: raw.trim() });
   }
@@ -68,12 +59,13 @@ export default function ThemeGeneratorPage() {
     paysNaissance: "",
     lieuNaissance: "",
     heureNaissance: "",
-    email: undefined,
   });
 
   const [theme, setTheme] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -84,6 +76,14 @@ export default function ThemeGeneratorPage() {
     e.preventDefault();
     setError(null);
     setTheme("");
+
+    // ✅ Blocage front : pas de token => popup + stop
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setShowAuthModal(true);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -97,24 +97,9 @@ export default function ThemeGeneratorPage() {
         .filter(Boolean)
         .join(", ");
 
-      // récupérer l'email du user connecté (stocké au login)
-      let emailFromUser: string | undefined;
-      try {
-        const stored = localStorage.getItem("user");
-        if (stored) {
-          const user = JSON.parse(stored);
-          if (user && typeof user.email === "string") {
-            emailFromUser = user.email;
-          }
-        }
-      } catch {
-        // ignore
-      }
-
       const payload: FormData = {
         ...form,
         lieuNaissance: lieuNaissanceCombine,
-        email: emailFromUser,
       };
 
       const result = await generateTheme(payload);
@@ -125,6 +110,7 @@ export default function ThemeGeneratorPage() {
         setTheme(JSON.stringify(result, null, 2));
       }
     } catch (err: any) {
+      // Si backend renvoie AUTH_REQUIRED (ou 401), api.ts fait déjà redirect /signin.
       setError(err?.message || "Erreur inconnue.");
     } finally {
       setLoading(false);
@@ -140,6 +126,38 @@ export default function ThemeGeneratorPage() {
 
   return (
     <div className="app-container">
+      {/* MODAL AUTH REQUIRED */}
+      {showAuthModal && (
+        <div className="modal-overlay" role="dialog" aria-modal="true">
+          <div className="modal-card">
+            <h3>Compte requis</h3>
+            <p>
+              Pour générer votre thème numérologique, vous devez créer un compte.
+            </p>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                onClick={() => (window.location.href = "/signup")}
+              >
+                Créer un compte
+              </button>
+
+              <button
+                type="button"
+                onClick={() => (window.location.href = "/signin")}
+              >
+                Se connecter
+              </button>
+
+              <button type="button" onClick={() => setShowAuthModal(false)}>
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="app-header">
         <h1>Générateur de Thème Numérologique</h1>
         <p>
@@ -264,11 +282,7 @@ export default function ThemeGeneratorPage() {
       <section className="card">
         <div className="theme-header">
           <h2>Thème numérologique</h2>
-          <button
-            type="button"
-            onClick={handleCopy}
-            disabled={!theme || loading}
-          >
+          <button type="button" onClick={handleCopy} disabled={!theme || loading}>
             Copier le thème
           </button>
         </div>
@@ -288,25 +302,9 @@ export default function ThemeGeneratorPage() {
         {theme && (
           <div className="theme-render">
             {parseThemeBlocks(theme).map((b, i) => {
-              if (b.type === "h1") {
-                return (
-                  <div key={i} className="theme-h1">
-                    {b.title}
-                  </div>
-                );
-              }
-              if (b.type === "h2") {
-                return (
-                  <div key={i} className="theme-h2">
-                    {b.title}
-                  </div>
-                );
-              }
-              return (
-                <p key={i} className="theme-text">
-                  {b.content}
-                </p>
-              );
+              if (b.type === "h1") return <div key={i} className="theme-h1">{b.title}</div>;
+              if (b.type === "h2") return <div key={i} className="theme-h2">{b.title}</div>;
+              return <p key={i} className="theme-text">{b.content}</p>;
             })}
           </div>
         )}

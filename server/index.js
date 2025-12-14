@@ -261,6 +261,15 @@ app.get("/me", async (req, res) => {
 /* ===========================================
    NUMEROLOGY GENERATOR
 =========================================== */
+const token = getBearerToken(req);
+if (!token) {
+  return res.status(401).json({
+    success: false,
+    error: "AUTH_REQUIRED",
+    message: "Vous devez créer un compte pour générer votre thème.",
+  });
+}
+
 app.post("/generate-theme", generateLimiter, async (req, res) => {
   try {
     const {
