@@ -1,4 +1,28 @@
+// web/src/pages/PricingPage.tsx
+
+function getCurrentPlan(): string | null {
+  try {
+    const raw = localStorage.getItem("user");
+    if (!raw) return null;
+    const u = JSON.parse(raw);
+    if (typeof u?.plan === "string") return u.plan.toLowerCase();
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 const PricingPage = () => {
+  const currentPlan = getCurrentPlan();
+
+  const btnText = (planKey: string) =>
+    currentPlan === planKey ? "Plan actuel" : "Choisir ce plan";
+
+  const btnDisabled = (planKey: string) => currentPlan === planKey;
+
+  const btnClass = (planKey: string) =>
+    `btn-plan ${currentPlan === planKey ? "btn-plan-current" : ""}`;
+
   return (
     <main className="app-container">
       <section className="pricing-root">
@@ -22,15 +46,18 @@ const PricingPage = () => {
             </div>
 
             <ul className="pricing-features">
-              <li className="pricing-feature-highlight">
-                Résumé numérologique
-              </li>
+              <li className="pricing-feature-highlight">Résumé numérologique</li>
               <li>Profil synthétique</li>
               <li>Sans PDF</li>
               <li>Usage personnel</li>
             </ul>
 
-            <button className="btn-plan">Choisir ce plan</button>
+            <button
+              className={btnClass("free")}
+              disabled={btnDisabled("free")}
+            >
+              {btnText("free")}
+            </button>
           </article>
 
           {/* Plan 2 – Essentiel (mise en avant) */}
@@ -42,15 +69,18 @@ const PricingPage = () => {
             </div>
 
             <ul className="pricing-features">
-              <li className="pricing-feature-highlight">
-                1 thème complet / mois
-              </li>
+              <li className="pricing-feature-highlight">1 thème complet / mois</li>
               <li>Accès au texte complet</li>
               <li>Téléchargement PDF</li>
               <li>Historique des thèmes</li>
             </ul>
 
-            <button className="btn-plan">Choisir ce plan</button>
+            <button
+              className={btnClass("essentiel")}
+              disabled={btnDisabled("essentiel")}
+            >
+              {btnText("essentiel")}
+            </button>
           </article>
 
           {/* Plan 3 – Praticien */}
@@ -61,15 +91,18 @@ const PricingPage = () => {
             </div>
 
             <ul className="pricing-features">
-              <li className="pricing-feature-highlight">
-                5 thèmes complets / mois
-              </li>
+              <li className="pricing-feature-highlight">5 thèmes complets / mois</li>
               <li>PDF inclus</li>
               <li>Usage professionnel autorisé</li>
               <li>Historique illimité</li>
             </ul>
 
-            <button className="btn-plan">Choisir ce plan</button>
+            <button
+              className={btnClass("praticien")}
+              disabled={btnDisabled("praticien")}
+            >
+              {btnText("praticien")}
+            </button>
           </article>
 
           {/* Plan 4 – Pro Illimité */}
@@ -80,20 +113,24 @@ const PricingPage = () => {
             </div>
 
             <ul className="pricing-features">
-              <li className="pricing-feature-highlight">
-                Thèmes complets illimités
-              </li>
+              <li className="pricing-feature-highlight">Thèmes complets illimités</li>
               <li>PDF inclus</li>
               <li>Usage professionnel autorisé</li>
               <li>Historique illimité &amp; support prioritaire</li>
             </ul>
 
-            <button className="btn-plan">Choisir ce plan</button>
+            <button
+              className={btnClass("pro")}
+              disabled={btnDisabled("pro")}
+            >
+              {btnText("pro")}
+            </button>
           </article>
         </div>
 
         <p className="pricing-note">
-          Gardez le contrôle sur votre abonnement, ajustez ou arrêtez le à n'importe quel moment. 
+          Gardez le contrôle sur votre abonnement, ajustez ou arrêtez le à
+          n&apos;importe quel moment.
         </p>
       </section>
     </main>
