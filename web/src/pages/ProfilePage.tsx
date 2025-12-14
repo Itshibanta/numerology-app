@@ -15,11 +15,14 @@ function formatPlan(plan: string) {
   if (p === "free") {
     return { name: "Découverte (gratuit)", limit: 1, price: "0 € / mois" };
   }
+  if (p === "essentiel") {
+    return { name: "Essentiel", limit: 1, price: "19,99 € / mois" };
+  }
   if (p === "praticien") {
-    return { name: "Praticien", limit: 5, price: "50 € / mois" };
+    return { name: "Praticien", limit: 5, price: "49,99 € / mois" };
   }
   if (p === "pro") {
-    return { name: "Pro Illimité", limit: "Illimité" as const, price: "150 € / mois" };
+    return { name: "Pro Illimité", limit: "Illimité" as const, price: "149,99 € / mois" };
   }
 
   return { name: plan || "Inconnu", limit: "?" as const, price: "—" };

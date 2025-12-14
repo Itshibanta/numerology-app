@@ -1403,7 +1403,15 @@ p {
 }
 
 .btn-plan-current{
-  opacity: .8;
+  background: rgba(17,24,39,0.10);  /* anthracite clair */
+  color: rgba(17,24,39,0.85);
+  border: 1px solid rgba(17,24,39,0.18);
+  opacity: 1;
   cursor: not-allowed;
-  border: 1px solid rgba(0,0,0,0.12);
 }
+
+.btn-plan-current:hover{
+  transform: none;
+  box-shadow: none;
+}
+
