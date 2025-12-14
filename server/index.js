@@ -259,19 +259,20 @@ app.get("/me", async (req, res) => {
 });
 
 /* ===========================================
-   NUMEROLOGY GENERATOR
+   NUMEROLOGY GENERATOR (AUTH REQUIRED)
 =========================================== */
-const token = getBearerToken(req);
-if (!token) {
-  return res.status(401).json({
-    success: false,
-    error: "AUTH_REQUIRED",
-    message: "Vous devez créer un compte pour générer votre thème.",
-  });
-}
-
 app.post("/generate-theme", generateLimiter, async (req, res) => {
   try {
+    // ✅ Compte requis
+    const token = getBearerToken(req);
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: "AUTH_REQUIRED",
+        message: "Vous devez créer un compte pour générer votre thème.",
+      });
+    }
+
     const {
       prenom,
       secondPrenom,
@@ -283,35 +284,44 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
     } = req.body;
 
     if (!prenom || !nomFamille || !dateNaissance) {
-      return res.status(400).json({ success: false, error: "missing fields" });
+      return res.status(400).json({
+        success: false,
+        error: "missing fields",
+      });
     }
 
-    // Auth optionnelle (token)
-    const token = getBearerToken(req);
-    let userId = null;
-    let plan = "free";
-    let fullName = "";
-
-    if (token) {
-      const { data: userData } = await supabaseAdmin.auth.getUser(token);
-      if (userData?.user) {
-        userId = userData.user.id;
-
-        const { data: profile } = await supabaseAdmin
-          .from("profiles")
-          .select("first_name, last_name, plan")
-          .eq("id", userId)
-          .single();
-
-        if (profile) {
-          plan = profile.plan || "free";
-          fullName = `${profile.first_name} ${profile.last_name}`.trim();
-        }
-      }
+    // ✅ Token -> user
+    const { data: userData, error: uErr } = await supabaseAdmin.auth.getUser(token);
+    if (uErr || !userData?.user) {
+      return res.status(401).json({
+        success: false,
+        error: "INVALID_TOKEN",
+        message: "Session invalide. Reconnectez-vous.",
+      });
     }
 
-    // Plan free => résumé (si connecté)
-    if (userId && plan === "free") {
+    const userId = userData.user.id;
+
+    // ✅ Profil (plan)
+    const { data: profile, error: pErr } = await supabaseAdmin
+      .from("profiles")
+      .select("first_name, last_name, plan")
+      .eq("id", userId)
+      .single();
+
+    if (pErr || !profile) {
+      return res.status(500).json({
+        success: false,
+        error: "PROFILE_NOT_FOUND",
+        message: "Profil introuvable.",
+      });
+    }
+
+    const plan = profile.plan || "free";
+    const fullName = `${profile.first_name || ""} ${profile.last_name || ""}`.trim();
+
+    // ✅ Plan free => résumé
+    if (plan === "free") {
       const summaryText = await generateNumerologySummary({
         prenom,
         secondPrenom,
@@ -332,7 +342,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       return res.json({ success: true, summary: summaryText });
     }
 
-    // Sinon thème complet
+    // ✅ Sinon thème complet
     const themeTexte = await generateNumerologyTheme({
       prenom,
       secondPrenom,
@@ -343,19 +353,20 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       heureNaissance,
     });
 
-    if (userId) {
-      await supabaseAdmin.from("generations").insert({
-        user_id: userId,
-        type: "theme",
-        label: fullName ? `Thème numérologique ${fullName}` : "Thème numérologique",
-        payload: req.body,
-      });
-    }
+    await supabaseAdmin.from("generations").insert({
+      user_id: userId,
+      type: "theme",
+      label: fullName ? `Thème numérologique ${fullName}` : "Thème numérologique",
+      payload: req.body,
+    });
 
     return res.json({ success: true, theme: themeTexte });
   } catch (e) {
     console.error("GEN error:", e);
-    return res.status(500).json({ success: false, error: "Erreur interne serveur" });
+    return res.status(500).json({
+      success: false,
+      error: "Erreur interne serveur",
+    });
   }
 });
 
