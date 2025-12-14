@@ -138,6 +138,7 @@ export default function ThemeGeneratorPage() {
             <div className="modal-actions">
               <button
                 type="button"
+                className="btn btn-primary"
                 onClick={() => (window.location.href = "/signup")}
               >
                 Créer un compte
@@ -145,12 +146,17 @@ export default function ThemeGeneratorPage() {
 
               <button
                 type="button"
+                className="btn btn-secondary"
                 onClick={() => (window.location.href = "/signin")}
               >
                 Se connecter
               </button>
 
-              <button type="button" onClick={() => setShowAuthModal(false)}>
+              <button 
+                type="button"
+                className="btn btn-ghost" 
+                onClick={() => setShowAuthModal(false)}
+              >
                 Fermer
               </button>
             </div>
