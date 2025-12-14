@@ -727,8 +727,15 @@ p {
   text-align: center;
 }
 
+/* --- Pricing: rapprocher la note du footer --- */
 .pricing-note {
-  margin-bottom: -2rem;
+  margin: 18px 0 0;     /* moins d'espace en bas */
+  padding-bottom: 0;
+}
+
+/* le <main class="app-container"> est juste avant le footer dans App.tsx */
+main.app-container + footer.site-footer {
+  margin-top: 14px;     /* espace plus compact entre pricing et footer */
 }
 
 .pricing-header {
@@ -1419,3 +1426,47 @@ p {
   box-shadow: none;
 }
 
+/* --- Modal (quota / auth) --- */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 999;
+}
+
+.modal-card{
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  padding: 18px 18px 16px;
+}
+
+.modal-card h3{
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.modal-card p{
+  margin: 0 0 14px;
+  color: rgba(0,0,0,0.70);
+  line-height: 1.45;
+}
+
+.modal-actions{
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.btn-plan-secondary{
+  background: #e6e6e6;
+  color: rgba(0,0,0,0.80);
+}

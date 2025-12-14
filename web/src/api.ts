@@ -1,6 +1,32 @@
 // web/src/api.ts
-
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+
+export class ApiError extends Error {
+  code?: string;
+  meta?: any;
+
+  constructor(message: string, code?: string, meta?: any) {
+    super(message);
+    this.name = "ApiError";
+    this.code = code;
+    this.meta = meta;
+  }
+}
+
+async function parseApiError(res: Response): Promise<ApiError> {
+  const text = await res.text();
+
+  try {
+    const json = JSON.parse(text);
+    const message =
+      json?.message || json?.msg || json?.error || `Erreur serveur (${res.status})`;
+    const code = json?.error; // ex: QUOTA_EXCEEDED / AUTH_REQUIRED
+    const meta = json?.meta;
+    return new ApiError(message, code, meta);
+  } catch {
+    return new ApiError(text || `Erreur serveur (${res.status})`);
+  }
+}
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem("auth_token");
@@ -9,12 +35,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     ...(options.headers as Record<string, string> | undefined),
   };
 
-  // Ajoute Content-Type si body JSON
   if (options.body && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
 
-  // Ajoute Bearer token si dispo
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
@@ -24,19 +48,20 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers,
   });
 
+  // 401 => logout
   if (res.status === 401) {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("user");
     window.location.href = "/signin";
-    throw new Error("Session expirée. Reconnecte-toi.");
+    throw new ApiError("Session expirée. Reconnecte-toi.", "UNAUTHORIZED");
   }
 
-  const text = await res.text();
   if (!res.ok) {
-    throw new Error(text || `Erreur serveur (${res.status})`);
+    throw await parseApiError(res);
   }
-  
-  // Certaines routes peuvent renvoyer du texte brut
+
+  // Certaines routes peuvent renvoyer texte brut
+  const text = await res.text();
   try {
     return JSON.parse(text) as T;
   } catch {
@@ -55,18 +80,16 @@ export type ThemeFormData = {
 };
 
 export async function generateTheme(formData: ThemeFormData): Promise<string> {
-  const data = await request<{
-    success: boolean;
-    summary?: string;
-    theme?: string;
-    error?: string;
-  }>("/generate-theme", {
+  const data = await request<any>("/generate-theme", {
     method: "POST",
     body: JSON.stringify(formData),
   });
 
-  if (!data.success) throw new Error(data.error || "Impossible de générer.");
-  return (data.summary || data.theme || "") as string;
+  if (!data?.success) {
+    throw new ApiError(data?.message || "Impossible de générer.", data?.error, data?.meta);
+  }
+
+  return (data.summary || data.theme) as string;
 }
 
 export interface RegisterPayload {
@@ -109,8 +132,8 @@ export async function getMe(): Promise<MeResponse> {
   return request<MeResponse>("/me");
 }
 
-// petit helper optionnel
 export function logout() {
   localStorage.removeItem("auth_token");
   localStorage.removeItem("user");
+  window.location.href = "/signin";
 }

@@ -1,7 +1,7 @@
 // web/src/pages/ThemeGeneratorPage.tsx
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { generateTheme } from "../api";
+import { ApiError, generateTheme } from "../api";
 
 type FormData = {
   prenom: string;
@@ -11,7 +11,7 @@ type FormData = {
   dateNaissance: string;
   villeNaissance: string;
   paysNaissance: string;
-  lieuNaissance: string; // combiné envoyé au backend
+  lieuNaissance: string;
   heureNaissance: string;
 };
 
@@ -67,6 +67,13 @@ export default function ThemeGeneratorPage() {
 
   const [showAuthModal, setShowAuthModal] = useState(false);
 
+  const [showQuotaModal, setShowQuotaModal] = useState(false);
+  const [quotaInfo, setQuotaInfo] = useState<{
+    count?: number;
+    limit?: number;
+    month?: string;
+  } | null>(null);
+
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -97,20 +104,32 @@ export default function ThemeGeneratorPage() {
         .filter(Boolean)
         .join(", ");
 
-      const payload: FormData = {
-        ...form,
+      const payload = {
+        prenom: form.prenom,
+        secondPrenom: form.secondPrenom,
+        nomFamille: form.nomFamille,
+        nomMarital: form.nomMarital,
+        dateNaissance: form.dateNaissance,
         lieuNaissance: lieuNaissanceCombine,
+        heureNaissance: form.heureNaissance,
       };
 
       const result = await generateTheme(payload);
 
-      if (typeof result === "string") {
-        setTheme(result);
-      } else {
-        setTheme(JSON.stringify(result, null, 2));
-      }
+      setTheme(typeof result === "string" ? result : JSON.stringify(result, null, 2));
     } catch (err: any) {
-      // Si backend renvoie AUTH_REQUIRED (ou 401), api.ts fait déjà redirect /signin.
+      if (err instanceof ApiError && err.code === "QUOTA_EXCEEDED") {
+        setQuotaInfo(err.meta || null);
+        setShowQuotaModal(true);
+        setError(null);
+        return;
+      }
+
+      if (err instanceof ApiError && err.code === "AUTH_REQUIRED") {
+        setShowAuthModal(true);
+        return;
+      }
+
       setError(err?.message || "Erreur inconnue.");
     } finally {
       setLoading(false);
@@ -128,17 +147,15 @@ export default function ThemeGeneratorPage() {
     <div className="app-container">
       {/* MODAL AUTH REQUIRED */}
       {showAuthModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true">
-          <div className="modal-card">
+        <div className="modal-overlay" role="dialog" aria-modal="true" onClick={() => setShowAuthModal(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h3>Compte requis</h3>
-            <p>
-              Pour générer votre thème numérologique, vous devez créer un compte.
-            </p>
+            <p>Pour générer votre thème numérologique, vous devez créer un compte.</p>
 
             <div className="modal-actions">
               <button
                 type="button"
-                className="btn btn-primary"
+                className="btn-plan"
                 onClick={() => (window.location.href = "/signup")}
               >
                 Créer un compte
@@ -146,16 +163,47 @@ export default function ThemeGeneratorPage() {
 
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn-plan btn-plan-secondary"
                 onClick={() => (window.location.href = "/signin")}
               >
                 Se connecter
               </button>
 
-              <button 
+              <button
                 type="button"
-                className="btn btn-ghost" 
+                className="btn-plan btn-plan-secondary"
                 onClick={() => setShowAuthModal(false)}
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL QUOTA */}
+      {showQuotaModal && (
+        <div className="modal-overlay" role="dialog" aria-modal="true" onClick={() => setShowQuotaModal(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3>Quota mensuel atteint</h3>
+            <p>
+              Tu as utilisé {quotaInfo?.count ?? 1} / {quotaInfo?.limit ?? 1} génération(s) ce mois-ci.
+              {quotaInfo?.month ? ` (mois: ${quotaInfo.month})` : ""}
+            </p>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-plan"
+                onClick={() => (window.location.href = "/pricing")}
+              >
+                Voir les tarifs
+              </button>
+
+              <button
+                type="button"
+                className="btn-plan btn-plan-secondary"
+                onClick={() => setShowQuotaModal(false)}
               >
                 Fermer
               </button>
@@ -167,8 +215,7 @@ export default function ThemeGeneratorPage() {
       <header className="app-header">
         <h1>Générateur de Thème Numérologique</h1>
         <p>
-          Renseigne ton état civil, puis clique sur{" "}
-          <strong>Générer mon thème</strong>.
+          Renseigne ton état civil, puis clique sur <strong>Générer mon thème</strong>.
         </p>
       </header>
 
