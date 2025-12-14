@@ -6,7 +6,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
-const { supabase, supabaseAdmin } = require("./supabase");
+const { supabaseAdmin } = require("./supabase");
 const {
   generateNumerologyTheme,
   generateNumerologySummary,
@@ -117,11 +117,28 @@ app.post("/auth/register", async (req, res) => {
 
     if (error) return res.status(400).json({ msg: error.message });
 
-    // Peut échouer si le trigger n'a pas créé la row -> pas grave
-    await supabaseAdmin
+    // 1) On tente un update (cas normal: trigger a créé la row profiles)
+    const { data: updated, error: upErr } = await supabaseAdmin
       .from("profiles")
       .update({ first_name: firstName, last_name: lastName })
-      .eq("id", data.user.id);
+      .eq("id", data.user.id)
+      .select("id")
+      .single();
+
+    // 2) Fallback: si pas de row (trigger absent/raté), on insert
+    if (upErr || !updated) {
+      const { error: insErr } = await supabaseAdmin.from("profiles").insert({
+        id: data.user.id,
+        first_name: firstName,
+        last_name: lastName,
+        plan: "free",
+      });
+
+      if (insErr) {
+        console.error("REGISTER profile insert failed:", insErr);
+        return res.status(500).json({ msg: "profile insert failed" });
+      }
+    }
 
     return res.json({ msg: "ok" });
   } catch (e) {
@@ -140,10 +157,11 @@ app.post("/auth/login", async (req, res) => {
       return res.status(400).json({ msg: "champs manquants" });
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // On utilise l'endpoint Supabase REST (auth) via fetch côté serveur
+    // => ici on passe par GoTrue via supabase-js côté serveur: OK
+    // (Si ton ./supabase exporte aussi un client non-admin, garde-le; sinon on peut réécrire)
+    const { supabase } = require("./supabase");
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) return res.status(401).json({ msg: "invalid credentials" });
 
@@ -183,7 +201,6 @@ app.post("/auth/login", async (req, res) => {
           hint: iErr?.hint,
         });
       }
-
 
       profile = inserted;
     }
@@ -317,8 +334,37 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       });
     }
 
-    const plan = profile.plan || "free";
+    const plan = (profile.plan || "free").toLowerCase();
     const fullName = `${profile.first_name || ""} ${profile.last_name || ""}`.trim();
+
+    // ✅ Quota mensuel (atomique)
+    const { data: quotaRows, error: qErr } = await supabaseAdmin.rpc("consume_generation", {
+      p_user: userId,
+    });
+
+    if (qErr) {
+      console.error("QUOTA rpc error:", qErr);
+      return res.status(500).json({
+        success: false,
+        error: "QUOTA_CHECK_FAILED",
+        message: "Erreur quota. Réessayez.",
+      });
+    }
+
+    const quota = Array.isArray(quotaRows) ? quotaRows[0] : quotaRows;
+
+    if (!quota?.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: quota?.reason || "QUOTA_EXCEEDED",
+        message: "Quota mensuel atteint. Passez sur un plan supérieur pour continuer.",
+        meta: {
+          count: quota?.new_count ?? null,
+          limit: quota?.quota_limit ?? null,
+          month: quota?.month_key ?? null,
+        },
+      });
+    }
 
     // ✅ Plan free => résumé
     if (plan === "free") {

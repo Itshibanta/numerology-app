@@ -727,6 +727,10 @@ p {
   text-align: center;
 }
 
+.pricing-note {
+  margin-bottom: -2rem;
+}
+
 .pricing-header {
   max-width: 720px;
   margin: 0 auto 2.8rem;
