@@ -32,6 +32,32 @@ const app = express();
 app.set("trust proxy", 1);
 console.log("BOOT: app initialized");
 
+async function ensureProfileExists(user) {
+  const userId = user.id;
+
+  // 1) check
+  const { data: existing, error: selErr } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (selErr) throw selErr;
+  if (existing?.id) return;
+
+  // 2) create minimal profile (adapt if your columns differ)
+  const email = user.email || null;
+
+  const { error: insErr } = await supabaseAdmin.from("profiles").insert({
+    id: userId,
+    email,
+    plan: "free",
+  });
+
+  if (insErr) throw insErr;
+}
+
+
 /* ===========================================
    STRIPE (webhook MUST use raw body)
    IMPORTANT: this route must be declared BEFORE express.json()
@@ -585,6 +611,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
     }
 
     const userId = userData.user.id;
+    await ensureProfileExists(userData.user);
 
     const { data: profile, error: pErr } = await supabaseAdmin
       .from("profiles")
@@ -699,6 +726,7 @@ console.log("ENV:", NODE_ENV);
 console.log("CORS_ORIGIN:", process.env.CORS_ORIGIN);
 console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
 console.log("STRIPE_ENABLED:", !!stripeKey);
+console.log("CHECKOUT userId:", userId);
 
 app.post("/stripe/create-checkout-session", async (req, res) => {
   try {
@@ -714,6 +742,7 @@ app.post("/stripe/create-checkout-session", async (req, res) => {
     if (uErr || !userData?.user) return res.status(401).json({ error: "INVALID_TOKEN" });
 
     const userId = userData.user.id;
+    await ensureProfileExists(userData.user);
 
     const { data: profile, error: pErr } = await supabaseAdmin
       .from("profiles")
