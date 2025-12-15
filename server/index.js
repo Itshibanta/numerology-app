@@ -48,11 +48,28 @@ async function ensureProfileExists(user) {
   // 2) create minimal profile (adapt if your columns differ)
   const email = user.email || null;
 
-  const { error: insErr } = await supabaseAdmin.from("profiles").insert({
+async function ensureProfileExists(user) {
+  const userId = user.id;
+
+  const { data: existing, error: selErr } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (selErr) throw selErr;
+  if (existing?.id) return;
+
+  const patch = {
     id: userId,
-    email,
     plan: "free",
-  });
+    first_name: "",
+    last_name: "",
+  };
+
+  const { error: insErr } = await supabaseAdmin.from("profiles").insert(patch);
+  if (insErr) throw insErr;
+}
 
   if (insErr) throw insErr;
 }
@@ -293,9 +310,8 @@ if (process.env.NODE_ENV !== "production") {
 =========================================== */
 function getBearerToken(req) {
   const h = req.headers.authorization || "";
-  const [type, token] = h.split(" ");
-  if (type !== "Bearer" || !token) return null;
-  return token;
+  if (!h.startsWith("Bearer ")) return null;
+  return h.slice(7).trim();
 }
 
 async function requireAuth(req, res, next) {
@@ -321,18 +337,12 @@ async function requireAuth(req, res, next) {
 /* ===========================================
    PLANS (catalog for front) - currently from DB (no breaking change)
 =========================================== */
-app.get("/plans", async (req, res) => {
+app.get("/plans", (req, res) => {
   try {
-    const { data, error } = await supabaseAdmin
-      .from("plans")
-      .select("plan_key, display_name, price_cents, currency, monthly_limit")
-      .order("price_cents", { ascending: true });
-
-    if (error) return res.status(500).json({ success: false, error: error.message });
-    return res.json({ success: true, plans: data || [] });
+    return res.json({ success: true, plans: getPlansPublic() });
   } catch (e) {
     console.error("PLANS error:", e);
-    return res.status(500).json({ success: false, error: "internal" });
+    return res.status(500).json({ success: false, error: "PLANS_FAILED" });
   }
 });
 
@@ -341,9 +351,14 @@ app.get("/plans", async (req, res) => {
    Front calls this, then redirects to returned URL.
    Webhook updates plan. Front stays passive.
 =========================================== */
+/* ===========================================
+   STRIPE - CREATE CHECKOUT SESSION (AUTH REQUIRED)
+=========================================== */
 app.post("/stripe/create-checkout-session", requireAuth, async (req, res) => {
   try {
-    if (!stripe) return res.status(500).json({ success: false, error: "STRIPE_DISABLED" });
+    if (!stripe) {
+      return res.status(500).json({ success: false, error: "STRIPE_DISABLED" });
+    }
 
     const { plan_key } = req.body || {};
     const plan = getPlanByKey(plan_key);
@@ -351,13 +366,16 @@ app.post("/stripe/create-checkout-session", requireAuth, async (req, res) => {
     if (!plan || plan.plan_key === "free") {
       return res.status(400).json({ success: false, error: "INVALID_PLAN" });
     }
+
     if (!plan.stripe_price_id) {
       return res.status(500).json({ success: false, error: "PLAN_NOT_CONFIGURED" });
     }
 
     const userId = req.user.id;
 
-    // read profile for existing stripe_customer_id
+    // 🔒 sécurité absolue
+    await ensureProfileExists({ id: userId, email: req.user.email });
+
     const { data: profile, error: pErr } = await supabaseAdmin
       .from("profiles")
       .select("id, email, stripe_customer_id")
@@ -368,7 +386,7 @@ app.post("/stripe/create-checkout-session", requireAuth, async (req, res) => {
       return res.status(500).json({ success: false, error: "PROFILE_NOT_FOUND" });
     }
 
-    let customerId = profile.stripe_customer_id || null;
+    let customerId = profile.stripe_customer_id;
 
     if (!customerId) {
       const customer = await stripe.customers.create({
@@ -378,12 +396,10 @@ app.post("/stripe/create-checkout-session", requireAuth, async (req, res) => {
 
       customerId = customer.id;
 
-      const { error: upErr } = await supabaseAdmin
+      await supabaseAdmin
         .from("profiles")
         .update({ stripe_customer_id: customerId })
         .eq("id", userId);
-
-      if (upErr) console.error("Failed to save stripe_customer_id:", upErr);
     }
 
     const successUrl = `${process.env.FRONTEND_URL}/profile?checkout=success`;
@@ -395,12 +411,10 @@ app.post("/stripe/create-checkout-session", requireAuth, async (req, res) => {
       line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
-      allow_promotion_codes: true,
       metadata: {
         supabase_user_id: userId,
         plan_key: plan.plan_key,
       },
-      // optional but useful as fallback
       client_reference_id: userId,
     });
 
@@ -720,82 +734,6 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
 /* ===========================================
    START SERVER
 =========================================== */
-console.log("BOOT FILE:", __filename);
-console.log("PORT:", port);
-console.log("ENV:", NODE_ENV);
-console.log("CORS_ORIGIN:", process.env.CORS_ORIGIN);
-console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
-console.log("STRIPE_ENABLED:", !!stripeKey);
-console.log("CHECKOUT userId:", userId);
-
-app.post("/stripe/create-checkout-session", async (req, res) => {
-  try {
-    const token = getBearerToken(req);
-    if (!token) return res.status(401).json({ error: "AUTH_REQUIRED" });
-
-    const { plan_key } = req.body;
-    if (!plan_key || plan_key === "free") {
-      return res.status(400).json({ error: "INVALID_PLAN" });
-    }
-
-    const { data: userData, error: uErr } = await supabaseAdmin.auth.getUser(token);
-    if (uErr || !userData?.user) return res.status(401).json({ error: "INVALID_TOKEN" });
-
-    const userId = userData.user.id;
-    await ensureProfileExists(userData.user);
-
-    const { data: profile, error: pErr } = await supabaseAdmin
-      .from("profiles")
-      .select("id, stripe_customer_id, plan")
-      .eq("id", userId)
-      .single();
-
-    if (pErr || !profile) return res.status(500).json({ error: "PROFILE_NOT_FOUND" });
-
-    const plan = getPlanByKey(plan_key);
-    if (!plan || !plan.stripe_price_id) {
-      return res.status(400).json({ error: "PLAN_NOT_CONFIGURED" });
-    }
-
-    // Crée customer Stripe si besoin
-    let customerId = profile.stripe_customer_id;
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        metadata: { supabase_user_id: userId },
-      });
-      customerId = customer.id;
-
-      await supabaseAdmin
-        .from("profiles")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", userId);
-    }
-
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      customer: customerId,
-      line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
-      success_url: `${frontendUrl}/profile?checkout=success`,
-      cancel_url: `${frontendUrl}/pricing?checkout=cancel`,
-      metadata: { supabase_user_id: userId }, // 🔥 CRITIQUE pour ton webhook
-    });
-
-    return res.json({ url: session.url });
-  } catch (e) {
-    console.error("CREATE_CHECKOUT_SESSION error:", e);
-    return res.status(500).json({ error: "CHECKOUT_FAILED" });
-  }
-});
-
-app.get("/plans", (req, res) => {
-  try {
-    return res.json({ success: true, plans: getPlansPublic() });
-  } catch (e) {
-    return res.status(500).json({ success: false, error: "PLANS_FAILED" });
-  }
-});
 
 app.listen(port, () => {
   console.log(`🚀 Server listening on port ${port}`);
