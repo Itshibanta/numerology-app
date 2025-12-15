@@ -29,6 +29,13 @@ const {
 const NODE_ENV = process.env.NODE_ENV || "development";
 const PORT = process.env.PORT || 3001;
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "";
+if (NODE_ENV === "production" && !FRONTEND_URL.startsWith("https://")) {
+  throw new Error(
+    `FRONTEND_URL invalid (must start with https://): ${FRONTEND_URL}`
+  );
+}
+
 if (NODE_ENV === "production") {
   assertPlansConfigured();
 }
@@ -39,6 +46,9 @@ app.set("trust proxy", 1);
 console.log("BOOT index.js");
 console.log("ENV:", NODE_ENV);
 console.log("PORT:", PORT);
+console.log("BOOT FILE:", __filename);
+console.log("BOOT CWD:", process.cwd());
+console.log("ROUTE REGISTERED: POST /auth/register");
 
 /* ===========================================
    STRIPE INIT
@@ -100,11 +110,11 @@ async function ensureProfileExists(user) {
     plan: "free",
     first_name: "",
     last_name: "",
-    email: user.email || null,
   });
 
   if (insErr) throw insErr;
 }
+
 
 function getSubPriceId(subscription) {
   return subscription?.items?.data?.[0]?.price?.id || null;
@@ -348,6 +358,106 @@ app.post(
     }
   }
 );
+
+/* =========================
+   AUTH - REGISTER
+========================= */
+app.post("/auth/register", async (req, res) => {
+  try {
+    const { firstName, lastName, email, password } = req.body || {};
+
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({ error: "MISSING_FIELDS" });
+    }
+
+    // Crée l'user (Admin API)
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { firstName, lastName },
+    });
+
+    if (error || !data?.user) {
+      return res.status(400).json({ error: "REGISTER_FAILED", detail: error?.message });
+    }
+
+    // Garantit le profil + met à jour les noms
+    await ensureProfileExists({ id: data.user.id, email });
+
+    const { error: upErr } = await supabaseAdmin
+      .from("profiles")
+      .update({ first_name: firstName, last_name: lastName })
+      .eq("id", data.user.id);
+
+    if (upErr) {
+      // pas bloquant pour le signup, mais loggable
+      console.error("PROFILE_UPDATE_FAILED:", upErr);
+    }
+
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error("REGISTER error:", e);
+    return res.status(500).json({ error: "INTERNAL" });
+  }
+});
+
+/* =========================
+   AUTH - LOGIN
+========================= */
+app.post("/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+    if (!email || !password) {
+      return res.status(400).json({ error: "MISSING_FIELDS" });
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error || !data?.user || !data?.session?.access_token) {
+      return res.status(401).json({ error: "INVALID_CREDENTIALS" });
+    }
+
+    // profil requis
+    await ensureProfileExists({ id: data.user.id, email: data.user.email });
+
+    const { data: profile, error: pErr } = await supabaseAdmin
+      .from("profiles")
+      .select("first_name, last_name, plan")
+      .eq("id", data.user.id)
+      .maybeSingle();
+
+    if (pErr) console.error("PROFILE_READ_FAILED:", pErr);
+
+    return res.json({
+      ok: true,
+      token: data.session.access_token,
+      user: {
+        firstName: profile?.first_name || "",
+        lastName: profile?.last_name || "",
+        email: data.user.email,
+        plan: (profile?.plan || "free"),
+      },
+    });
+  } catch (e) {
+    console.error("LOGIN error:", e);
+    return res.status(500).json({ error: "INTERNAL" });
+  }
+});
+
+app.get("/__routes", (req, res) => { /*A SUPPRIMER APRES TEST : curl -s https://numerology-app-n8o2.onrender.com/__routes | head */
+  const routes = (app._router?.stack || [])
+    .filter((l) => l.route && l.route.path)
+    .map((l) => ({
+      path: l.route.path,
+      methods: Object.keys(l.route.methods || {}).filter(Boolean),
+    }));
+  res.json({ count: routes.length, routes });
+});
+
+app.use((req, res) => {
+  res.status(404).json({ error: "NOT_FOUND", path: req.path });
+});
+
 
 /* ===========================================
    START SERVER
