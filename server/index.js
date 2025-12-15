@@ -25,6 +25,10 @@ if (process.env.NODE_ENV === "production") {
   assertPlansConfigured();
 }
 
+const app = express();
+app.set("trust proxy", 1);
+console.log("BOOT: app initialized");
+
 /* ===========================================
    STRIPE (webhook MUST use raw body)
    IMPORTANT: this route must be declared BEFORE express.json()
@@ -41,6 +45,7 @@ function getSubPriceId(subscription) {
   return item?.price?.id || null;
 }
 
+console.log("BOOT: registering webhook route");
 app.post(
   "/stripe/webhook",
   express.raw({ type: "application/json" }),
