@@ -17,20 +17,13 @@ const {
 const {
   getPlanByKey,
   getPlanKeyByStripePriceId,
+  getPlansPublic,
+  assertPlansConfigured,
 } = require("./plansCatalog");
 
-const app = express();
-app.set("trust proxy", 1);
-
-const port = process.env.PORT || 3001;
-const NODE_ENV = process.env.NODE_ENV || "development";
-
-const { assertPlansConfigured } = require("./plansCatalog");
 if (process.env.NODE_ENV === "production") {
   assertPlansConfigured();
 }
-
-const { getPlansPublic, getPlanByKey } = require("./plansCatalog");
 
 /* ===========================================
    STRIPE (webhook MUST use raw body)
