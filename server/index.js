@@ -42,6 +42,8 @@ if (NODE_ENV === "production") {
 const app = express();
 app.set("trust proxy", 1);
 
+const generateLimiter = rateLimit({ windowMs: 60 * 1000, max: 12, });
+
 console.log("BOOT index.js");
 console.log("ENV:", NODE_ENV);
 console.log("PORT:", PORT);
@@ -453,14 +455,173 @@ app.get("/__routes", (req, res) => { /*A SUPPRIMER APRES TEST : curl -s https://
   res.json({ count: routes.length, routes });
 });
 
-app.use((req, res) => {
-  res.status(404).json({ error: "NOT_FOUND", path: req.path });
+/* =========================
+   NUMEROLOGY - GENERATE THEME (AUTH + QUOTA)
+========================= */
+app.post("/generate-theme", generateLimiter, async (req, res) => {
+  try {
+    const token = getBearerToken(req);
+    if (!token) return res.status(401).json({ error: "AUTH_REQUIRED" });
+
+    const { data: userData, error: uErr } = await supabaseAdmin.auth.getUser(token);
+    if (uErr || !userData?.user) return res.status(401).json({ error: "INVALID_TOKEN" });
+
+    const userId = userData.user.id;
+
+    // profil garanti
+    await ensureProfileExists({ id: userId, email: userData.user.email });
+
+    // récup plan
+    const { data: profile, error: pErr } = await supabaseAdmin
+      .from("profiles")
+      .select("first_name, last_name, plan")
+      .eq("id", userId)
+      .single();
+
+    if (pErr || !profile) return res.status(500).json({ error: "PROFILE_NOT_FOUND" });
+
+    const planKey = profile.plan || "free";
+    const planObj = getPlanByKey(planKey) || getPlanByKey("free");
+    if (!planObj) return res.status(500).json({ error: "PLAN_CONFIG_ERROR" });
+
+    // quota (si ton RPC existe)
+    const { data: quotaRows, error: qErr } = await supabaseAdmin.rpc("consume_generation", {
+      p_user: userId,
+      p_limit: planObj.monthly_limit,
+    });
+
+    if (qErr) return res.status(500).json({ error: "QUOTA_CHECK_FAILED", detail: qErr.message });
+
+    const quota = Array.isArray(quotaRows) ? quotaRows[0] : quotaRows;
+    if (!quota?.allowed) {
+      return res.status(429).json({
+        error: quota?.reason || "QUOTA_EXCEEDED",
+        meta: { count: quota?.new_count ?? null, limit: quota?.quota_limit ?? null, month: quota?.month_key ?? null },
+      });
+    }
+
+    // input minimal (adapte si besoin)
+    const {
+      prenom,
+      secondPrenom,
+      nomFamille,
+      nomMarital,
+      dateNaissance,
+      lieuNaissance,
+      heureNaissance,
+    } = req.body || {};
+
+    if (!prenom || !nomFamille || !dateNaissance) {
+      return res.status(400).json({ error: "MISSING_FIELDS" });
+    }
+
+    const fullName = `${profile.first_name || ""} ${profile.last_name || ""}`.trim();
+
+    if (planKey === "free") {
+      const summaryText = await generateNumerologySummary({
+        prenom,
+        secondPrenom,
+        nomFamille,
+        nomMarital,
+        dateNaissance,
+        lieuNaissance,
+        heureNaissance,
+      });
+
+      await supabaseAdmin.from("generations").insert({
+        user_id: userId,
+        type: "summary",
+        label: fullName ? `Résumé thème ${fullName}` : "Résumé thème",
+        payload: req.body,
+      });
+
+      return res.json({ success: true, summary: summaryText });
+    }
+
+    const themeTexte = await generateNumerologyTheme({
+      prenom,
+      secondPrenom,
+      nomFamille,
+      nomMarital,
+      dateNaissance,
+      lieuNaissance,
+      heureNaissance,
+    });
+
+    await supabaseAdmin.from("generations").insert({
+      user_id: userId,
+      type: "theme",
+      label: fullName ? `Thème numérologique ${fullName}` : "Thème numérologique",
+      payload: req.body,
+    });
+
+    return res.json({ success: true, theme: themeTexte });
+  } catch (e) {
+    console.error("GENERATE_THEME error:", e);
+    return res.status(500).json({ error: "INTERNAL" });
+  }
+});
+
+/* =========================
+   PROFILE - ME (AUTH)
+========================= */
+app.get("/me", async (req, res) => {
+  try {
+    const token = getBearerToken(req);
+    if (!token) return res.status(401).json({ error: "AUTH_REQUIRED" });
+
+    const { data, error } = await supabaseAdmin.auth.getUser(token);
+    if (error || !data?.user) return res.status(401).json({ error: "INVALID_TOKEN" });
+
+    const userId = data.user.id;
+
+    await ensureProfileExists({ id: userId, email: data.user.email });
+
+    const { data: profile, error: pErr } = await supabaseAdmin
+      .from("profiles")
+      .select("first_name, last_name, plan")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (pErr) return res.status(500).json({ error: "PROFILE_READ_FAILED", detail: pErr.message });
+
+    const { data: history, error: hErr } = await supabaseAdmin
+      .from("generations")
+      .select("created_at, type, label")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (hErr) return res.status(500).json({ error: "HISTORY_READ_FAILED", detail: hErr.message });
+
+    return res.json({
+      success: true,
+      user: {
+        firstName: profile?.first_name || "",
+        lastName: profile?.last_name || "",
+        email: data.user.email,
+        plan: profile?.plan || "free",
+      },
+      history: (history || []).map((x) => ({
+        date: x.created_at,
+        type: x.type,
+        label: x.label,
+      })),
+    });
+  } catch (e) {
+    console.error("ME error:", e);
+    return res.status(500).json({ error: "INTERNAL" });
+  }
 });
 
 
 /* ===========================================
    START SERVER
 =========================================== */
+app.use((req, res) => {
+  res.status(404).json({ error: "NOT_FOUND", path: req.path });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
