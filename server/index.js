@@ -259,7 +259,7 @@ app.get("/plans", (_, res) =>
   res.json({ success: true, plans: getPlansPublic() })
 );
 
-/* ===== Stripe Checkout (ROBUSTE) ===== */
+/* ===== Stripe Checkout (ROBUSTE + PROD SAFE) ===== */
 app.post(
   "/stripe/create-checkout-session",
   requireAuth,
@@ -282,13 +282,9 @@ app.post(
 
       const userId = req.user.id;
 
-      // 🔒 GARANTIE ABSOLUE que le profil existe
-      await ensureProfileExists({
-        id: userId,
-        email: req.user.email,
-      });
+      // ✅ GARANTIT que le profil existe
+      await ensureProfileExists({ id: userId });
 
-      // 🔒 SELECT SÉCURISÉ
       const { data: profile, error: pErr } = await supabaseAdmin
         .from("profiles")
         .select("stripe_customer_id")
@@ -296,19 +292,15 @@ app.post(
         .single();
 
       if (pErr || !profile) {
-        console.error("PROFILE_NOT_FOUND at checkout", {
-          userId,
-          pErr,
-        });
+        console.error("PROFILE_NOT_FOUND at checkout", { userId, pErr });
         return res.status(500).json({ error: "PROFILE_NOT_FOUND" });
       }
 
       let customerId = profile.stripe_customer_id;
 
-      // 🧠 Création customer Stripe si absent
+      // ✅ Création customer Stripe si absent
       if (!customerId) {
         const customer = await stripe.customers.create({
-          email: req.user.email || undefined,
           metadata: { supabase_user_id: userId },
         });
 
@@ -320,17 +312,28 @@ app.post(
           .eq("id", userId);
 
         if (upErr) {
-          console.error("Failed to save stripe_customer_id", upErr);
+          console.error("PROFILE_UPDATE_FAILED", upErr);
           return res.status(500).json({ error: "PROFILE_UPDATE_FAILED" });
         }
       }
+
+      // ✅ URL FRONT BLINDÉE (Stripe exige https)
+      const frontendUrlRaw =
+        process.env.FRONTEND_URL || "http://localhost:5173";
+
+      const frontendUrl = frontendUrlRaw.startsWith("http")
+        ? frontendUrlRaw
+        : `https://${frontendUrlRaw}`;
+
+      const successUrl = `${frontendUrl}/profile?checkout=success`;
+      const cancelUrl = `${frontendUrl}/pricing?checkout=cancel`;
 
       const session = await stripe.checkout.sessions.create({
         mode: "subscription",
         customer: customerId,
         line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
-        success_url: `${process.env.FRONTEND_URL}/profile?checkout=success`,
-        cancel_url: `${process.env.FRONTEND_URL}/pricing?checkout=cancel`,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
         metadata: {
           supabase_user_id: userId,
           plan_key: plan.plan_key,
