@@ -30,6 +30,8 @@ if (process.env.NODE_ENV === "production") {
   assertPlansConfigured();
 }
 
+const { getPlansPublic, getPlanByKey } = require("./plansCatalog");
+
 /* ===========================================
    STRIPE (webhook MUST use raw body)
    IMPORTANT: this route must be declared BEFORE express.json()
@@ -757,6 +759,13 @@ app.post("/stripe/create-checkout-session", async (req, res) => {
   }
 });
 
+app.get("/plans", (req, res) => {
+  try {
+    return res.json({ success: true, plans: getPlansPublic() });
+  } catch (e) {
+    return res.status(500).json({ success: false, error: "PLANS_FAILED" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`🚀 Server listening on port ${port}`);
