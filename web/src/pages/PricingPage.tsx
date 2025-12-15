@@ -1,6 +1,6 @@
 // web/src/pages/PricingPage.tsx
 
-const API_BASE = import.meta.env.VITE_API_URL; // doit pointer vers Render en prod
+const API_BASE = import.meta.env.VITE_API_BASE_URL; // doit pointer vers Render en prod
 
 async function startCheckout(planKey: string) {
   const token = localStorage.getItem("auth_token");
