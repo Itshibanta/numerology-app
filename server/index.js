@@ -445,13 +445,35 @@ app.post("/auth/login", async (req, res) => {
   }
 });
 
-app.get("/__routes", (req, res) => { /*A SUPPRIMER APRES TEST : curl -s https://numerology-app-n8o2.onrender.com/__routes | head */
-  const routes = (app._router?.stack || [])
-    .filter((l) => l.route && l.route.path)
-    .map((l) => ({
-      path: l.route.path,
-      methods: Object.keys(l.route.methods || {}).filter(Boolean),
-    }));
+app.get("/__routes", (req, res) => {
+  const stack = (app._router?.stack || app.router?.stack || []);
+
+  const routes = [];
+  for (const layer of stack) {
+    if (!layer) continue;
+
+    // Express route
+    if (layer.route?.path) {
+      routes.push({
+        path: layer.route.path,
+        methods: Object.keys(layer.route.methods || {}).filter(Boolean),
+      });
+      continue;
+    }
+
+    // Router mounted (rare, mais utile)
+    if (layer.handle?.stack) {
+      for (const l of layer.handle.stack) {
+        if (l.route?.path) {
+          routes.push({
+            path: l.route.path,
+            methods: Object.keys(l.route.methods || {}).filter(Boolean),
+          });
+        }
+      }
+    }
+  }
+
   res.json({ count: routes.length, routes });
 });
 
