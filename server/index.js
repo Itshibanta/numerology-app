@@ -35,22 +35,6 @@ console.log("BOOT: app initialized");
 async function ensureProfileExists(user) {
   const userId = user.id;
 
-  // 1) check
-  const { data: existing, error: selErr } = await supabaseAdmin
-    .from("profiles")
-    .select("id")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (selErr) throw selErr;
-  if (existing?.id) return;
-
-  // 2) create minimal profile (adapt if your columns differ)
-  const email = user.email || null;
-
-async function ensureProfileExists(user) {
-  const userId = user.id;
-
   const { data: existing, error: selErr } = await supabaseAdmin
     .from("profiles")
     .select("id")
@@ -70,10 +54,6 @@ async function ensureProfileExists(user) {
   const { error: insErr } = await supabaseAdmin.from("profiles").insert(patch);
   if (insErr) throw insErr;
 }
-
-  if (insErr) throw insErr;
-}
-
 
 /* ===========================================
    STRIPE (webhook MUST use raw body)
