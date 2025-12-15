@@ -25,6 +25,9 @@ if (process.env.NODE_ENV === "production") {
   assertPlansConfigured();
 }
 
+const port = process.env.PORT || 3001;
+const NODE_ENV = process.env.NODE_ENV || "development";
+
 const app = express();
 app.set("trust proxy", 1);
 console.log("BOOT: app initialized");
@@ -248,7 +251,7 @@ app.get("/__supabase", (req, res) => {
   res.json({ ok: true, supabaseUrl: url, projectRef });
 });
 
-if (NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production") {
   app.get("/__whoami", (req, res) =>
     res.json({
       file: __filename,
