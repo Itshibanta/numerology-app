@@ -291,7 +291,7 @@ app.post(
       // 🔒 SELECT SÉCURISÉ
       const { data: profile, error: pErr } = await supabaseAdmin
         .from("profiles")
-        .select("stripe_customer_id, email")
+        .select("stripe_customer_id")
         .eq("id", userId)
         .single();
 
@@ -308,7 +308,7 @@ app.post(
       // 🧠 Création customer Stripe si absent
       if (!customerId) {
         const customer = await stripe.customers.create({
-          email: profile.email || req.user.email || undefined,
+          email: req.user.email || undefined,
           metadata: { supabase_user_id: userId },
         });
 
