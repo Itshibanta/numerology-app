@@ -1,12 +1,33 @@
-// web/src/pages/PricingPage.tsx
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL; // doit pointer vers Render en prod
+function normalizeToken(raw: string | null) {
+  if (!raw) return null;
+
+  let t = raw.trim();
+
+  // si jamais tu as stocké "Bearer eyJ..." par erreur
+  t = t.replace(/^Bearer\s+/i, "").trim();
+
+  // si le token est JSON-stringifié avec guillemets
+  if (
+    (t.startsWith('"') && t.endsWith('"')) ||
+    (t.startsWith("'") && t.endsWith("'"))
+  ) {
+    t = t.slice(1, -1).trim();
+  }
+
+  // sanity check JWT
+  if (!t.includes(".") || t.length < 30) return null;
+
+  return t;
+}
 
 async function startCheckout(planKey: string) {
-  const token = localStorage.getItem("auth_token");
+  const token = normalizeToken(localStorage.getItem("auth_token"));
 
   if (!token) {
-    // Minimal V1 : si pas connecté, on renvoie vers login
+    // token absent/malformé => on force login
+    localStorage.removeItem("auth_token");
     window.location.href = "/signin";
     return;
   }
@@ -23,7 +44,13 @@ async function startCheckout(planKey: string) {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    // Minimal : tu peux brancher ta modal ici plus tard
+    // cas le plus fréquent en prod : token expiré / invalide
+    if (data?.error === "INVALID_TOKEN" || res.status === 401) {
+      localStorage.removeItem("auth_token");
+      window.location.href = "/signin";
+      return;
+    }
+
     alert(data?.error || "Erreur paiement. Réessayez.");
     return;
   }
