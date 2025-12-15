@@ -29,15 +29,14 @@ const {
 const NODE_ENV = process.env.NODE_ENV || "development";
 const PORT = process.env.PORT || 3001;
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
-if (NODE_ENV === "production" && !FRONTEND_URL.startsWith("https://")) {
-  throw new Error(
-    `FRONTEND_URL invalid (must start with https://): ${FRONTEND_URL}`
-  );
-}
+const FRONTEND_URL =
+  (process.env.FRONTEND_URL || "").trim() ||
+  (NODE_ENV === "production" ? "" : "http://localhost:5173");
 
 if (NODE_ENV === "production") {
-  assertPlansConfigured();
+  if (!FRONTEND_URL.startsWith("https://")) {
+    throw new Error(`FRONTEND_URL invalid (must start with https://): ${FRONTEND_URL}`);
+  }
 }
 
 const app = express();
@@ -335,8 +334,8 @@ app.post(
         ? frontendUrlRaw
         : `https://${frontendUrlRaw}`;
 
-      const successUrl = `${frontendUrl}/profile?checkout=success`;
-      const cancelUrl = `${frontendUrl}/pricing?checkout=cancel`;
+      const successUrl = `${FRONTEND_URL}/profile?checkout=success`;
+      const cancelUrl = `${FRONTEND_URL}/pricing?checkout=cancel`;
 
       const session = await stripe.checkout.sessions.create({
         mode: "subscription",
