@@ -446,35 +446,37 @@ app.post("/auth/login", async (req, res) => {
 });
 
 app.get("/__routes", (req, res) => {
-  const stack = (app._router?.stack || app.router?.stack || []);
+  const router = app._router || app.router;
+  const stack = router?.stack || [];
 
-  const routes = [];
+  const out = [];
+
+  const pushRoute = (r) => {
+    out.push({
+      path: r.path,
+      methods: Object.keys(r.methods || {}).filter(Boolean),
+    });
+  };
+
   for (const layer of stack) {
     if (!layer) continue;
 
-    // Express route
-    if (layer.route?.path) {
-      routes.push({
-        path: layer.route.path,
-        methods: Object.keys(layer.route.methods || {}).filter(Boolean),
-      });
+    // Express 4 style
+    if (layer.route) {
+      pushRoute(layer.route);
       continue;
     }
 
-    // Router mounted (rare, mais utile)
-    if (layer.handle?.stack) {
-      for (const l of layer.handle.stack) {
-        if (l.route?.path) {
-          routes.push({
-            path: l.route.path,
-            methods: Object.keys(l.route.methods || {}).filter(Boolean),
-          });
-        }
+    // Express 5 / nested router
+    const nested = layer.handle?.stack || layer.handle?.router?.stack;
+    if (nested) {
+      for (const l of nested) {
+        if (l?.route) pushRoute(l.route);
       }
     }
   }
 
-  res.json({ count: routes.length, routes });
+  res.json({ count: out.length, routes: out });
 });
 
 /* =========================
