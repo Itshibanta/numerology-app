@@ -728,9 +728,8 @@ p {
 }
 
 /* --- Pricing: rapprocher la note du footer --- */
-.pricing-note {
-  margin: 18px 0 0;     /* moins d'espace en bas */
-  padding-bottom: 0;
+.pricing-note {    /* moins d'espace en bas */
+  padding-bottom: 0rem;
 }
 
 /* le <main class="app-container"> est juste avant le footer dans App.tsx */

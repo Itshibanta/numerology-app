@@ -188,7 +188,6 @@ export default function ThemeGeneratorPage() {
             <h3>Quota mensuel atteint</h3>
             <p>
               Tu as utilisé {quotaInfo?.count ?? 1} / {quotaInfo?.limit ?? 1} génération(s) ce mois-ci.
-              {quotaInfo?.month ? ` (mois: ${quotaInfo.month})` : ""}
             </p>
 
             <div className="modal-actions">

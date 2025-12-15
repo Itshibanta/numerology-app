@@ -1,5 +1,41 @@
 // web/src/pages/PricingPage.tsx
 
+const API_BASE = import.meta.env.VITE_API_URL; // doit pointer vers Render en prod
+
+async function startCheckout(planKey: string) {
+  const token = localStorage.getItem("auth_token");
+
+  if (!token) {
+    // Minimal V1 : si pas connecté, on renvoie vers login
+    window.location.href = "/signin";
+    return;
+  }
+
+  const res = await fetch(`${API_BASE}/stripe/create-checkout-session`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ plan_key: planKey }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    // Minimal : tu peux brancher ta modal ici plus tard
+    alert(data?.error || "Erreur paiement. Réessayez.");
+    return;
+  }
+
+  if (!data?.url) {
+    alert("Checkout indisponible. Réessayez.");
+    return;
+  }
+
+  window.location.href = data.url;
+}
+
 function getCurrentPlan(): string | null {
   try {
     const raw = localStorage.getItem("user");
@@ -52,10 +88,7 @@ const PricingPage = () => {
               <li>Usage personnel</li>
             </ul>
 
-            <button
-              className={btnClass("free")}
-              disabled={btnDisabled("free")}
-            >
+            <button className={btnClass("free")} disabled={btnDisabled("free")}>
               {btnText("free")}
             </button>
           </article>
@@ -78,6 +111,7 @@ const PricingPage = () => {
             <button
               className={btnClass("essentiel")}
               disabled={btnDisabled("essentiel")}
+              onClick={() => startCheckout("essentiel")}
             >
               {btnText("essentiel")}
             </button>
@@ -100,6 +134,7 @@ const PricingPage = () => {
             <button
               className={btnClass("praticien")}
               disabled={btnDisabled("praticien")}
+              onClick={() => startCheckout("praticien")}
             >
               {btnText("praticien")}
             </button>
@@ -120,10 +155,11 @@ const PricingPage = () => {
             </ul>
 
             <button
-              className={btnClass("pro")}
-              disabled={btnDisabled("pro")}
+              className={btnClass("pro_illimite")}
+              disabled={btnDisabled("pro_illimite")}
+              onClick={() => startCheckout("pro_illimite")}
             >
-              {btnText("pro")}
+              {btnText("pro_illimite")}
             </button>
           </article>
         </div>

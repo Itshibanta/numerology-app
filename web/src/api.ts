@@ -137,3 +137,30 @@ export function logout() {
   localStorage.removeItem("user");
   window.location.href = "/signin";
 }
+
+export type Plan = {
+  plan_key: string;
+  display_name: string;
+  price_cents: number;
+  currency: string;
+  monthly_limit: number;
+};
+
+export async function fetchPlans(): Promise<Plan[]> {
+  const data = await request<{ success: boolean; plans: Plan[] }>("/plans");
+  if (!data?.success) throw new ApiError("Impossible de charger les plans", "PLANS_FAILED");
+  return data.plans || [];
+}
+
+export async function createCheckoutSession(plan_key: string): Promise<string> {
+  const data = await request<{ success: boolean; url: string }>("/stripe/create-checkout-session", {
+    method: "POST",
+    body: JSON.stringify({ plan_key }),
+  });
+
+  if (!data?.success || !data?.url) {
+    throw new ApiError("Impossible de démarrer le paiement", "CHECKOUT_FAILED");
+  }
+
+  return data.url;
+}
