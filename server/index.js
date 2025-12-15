@@ -259,7 +259,7 @@ app.get("/plans", (_, res) =>
   res.json({ success: true, plans: getPlansPublic() })
 );
 
-/* ===== Stripe Checkout ===== */
+/* ===== Stripe Checkout (ROBUSTE) ===== */
 app.post(
   "/stripe/create-checkout-session",
   requireAuth,
@@ -269,7 +269,7 @@ app.post(
         return res.status(500).json({ error: "STRIPE_DISABLED" });
       }
 
-      const { plan_key } = req.body;
+      const { plan_key } = req.body || {};
       const plan = getPlanByKey(plan_key);
 
       if (!plan || plan.plan_key === "free") {
@@ -280,28 +280,49 @@ app.post(
         return res.status(500).json({ error: "PLAN_NOT_CONFIGURED" });
       }
 
-      await ensureProfileExists(req.user);
+      const userId = req.user.id;
 
-      const { data: profile } = await supabaseAdmin
+      // 🔒 GARANTIE ABSOLUE que le profil existe
+      await ensureProfileExists({
+        id: userId,
+        email: req.user.email,
+      });
+
+      // 🔒 SELECT SÉCURISÉ
+      const { data: profile, error: pErr } = await supabaseAdmin
         .from("profiles")
         .select("stripe_customer_id, email")
-        .eq("id", req.user.id)
+        .eq("id", userId)
         .single();
+
+      if (pErr || !profile) {
+        console.error("PROFILE_NOT_FOUND at checkout", {
+          userId,
+          pErr,
+        });
+        return res.status(500).json({ error: "PROFILE_NOT_FOUND" });
+      }
 
       let customerId = profile.stripe_customer_id;
 
+      // 🧠 Création customer Stripe si absent
       if (!customerId) {
         const customer = await stripe.customers.create({
-          email: profile.email || req.user.email,
-          metadata: { supabase_user_id: req.user.id },
+          email: profile.email || req.user.email || undefined,
+          metadata: { supabase_user_id: userId },
         });
 
         customerId = customer.id;
 
-        await supabaseAdmin
+        const { error: upErr } = await supabaseAdmin
           .from("profiles")
           .update({ stripe_customer_id: customerId })
-          .eq("id", req.user.id);
+          .eq("id", userId);
+
+        if (upErr) {
+          console.error("Failed to save stripe_customer_id", upErr);
+          return res.status(500).json({ error: "PROFILE_UPDATE_FAILED" });
+        }
       }
 
       const session = await stripe.checkout.sessions.create({
@@ -311,16 +332,16 @@ app.post(
         success_url: `${process.env.FRONTEND_URL}/profile?checkout=success`,
         cancel_url: `${process.env.FRONTEND_URL}/pricing?checkout=cancel`,
         metadata: {
-          supabase_user_id: req.user.id,
+          supabase_user_id: userId,
           plan_key: plan.plan_key,
         },
-        client_reference_id: req.user.id,
+        client_reference_id: userId,
       });
 
-      res.json({ url: session.url });
+      return res.json({ url: session.url });
     } catch (e) {
-      console.error("checkout error:", e);
-      res.status(500).json({ error: "CHECKOUT_FAILED" });
+      console.error("CHECKOUT_FAILED", e);
+      return res.status(500).json({ error: "CHECKOUT_FAILED" });
     }
   }
 );
