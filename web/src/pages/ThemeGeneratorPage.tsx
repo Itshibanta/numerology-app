@@ -187,7 +187,7 @@ export default function ThemeGeneratorPage() {
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h3>Quota mensuel atteint</h3>
             <p>
-              Tu as utilisé {quotaInfo?.count ?? 1} / {quotaInfo?.limit ?? 1} génération(s) ce mois-ci.
+              Tu as utilisé {quotaInfo?.count ?? 1} / {quotaInfo?.limit ?? 1} génération(s) sur cette période d'abonnement.
             </p>
 
             <div className="modal-actions">

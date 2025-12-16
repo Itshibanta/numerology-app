@@ -421,7 +421,11 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       p_limit: planObj.monthly_limit,
     });
 
-    if (qErr) return res.status(500).json({ error: "QUOTA_CHECK_FAILED", detail: qErr.message });
+    if (qErr) {
+      console.error("QUOTA_CHECK_FAILED RAW:", qErr);
+      return res.status(500).json({ error: "QUOTA_CHECK_FAILED", detail: qErr.message });
+    }
+
 
     const quota = Array.isArray(quotaRows) ? quotaRows[0] : quotaRows;
     if (!quota?.allowed) {
