@@ -1,5 +1,6 @@
 // web/src/pages/ProfilePage.tsx
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getMe, type MeResponse } from "../api";
 
 type TabKey = "profile" | "plan" | "history";
@@ -21,8 +22,13 @@ function formatPlan(plan: string) {
   if (p === "praticien") {
     return { name: "Praticien", limit: 5, price: "49,99 € / mois" };
   }
-  if (p === "pro") {
-    return { name: "Pro Illimité", limit: "Illimité" as const, price: "149,99 € / mois" };
+  // ✅ cohérent avec tes clés backend: "pro_illimite"
+  if (p === "pro_illimite" || p === "pro") {
+    return {
+      name: "Pro Illimité",
+      limit: "Illimité" as const,
+      price: "149,99 € / mois",
+    };
   }
 
   return { name: plan || "Inconnu", limit: "?" as const, price: "—" };
@@ -37,22 +43,54 @@ function logoutAndRedirect() {
 export default function ProfilePage() {
   const [tab, setTab] = useState<TabKey>("profile");
   const [state, setState] = useState<ViewState>({ status: "loading" });
+  const [params] = useSearchParams();
 
   useEffect(() => {
-    // Si pas de token, inutile d'appeler /me
     const token = localStorage.getItem("auth_token");
     if (!token) {
       setState({ status: "error", message: "Tu n’es pas connecté." });
       return;
     }
 
-    getMe()
-      .then((data) => setState({ status: "ready", data }))
-      .catch((e: unknown) => {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const data = await getMe();
+        if (cancelled) return;
+
+        setState({ status: "ready", data });
+
+        // ✅ important: garde "user" en sync pour PricingPage et autres pages
+        localStorage.setItem("user", JSON.stringify(data.user));
+      } catch (e: unknown) {
+        if (cancelled) return;
         const message = e instanceof Error ? e.message : "Erreur inconnue.";
         setState({ status: "error", message });
-      });
-  }, []);
+      }
+    };
+
+    // 1er chargement
+    load();
+
+    // ✅ retour Stripe: le webhook peut arriver quelques secondes après
+    if (params.get("checkout") === "success") {
+      const t1 = setTimeout(load, 1500);
+      const t2 = setTimeout(load, 3500);
+      const t3 = setTimeout(load, 6000);
+
+      return () => {
+        cancelled = true;
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [params]);
 
   const content = useMemo(() => {
     if (state.status !== "ready") return null;
@@ -101,7 +139,6 @@ export default function ProfilePage() {
       );
     }
 
-    // history
     return (
       <div className="profile-panel">
         {history.length === 0 ? (
