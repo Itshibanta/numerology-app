@@ -1,6 +1,18 @@
 // server/index.js
 require("dotenv").config();
 
+const {
+  getPlanByKey,
+  getPlansPublic,
+  assertPlansConfigured,
+} = require("./plansCatalog");
+
+const NODE_ENV = process.env.NODE_ENV || "development";
+
+if (NODE_ENV === "production") {
+  assertPlansConfigured();
+}
+
 /* ===========================================
    CORE IMPORTS
 =========================================== */
@@ -9,6 +21,8 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const Stripe = require("stripe");
+const { stripeWebhookHandler } = require("./stripeWebhook");
+
 
 const { supabase, supabaseAdmin } = require("./supabase");
 const {
@@ -16,17 +30,9 @@ const {
   generateNumerologySummary,
 } = require("./numerologyLogic");
 
-const {
-  getPlanByKey,
-  getPlanKeyByStripePriceId,
-  getPlansPublic,
-  assertPlansConfigured,
-} = require("./plansCatalog");
-
 /* ===========================================
    ENV / APP INIT
 =========================================== */
-const NODE_ENV = process.env.NODE_ENV || "development";
 const PORT = process.env.PORT || 3001;
 
 const FRONTEND_URL =
@@ -40,6 +46,13 @@ if (NODE_ENV === "production") {
 }
 
 const app = express();
+app.use((req, res, next) => {
+  if (req.originalUrl === "/stripe/webhook") {
+    return next(); // on laisse express.raw gérer
+  }
+  return express.json()(req, res, next);
+});
+
 app.set("trust proxy", 1);
 
 const generateLimiter = rateLimit({ windowMs: 60 * 1000, max: 12, });
@@ -124,118 +137,12 @@ function getSubPriceId(subscription) {
 /* ===========================================
    STRIPE WEBHOOK (RAW BODY FIRST)
 =========================================== */
-app.post(
-  "/stripe/webhook",
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
-    if (!stripe || !stripeWebhookSecret) {
-      return res.status(500).send("Stripe not configured");
-    }
-
-    let event;
-    try {
-      const sig = req.headers["stripe-signature"];
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        stripeWebhookSecret
-      );
-    } catch (err) {
-      console.error("Webhook signature error:", err.message);
-      return res.status(400).send("Invalid signature");
-    }
-
-    try {
-      /* checkout completed */
-      if (event.type === "checkout.session.completed") {
-        const session = event.data.object;
-
-        const userId =
-          session.metadata?.supabase_user_id ||
-          session.client_reference_id ||
-          null;
-
-        if (!userId) return res.json({ received: true });
-
-        const subscriptionId = session.subscription;
-        const customerId = session.customer;
-
-        let planKey = null;
-        let priceId = null;
-        let periodEnd = null;
-
-        if (subscriptionId) {
-          const sub = await stripe.subscriptions.retrieve(subscriptionId);
-          priceId = getSubPriceId(sub);
-          planKey = priceId
-            ? getPlanKeyByStripePriceId(priceId)
-            : null;
-          periodEnd = sub.current_period_end
-            ? new Date(sub.current_period_end * 1000).toISOString()
-            : null;
-        }
-
-        await supabaseAdmin
-          .from("profiles")
-          .update({
-            stripe_customer_id: customerId,
-            stripe_subscription_id: subscriptionId,
-            ...(planKey ? { plan: planKey } : {}),
-            ...(priceId ? { stripe_price_id: priceId } : {}),
-            ...(periodEnd ? { current_period_end: periodEnd } : {}),
-          })
-          .eq("id", userId);
-      }
-
-      /* subscription updated */
-      if (event.type === "customer.subscription.updated") {
-        const sub = event.data.object;
-        const priceId = getSubPriceId(sub);
-        const planKey = priceId
-          ? getPlanKeyByStripePriceId(priceId)
-          : null;
-
-        await supabaseAdmin
-          .from("profiles")
-          .update({
-            ...(planKey ? { plan: planKey } : {}),
-            ...(priceId ? { stripe_price_id: priceId } : {}),
-            stripe_subscription_id: sub.id,
-            subscription_status: sub.status,
-            current_period_end: sub.current_period_end
-              ? new Date(sub.current_period_end * 1000).toISOString()
-              : null,
-          })
-          .eq("stripe_customer_id", sub.customer);
-      }
-
-      /* subscription deleted */
-      if (event.type === "customer.subscription.deleted") {
-        await supabaseAdmin
-          .from("profiles")
-          .update({
-            plan: "free",
-            stripe_subscription_id: null,
-            stripe_price_id: null,
-            subscription_status: "canceled",
-            current_period_end: null,
-          })
-          .eq("stripe_customer_id", event.data.object.customer);
-      }
-
-      res.json({ received: true });
-    } catch (e) {
-      console.error("Webhook handler error:", e);
-      res.status(500).json({ error: "WEBHOOK_FAILED" });
-    }
-  }
-);
+app.post("/stripe/webhook", express.raw({ type: "application/json" }), stripeWebhookHandler);
 
 /* ===========================================
    STANDARD MIDDLEWARES
 =========================================== */
 app.use(helmet());
-app.use(express.json({ limit: "100kb" }));
 
 const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .split(",")
