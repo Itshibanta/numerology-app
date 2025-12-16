@@ -1,14 +1,15 @@
+import { useEffect, useState } from "react";
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+type CurrentPlanState = { status: "loading" | "ready"; plan: string };
 
 function normalizeToken(raw: string | null) {
   if (!raw) return null;
 
   let t = raw.trim();
-
-  // si jamais tu as stocké "Bearer eyJ..." par erreur
   t = t.replace(/^Bearer\s+/i, "").trim();
 
-  // si le token est JSON-stringifié avec guillemets
   if (
     (t.startsWith('"') && t.endsWith('"')) ||
     (t.startsWith("'") && t.endsWith("'"))
@@ -16,17 +17,47 @@ function normalizeToken(raw: string | null) {
     t = t.slice(1, -1).trim();
   }
 
-  // sanity check JWT
   if (!t.includes(".") || t.length < 30) return null;
-
   return t;
+}
+
+function getCurrentPlan(): string | null {
+  try {
+    const raw = localStorage.getItem("user");
+    if (!raw) return null;
+    const u = JSON.parse(raw);
+    if (typeof u?.plan === "string") return u.plan.toLowerCase();
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchCurrentPlan(): Promise<string> {
+  const token = normalizeToken(localStorage.getItem("auth_token"));
+  if (!token) return "free";
+
+  const res = await fetch(`${API_BASE}/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) return "free";
+
+  const data = await res.json().catch(() => null);
+  const plan = data?.user?.plan;
+
+  // ✅ Sync localStorage.user pour tes pages qui lisent encore ça
+  if (data?.user) {
+    localStorage.setItem("user", JSON.stringify(data.user));
+  }
+
+  return typeof plan === "string" ? plan.toLowerCase() : "free";
 }
 
 async function startCheckout(planKey: string) {
   const token = normalizeToken(localStorage.getItem("auth_token"));
 
   if (!token) {
-    // token absent/malformé => on force login
     localStorage.removeItem("auth_token");
     window.location.href = "/signin";
     return;
@@ -44,7 +75,6 @@ async function startCheckout(planKey: string) {
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    // cas le plus fréquent en prod : token expiré / invalide
     if (data?.error === "INVALID_TOKEN" || res.status === 401) {
       localStorage.removeItem("auth_token");
       window.location.href = "/signin";
@@ -63,45 +93,54 @@ async function startCheckout(planKey: string) {
   window.location.href = data.url;
 }
 
-function getCurrentPlan(): string | null {
-  try {
-    const raw = localStorage.getItem("user");
-    if (!raw) return null;
-    const u = JSON.parse(raw);
-    if (typeof u?.plan === "string") return u.plan.toLowerCase();
-    return null;
-  } catch {
-    return null;
-  }
-}
-
 const PricingPage = () => {
-  const currentPlan = getCurrentPlan();
+  const [currentPlan, setCurrentPlan] = useState<CurrentPlanState>({
+    status: "loading",
+    plan: getCurrentPlan() || "free",
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const refresh = async () => {
+      const plan = await fetchCurrentPlan();
+      if (!cancelled) setCurrentPlan({ status: "ready", plan });
+    };
+
+    refresh();
+
+    // ✅ si l’utilisateur revient sur l’onglet, on re-sync (webhook async)
+    const onFocus = () => refresh();
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
+  const plan = currentPlan.plan;
 
   const btnText = (planKey: string) =>
-    currentPlan === planKey ? "Plan actuel" : "Choisir ce plan";
+    plan === planKey ? "Plan actuel" : "Choisir ce plan";
 
-  const btnDisabled = (planKey: string) => currentPlan === planKey;
+  const btnDisabled = (planKey: string) => plan === planKey;
 
   const btnClass = (planKey: string) =>
-    `btn-plan ${currentPlan === planKey ? "btn-plan-current" : ""}`;
+    `btn-plan ${plan === planKey ? "btn-plan-current" : ""}`;
 
   return (
     <main className="app-container">
       <section className="pricing-root">
         <header className="pricing-header">
-          <h1 className="pricing-title">
-            Choisissez le plan adapté à votre pratique
-          </h1>
+          <h1 className="pricing-title">Choisissez le plan adapté à votre pratique</h1>
           <p className="pricing-subtitle">
-            Tous les plans sont pensés pour s&apos;adapter à votre niveau de
-            pratique, de la découverte aux accompagnements professionnels
-            réguliers.
+            Tous les plans sont pensés pour s&apos;adapter à votre niveau de pratique,
+            de la découverte aux accompagnements professionnels réguliers.
           </p>
         </header>
 
         <div className="pricing-grid">
-          {/* Plan 1 – Découverte */}
           <article className="pricing-card">
             <div className="pricing-card-header">
               <h2 className="pricing-name">Découverte</h2>
@@ -120,7 +159,6 @@ const PricingPage = () => {
             </button>
           </article>
 
-          {/* Plan 2 – Essentiel (mise en avant) */}
           <article className="pricing-card pricing-card-featured">
             <div className="pricing-card-header">
               <p className="pricing-tagline">Idéal pour démarrer</p>
@@ -144,7 +182,6 @@ const PricingPage = () => {
             </button>
           </article>
 
-          {/* Plan 3 – Praticien */}
           <article className="pricing-card">
             <div className="pricing-card-header">
               <h2 className="pricing-name">Praticien</h2>
@@ -167,7 +204,6 @@ const PricingPage = () => {
             </button>
           </article>
 
-          {/* Plan 4 – Pro Illimité */}
           <article className="pricing-card">
             <div className="pricing-card-header">
               <h2 className="pricing-name">Pro Illimité</h2>
@@ -192,8 +228,7 @@ const PricingPage = () => {
         </div>
 
         <p className="pricing-note">
-          Gardez le contrôle sur votre abonnement, ajustez ou arrêtez le à
-          n&apos;importe quel moment.
+          Gardez le contrôle sur votre abonnement, ajustez ou arrêtez le à n&apos;importe quel moment.
         </p>
       </section>
     </main>
