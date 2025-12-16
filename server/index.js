@@ -431,7 +431,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
     if (!quota?.allowed) {
       return res.status(429).json({
         error: quota?.reason || "QUOTA_EXCEEDED",
-        meta: { count: quota?.new_count ?? null, limit: quota?.quota_limit ?? null, month: quota?.month_key ?? null },
+        meta: { count: quota?.new_count ?? null, limit: quota?.quota_limit ?? null, month: quota?.month_key_out ?? null },
       });
     }
 
