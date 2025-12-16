@@ -38,6 +38,8 @@ async function handleCheckoutSessionCompleted(session) {
   const customerId = session?.customer || null;
   const subscriptionId = session?.subscription || null;
 
+  console.log("CHECKOUT COMPLETED:", { userId, customerId, subscriptionId });
+
   if (!userId || !customerId || !subscriptionId) return;
 
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -55,12 +57,10 @@ async function handleCheckoutSessionCompleted(session) {
     stripe_price_id: priceId,
     subscription_status: subscription.status,
 
-    current_period_end: toIsoFromUnixSeconds(subscription.current_period_end),
-
     quota_period_start: toIsoFromUnixSeconds(subscription.current_period_start),
     quota_period_end: toIsoFromUnixSeconds(subscription.current_period_end),
+    current_period_end: toIsoFromUnixSeconds(subscription.current_period_end),
 
-    // ✅ COHÉRENT avec ton /generate-theme qui lit profiles.plan
     plan: planKey,
   };
 
@@ -79,6 +79,7 @@ async function handleSubscriptionUpdatedOrCreated(subscription) {
   }
 
   const patch = {
+    stripe_customer_id: customerId,
     stripe_subscription_id: subscription.id,
     stripe_price_id: priceId,
     subscription_status: subscription.status,
@@ -130,6 +131,8 @@ async function stripeWebhookHandler(req, res) {
   }
 
   try {
+    console.log("STRIPE EVENT:", event.type);
+
     switch (event.type) {
       case "checkout.session.completed":
         await handleCheckoutSessionCompleted(event.data.object);
@@ -150,6 +153,7 @@ async function stripeWebhookHandler(req, res) {
 
     return res.json({ received: true });
   } catch (err) {
+    console.error("WEBHOOK_FAILED", err);
     return res.status(500).json({ error: "WEBHOOK_FAILED" });
   }
 }
