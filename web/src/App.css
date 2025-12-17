@@ -912,6 +912,11 @@ main.app-container + footer.site-footer {
   box-shadow: none;
 }
 
+.btn-plan-secondary{
+  background: #e6e6e6;
+  color: rgba(0,0,0,0.80);
+}
+
 .site-footer {
   border-top: 1px solid #e0d7cc;
   margin-top: -3rem;
@@ -1474,7 +1479,4 @@ main.app-container + footer.site-footer {
   flex-wrap: wrap;
 }
 
-.btn-plan-secondary{
-  background: #e6e6e6;
-  color: rgba(0,0,0,0.80);
-}
+
