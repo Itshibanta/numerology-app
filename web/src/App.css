@@ -1260,10 +1260,26 @@ main.app-container + footer.site-footer {
   pointer-events: auto;
 }
 
-.logo {
+.header-inner{
   display: flex;
   align-items: center;
+  justify-content: flex-end; /* 🔥 pousse tout le groupe à droite */
+  gap: 2rem;                /* espace entre nav et logo */
 }
+
+.nav-links{
+  display: flex;
+  gap: 1.5rem;
+  order: 1;
+}
+
+.logo{
+  order: 2;
+}
+
+
+
+
 
 .nav-links {
   display: flex;
