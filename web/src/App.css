@@ -1413,10 +1413,18 @@ main.app-container + footer.site-footer {
 }
 
 .btn-plan-current{
-  background: rgba(17,24,39,0.10);  /* anthracite clair */
+  /* 🔁 même base que .btn-plan */
+  margin-top: 1.4rem;
+  border-radius: 999px;
+  padding: 0.8rem 1.8rem;
+  font-size: 0.90rem;
+  font-weight: 600;
+  width: 100%;
+
+  /* 🎯 état "plan actuel" */
+  background: rgba(17,24,39,0.10);
   color: rgba(17,24,39,0.85);
   border: 1px solid rgba(17,24,39,0.18);
-  opacity: 1;
   cursor: not-allowed;
 }
 
