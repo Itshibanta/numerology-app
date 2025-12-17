@@ -729,7 +729,8 @@ p {
 
 /* --- Pricing: rapprocher la note du footer --- */
 .pricing-note {    /* moins d'espace en bas */
-  padding-bottom: 0rem;
+  margin-bottom: -82px;
+  margin-top: 22px;
 }
 
 /* le <main class="app-container"> est juste avant le footer dans App.tsx */
@@ -740,6 +741,7 @@ main.app-container + footer.site-footer {
 .pricing-header {
   max-width: 720px;
   margin: 0 auto 2.8rem;
+  margin-top : 1.4rem;
 }
 
 .pricing-title {
@@ -903,7 +905,7 @@ main.app-container + footer.site-footer {
   /* 🎯 état "plan actuel" */
   background: rgba(17,24,39,0.10);
   color: rgba(17,24,39,0.85);
-  border: 1px solid rgba(17,24,39,0.18);
+  border: 1px solid transparent;
   cursor: not-allowed;
 }
 
@@ -916,6 +918,12 @@ main.app-container + footer.site-footer {
   background: #e6e6e6;
   color: rgba(0,0,0,0.80);
 }
+
+.btn-plan,
+.btn-plan-current {
+  box-sizing: border-box;
+}
+
 
 .site-footer {
   border-top: 1px solid #e0d7cc;

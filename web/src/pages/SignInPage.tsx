@@ -1,15 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginUser } from "../api";
 import "../App.css";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    // Empêche le "flash" de message lié à un ancien token invalide
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("user");
+  }, []);
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setError(null);
 
     try {
       const res = await loginUser({ email, password });
@@ -23,8 +30,8 @@ export default function SignInPage() {
       }
 
       window.location.href = "/theme";
-    } catch (err: any) {
-      setError(err?.message || "Email ou mot de passe incorrect.");
+    } catch {
+      setError("Email ou mot de passe incorrect.");
     }
   }
 

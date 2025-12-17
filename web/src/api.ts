@@ -50,11 +50,26 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   // 401 => logout
   if (res.status === 401) {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("user");
-    window.location.href = "/signin";
-    throw new ApiError("Session expirée. Reconnecte-toi.", "UNAUTHORIZED");
+    const isAuthEndpoint =
+      path === "/auth/login" || path === "/auth/register";
+
+    if (!isAuthEndpoint) {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user");
+
+      // évite boucle/flash si déjà sur /signin
+      if (window.location.pathname !== "/signin") {
+        window.location.href = "/signin";
+      }
+    }
+
+    // Sur login: on laisse la page gérer le message (Email/mot de passe incorrect.)
+    throw new ApiError(
+      isAuthEndpoint ? "INVALID_CREDENTIALS" : "Session expirée. Reconnecte-toi.",
+      "UNAUTHORIZED"
+    );
   }
+
 
   if (!res.ok) {
     throw await parseApiError(res);
