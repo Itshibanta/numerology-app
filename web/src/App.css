@@ -891,6 +891,27 @@ main.app-container + footer.site-footer {
   transform: translateY(-1px);
 }
 
+.btn-plan-current{
+  /* 🔁 même base que .btn-plan */
+  margin-top: 1.4rem;
+  border-radius: 999px;
+  padding: 0.8rem 1.8rem;
+  font-size: 0.90rem;
+  font-weight: 600;
+  width: 100%;
+
+  /* 🎯 état "plan actuel" */
+  background: rgba(17,24,39,0.10);
+  color: rgba(17,24,39,0.85);
+  border: 1px solid rgba(17,24,39,0.18);
+  cursor: not-allowed;
+}
+
+.btn-plan-current:hover{
+  transform: none;
+  box-shadow: none;
+}
+
 .site-footer {
   border-top: 1px solid #e0d7cc;
   margin-top: -3rem;
@@ -1412,26 +1433,6 @@ main.app-container + footer.site-footer {
   margin: 6px 0 0;
 }
 
-.btn-plan-current{
-  /* 🔁 même base que .btn-plan */
-  margin-top: 1.4rem;
-  border-radius: 999px;
-  padding: 0.8rem 1.8rem;
-  font-size: 0.90rem;
-  font-weight: 600;
-  width: 100%;
-
-  /* 🎯 état "plan actuel" */
-  background: rgba(17,24,39,0.10);
-  color: rgba(17,24,39,0.85);
-  border: 1px solid rgba(17,24,39,0.18);
-  cursor: not-allowed;
-}
-
-.btn-plan-current:hover{
-  transform: none;
-  box-shadow: none;
-}
 
 /* --- Modal (quota / auth) --- */
 .modal-overlay{

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-type CurrentPlanState = { status: "loading" | "ready"; plan: string };
+type CurrentPlanState = { status: "loading" | "ready"; plan: string | null };
 
 function normalizeToken(raw: string | null) {
   if (!raw) return null;
@@ -33,15 +33,15 @@ function getCurrentPlan(): string | null {
   }
 }
 
-async function fetchCurrentPlan(): Promise<string> {
+async function fetchCurrentPlan(): Promise<string | null> {
   const token = normalizeToken(localStorage.getItem("auth_token"));
-  if (!token) return "free";
+  if (!token) return null;
 
   const res = await fetch(`${API_BASE}/me`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  if (!res.ok) return "free";
+  if (!res.ok) return null;
 
   const data = await res.json().catch(() => null);
   const plan = data?.user?.plan;
@@ -51,7 +51,7 @@ async function fetchCurrentPlan(): Promise<string> {
     localStorage.setItem("user", JSON.stringify(data.user));
   }
 
-  return typeof plan === "string" ? plan.toLowerCase() : "free";
+  return typeof plan === "string" ? plan.toLowerCase() : null;
 }
 
 async function startCheckout(planKey: string) {
@@ -96,7 +96,7 @@ async function startCheckout(planKey: string) {
 const PricingPage = () => {
   const [currentPlan, setCurrentPlan] = useState<CurrentPlanState>({
     status: "loading",
-    plan: getCurrentPlan() || "free",
+    plan: getCurrentPlan(),
   });
 
   useEffect(() => {
@@ -120,14 +120,17 @@ const PricingPage = () => {
   }, []);
 
   const plan = currentPlan.plan;
+  const isAuthed = Boolean(normalizeToken(localStorage.getItem("auth_token")));
+  const isCurrent = (planKey: string) => isAuthed && plan === planKey;
 
   const btnText = (planKey: string) =>
-    plan === planKey ? "Plan actuel" : "Choisir ce plan";
+    isCurrent(planKey) ? "Plan actuel" : "Choisir ce plan";
 
-  const btnDisabled = (planKey: string) => plan === planKey;
+const btnDisabled = (planKey: string) => isCurrent(planKey);
 
-  const btnClass = (planKey: string) =>
-    `btn-plan ${plan === planKey ? "btn-plan-current" : ""}`;
+const btnClass = (planKey: string) =>
+  isCurrent(planKey) ? "btn-plan-current" : "btn-plan";
+
 
   return (
     <main className="app-container">
