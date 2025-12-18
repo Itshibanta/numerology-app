@@ -57,6 +57,12 @@ export default function SignInPage() {
     <div className="auth-container">
       <h2>Connexion</h2>
 
+      {new URLSearchParams(window.location.search).get("confirmed") === "1" && (
+        <p className="auth-info">
+          Email confirmé ✅ Tu peux maintenant te connecter.
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} className="auth-form">
         <label>Email</label>
         <input

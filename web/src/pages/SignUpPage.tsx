@@ -24,7 +24,7 @@ export default function SignUpPage() {
         password,
         options: {
           data: { firstName, lastName },
-          emailRedirectTo: `https://classy-sfogliatella-0aecf9.netlify.app/auth/callback`,
+          emailRedirectTo: `https://classy-sfogliatella-0aecf9.netlify.app/signin?confirmed=1`,
         },
       });
 
