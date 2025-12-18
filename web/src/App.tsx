@@ -11,13 +11,11 @@ import ContactPage from "./pages/ContactPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 import logo from "./assets/logo.png";
 
 import AuthCallbackPage from "./pages/AuthCallbackPage";
-
-// …
-<Route path="/auth/callback" element={<AuthCallbackPage />} />
 
 
 function isLoggedIn(): boolean {
@@ -63,6 +61,8 @@ export default function App() {
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Routes>
       </main>
 

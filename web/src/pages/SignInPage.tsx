@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import { loginUser } from "../api";
+// web/src/pages/SignInPage.tsx
+import { useEffect, useMemo, useState } from "react";
 import "../App.css";
 import { supabase } from "../supabaseClient";
-
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -10,41 +9,40 @@ export default function SignInPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  
+  const params = useMemo(() => new URLSearchParams(window.location.search), []);
+  const confirmed = params.get("confirmed") === "1";
+  const registered = params.get("registered") === "1";
+
   useEffect(() => {
-    // Empêche le "flash" de message lié à un ancien token invalide
+    // Nettoie un éventuel token legacy pour éviter les effets bizarres
     localStorage.removeItem("auth_token");
     localStorage.removeItem("user");
   }, []);
 
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setError(null);
     setLoading(true);
 
     try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      const msg = (error.message || "").toLowerCase();
-
-      if (msg.includes("email not confirmed")) {
-        setError("Confirmez votre compte avec l'email reçu avant de vous connecter.");
-      } else {
-        setError("Email ou mot de passe incorrect.");
+      if (error || !data?.session?.access_token) {
+        const msg = (error?.message || "").toLowerCase();
+        if (msg.includes("email not confirmed")) {
+          setError("Confirmez votre compte avec l’email reçu avant de vous connecter.");
+        } else {
+          setError("Email ou mot de passe incorrect.");
+        }
+        return;
       }
-      return;
-    }
 
-
-      // ✅ tu gardes ton système existant: JWT en localStorage
+      // Garde ton système existant: token en localStorage pour appeler ton backend
       localStorage.setItem("auth_token", data.session.access_token);
 
-      // Optionnel: redirection
       window.location.href = "/profile";
     } catch (err: any) {
       setError(err?.message || "Connexion impossible.");
@@ -57,11 +55,19 @@ export default function SignInPage() {
     <div className="auth-container">
       <h2>Connexion</h2>
 
-      {new URLSearchParams(window.location.search).get("confirmed") === "1" && (
+      {registered && (
         <p className="auth-info">
-          Email confirmé ✅ Tu peux maintenant te connecter.
+          Compte créé ✅ Vérifiez vos emails pour confirmer votre inscription.
         </p>
       )}
+
+      {confirmed && (
+        <p className="auth-info">
+          Email confirmé ✅ Vous pouvez maintenant vous connecter.
+        </p>
+      )}
+
+      {error && <p className="auth-error">{error}</p>}
 
       <form onSubmit={handleSubmit} className="auth-form">
         <label>Email</label>
@@ -80,12 +86,14 @@ export default function SignInPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {error && <p className="auth-error">{error}</p>}
-
-          <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Connexion..." : "Se connecter"}
-          </button>
+        <button type="submit" className="auth-btn" disabled={loading}>
+          {loading ? "Connexion..." : "Se connecter"}
+        </button>
       </form>
+
+      <p style={{ marginTop: "10px" }}>
+        Mot de passe oublié ? <a href="/reset-password">Réinitialisez-le</a>
+      </p>
 
       <p style={{ marginTop: "16px" }}>
         Pas encore de compte ? <a href="/signup">Créer un compte</a>
