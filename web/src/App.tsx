@@ -14,6 +14,12 @@ import ProfilePage from "./pages/ProfilePage";
 
 import logo from "./assets/logo.png";
 
+import AuthCallbackPage from "./pages/AuthCallbackPage";
+
+// …
+<Route path="/auth/callback" element={<AuthCallbackPage />} />
+
+
 function isLoggedIn(): boolean {
   const token = localStorage.getItem("auth_token");
   return !!token;

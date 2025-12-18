@@ -278,17 +278,21 @@ app.post("/auth/register", async (req, res) => {
       return res.status(400).json({ error: "MISSING_FIELDS" });
     }
 
-    // Crée l'user (Admin API)
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      email_confirm: true,
-      user_metadata: { firstName, lastName },
+      options: {
+        data: { firstName, lastName },
+        emailRedirectTo: `${FRONTEND_URL}/auth/callback`,
+      },
     });
 
     if (error || !data?.user) {
       return res.status(400).json({ error: "REGISTER_FAILED", detail: error?.message });
     }
+
+    return res.json({ ok: true, needsEmailConfirmation: true });
+
 
     // Garantit le profil + met à jour les noms
     await ensureProfileExists({ id: data.user.id, email });

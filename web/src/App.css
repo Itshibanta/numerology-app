@@ -24,6 +24,7 @@ body {
 .app-root {
   background-color: #faf8f3;
   min-height: 100vh;
+  flex-direction: column;
 }
 
 .app-container {
@@ -924,14 +925,14 @@ main.app-container + footer.site-footer {
   box-sizing: border-box;
 }
 
-
 .site-footer {
   border-top: 1px solid #e0d7cc;
-  margin-top: -3rem;
+  margin-top: auto;
   padding-top: 1.3rem;
   padding-bottom: 1.2rem;
   font-size: 0.85rem;
   color: #6b5b50;
+  max-width: none;
 }
 
 .footer-links {
@@ -1241,16 +1242,20 @@ main.app-container + footer.site-footer {
   border-bottom: 1px solid #e0d7cc;
   padding: 0;
   margin: 0 0 0.5rem 0;
+  width: 100%;
 }
 
-.header-inner {
+.header-inner{
+  width: 100%;
+  max-width: none;      /* si tu avais un max-width */
+  margin: 0;            /* si tu avais margin: 0 auto */
+  padding: 0 2rem;      /* espace par rapport au bord */
+  box-sizing: border-box;
+  height: 85px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-
-  height: 75px;       /* ✅ hauteur réelle du header */
-  overflow: visible;  /* le logo peut dépasser */
+  justify-content: flex-end;
+  gap: 2rem;
 }
 
 .logo img {
@@ -1258,13 +1263,6 @@ main.app-container + footer.site-footer {
   width: auto;
   transform: translateY(0px); /* débordement contrôlé */
   pointer-events: auto;
-}
-
-.header-inner{
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* 🔥 pousse tout le groupe à droite */
-  gap: 2rem;                /* espace entre nav et logo */
 }
 
 .nav-links{
