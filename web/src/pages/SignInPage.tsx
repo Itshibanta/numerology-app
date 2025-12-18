@@ -57,13 +57,13 @@ export default function SignInPage() {
 
       {registered && (
         <p className="auth-info">
-          Compte créé ✅ Vérifiez vos emails pour confirmer votre inscription.
+          Compte créé. Vérifiez vos emails pour confirmer votre inscription.
         </p>
       )}
 
       {confirmed && (
         <p className="auth-info">
-          Email confirmé ✅ Vous pouvez maintenant vous connecter.
+          Email confirmé. Vous pouvez maintenant vous connecter.
         </p>
       )}
 
