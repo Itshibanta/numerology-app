@@ -31,7 +31,7 @@ export default function SignUpPage() {
       if (error) {
         const msg = (error.message || "").toLowerCase();
         if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
-          setError("Un compte existe déjà avec cet email. Connecte-toi.");
+          setError("Un compte existe déjà avec cet email. Connectez-vous.");
         } else {
           setError("Inscription impossible : " + error.message);
         }

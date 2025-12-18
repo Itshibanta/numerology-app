@@ -24,15 +24,22 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (error || !data?.session?.access_token) {
+    if (error) {
+      const msg = (error.message || "").toLowerCase();
+
+      if (msg.includes("email not confirmed")) {
+        setError("Confirmez votre compte avec l'email reçu avant de vous connecter.");
+      } else {
         setError("Email ou mot de passe incorrect.");
-        return;
       }
+      return;
+    }
+
 
       // ✅ tu gardes ton système existant: JWT en localStorage
       localStorage.setItem("auth_token", data.session.access_token);
