@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { loginUser } from "../api";
 import "../App.css";
+import { supabase } from "../supabaseClient";
+
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
   
   useEffect(() => {
     // Empêche le "flash" de message lié à un ancien token invalide
@@ -16,22 +20,29 @@ export default function SignInPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
+    setError("");
+    setLoading(true);
 
     try {
-      const res = await loginUser({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (res?.token) {
-        localStorage.setItem("auth_token", res.token);
+      if (error || !data?.session?.access_token) {
+        setError("Email ou mot de passe incorrect.");
+        return;
       }
 
-      if (res?.user) {
-        localStorage.setItem("user", JSON.stringify(res.user));
-      }
+      // ✅ tu gardes ton système existant: JWT en localStorage
+      localStorage.setItem("auth_token", data.session.access_token);
 
-      window.location.href = "/theme";
-    } catch {
-      setError("Email ou mot de passe incorrect.");
+      // Optionnel: redirection
+      window.location.href = "/profile";
+    } catch (err: any) {
+      setError(err?.message || "Connexion impossible.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -58,9 +69,9 @@ export default function SignInPage() {
 
         {error && <p className="auth-error">{error}</p>}
 
-        <button type="submit" className="auth-btn">
-          Se connecter
-        </button>
+          <button type="submit" className="auth-btn" disabled={loading}>
+            {loading ? "Connexion..." : "Se connecter"}
+          </button>
       </form>
 
       <p style={{ marginTop: "16px" }}>
