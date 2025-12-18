@@ -24,7 +24,7 @@ export default function SignUpPage() {
         password,
         options: {
           data: { firstName, lastName },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${import.meta.env.VITE_SITE_URL}/auth/callback`,
         },
       });
 
