@@ -91,12 +91,12 @@ export default function SignInPage() {
         </button>
       </form>
 
-      <p style={{ marginTop: "10px" }}>
-        Mot de passe oublié ? <a href="/reset-password">Réinitialisez-le</a>
+      <p style={{ marginTop: "24px" }}>
+        Pas encore de compte ? <a href="/signup">Créer un compte</a>
       </p>
 
-      <p style={{ marginTop: "16px" }}>
-        Pas encore de compte ? <a href="/signup">Créer un compte</a>
+      <p style={{ marginTop: "-10px" }}>
+        Mot de passe oublié ? <a href="/reset-password">Réinitialisez-le</a>
       </p>
     </div>
   );
