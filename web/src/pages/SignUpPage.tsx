@@ -24,7 +24,7 @@ export default function SignUpPage() {
         password,
         options: {
           data: { firstName, lastName },
-          emailRedirectTo: `${import.meta.env.VITE_SITE_URL}/auth/callback`,
+          emailRedirectTo: `https://classy-sfogliatella-0aecf9.netlify.app/auth/callback`,
         },
       });
 
