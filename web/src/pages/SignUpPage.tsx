@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { registerUser } from "../api";
 import "../App.css";
+import { supabase } from "../supabaseClient";
+
 
 export default function SignUpPage() {
   const [firstName, setFirstName] = useState("");
@@ -8,18 +10,43 @@ export default function SignUpPage() {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [error, setError]       = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      await registerUser({ firstName, lastName, email, password });
-      window.location.href = "/signin";
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { firstName, lastName },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        const msg = (error.message || "").toLowerCase();
+        if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+          setError("Un compte existe déjà avec cet email. Connecte-toi.");
+        } else {
+          setError("Inscription impossible : " + error.message);
+        }
+        return;
+      }
+
+      // UX V1: on redirige tout de suite
+      window.location.href = "/signin?registered=1";
     } catch (err: any) {
-      setError(err.message || "Impossible de créer le compte.");
+      setError(err?.message || "Impossible de créer le compte.");
+    } finally {
+      setLoading(false);
     }
   }
+
 
   return (
     <div className="auth-container">
@@ -59,8 +86,8 @@ export default function SignUpPage() {
 
         {error && <p className="auth-error">{error}</p>}
 
-        <button type="submit" className="auth-btn">
-          S’inscrire
+        <button type="submit" className="auth-btn" disabled={loading}>
+          {loading ? "Création..." : "S’inscrire"}
         </button>
       </form>
 
