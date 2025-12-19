@@ -58,7 +58,7 @@ async function createCheckoutSession(req, res) {
     customer: customerId,
     line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
     success_url: `${process.env.FRONTEND_URL}/profile?checkout=success`,
-    cancel_url: `${process.env.FRONTEND_URL}/pricing?checkout=cancel`,
+    cancel_url: `${process.env.FRONTEND_URL}/pricing`,
     allow_promotion_codes: true,
     metadata: {
       supabase_user_id: userId,
