@@ -472,6 +472,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
         type: "summary",
         label: fullName ? `Résumé thème ${fullName}` : "Résumé thème",
         payload: req.body,
+        result_text: summaryText,
       });
 
       return res.json({ success: true, summary: summaryText });
@@ -492,6 +493,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       type: "theme",
       label: fullName ? `Thème numérologique ${fullName}` : "Thème numérologique",
       payload: req.body,
+      result_text: summaryText,
     });
 
     return res.json({ success: true, theme: themeTexte });
@@ -526,7 +528,7 @@ app.get("/me", async (req, res) => {
 
     const { data: history, error: hErr } = await supabaseAdmin
       .from("generations")
-      .select("created_at, type, label")
+      .select("id, created_at, type, label")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -542,6 +544,7 @@ app.get("/me", async (req, res) => {
         plan: profile?.plan || "free",
       },
       history: (history || []).map((x) => ({
+        id: x.id,
         date: x.created_at,
         type: x.type,
         label: x.label,
@@ -549,6 +552,34 @@ app.get("/me", async (req, res) => {
     });
   } catch (e) {
     console.error("ME error:", e);
+    return res.status(500).json({ error: "INTERNAL" });
+  }
+});
+
+app.get("/generations/:id", async (req, res) => {
+  try {
+    const token = getBearerToken(req);
+    if (!token) return res.status(401).json({ error: "AUTH_REQUIRED" });
+
+    const { data, error } = await supabaseAdmin.auth.getUser(token);
+    if (error || !data?.user) return res.status(401).json({ error: "INVALID_TOKEN" });
+
+    const userId = data.user.id;
+    const genId = req.params.id;
+
+    const { data: gen, error: gErr } = await supabaseAdmin
+      .from("generations")
+      .select("id, created_at, type, label, result_text")
+      .eq("id", genId)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (gErr) return res.status(500).json({ error: "GEN_READ_FAILED", detail: gErr.message });
+    if (!gen) return res.status(404).json({ error: "NOT_FOUND" });
+
+    return res.json({ success: true, generation: gen });
+  } catch (e) {
+    console.error("GENERATION_GET error:", e);
     return res.status(500).json({ error: "INTERNAL" });
   }
 });
