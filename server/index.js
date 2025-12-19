@@ -177,6 +177,9 @@ app.get("/plans", (_, res) =>
   res.json({ success: true, plans: getPlansPublic() })
 );
 
+console.log("CHECKOUT FRONTEND_URL:", process.env.FRONTEND_URL);
+console.log("CHECKOUT FRONTEND_URL const:", FRONTEND_URL);
+
 /* ===== Stripe Checkout (ROBUSTE + PROD SAFE) ===== */
 app.post(
   "/stripe/create-checkout-session",
@@ -307,7 +310,6 @@ app.post("/auth/register", async (req, res) => {
       console.error("PROFILE_UPDATE_FAILED:", upErr);
     }
 
-    return res.json({ ok: true });
   } catch (e) {
     console.error("REGISTER error:", e);
     return res.status(500).json({ error: "INTERNAL" });
