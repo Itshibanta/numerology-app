@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { ApiError, generateTheme } from "../api";
+import { jsPDF } from "jspdf";
 
 type FormData = {
   prenom: string;
@@ -46,6 +47,26 @@ function parseThemeBlocks(raw: string): Block[] {
   }
 
   return blocks;
+}
+
+function downloadPdf(title: string, content: string) {
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 48;
+  const maxWidth = pageWidth - margin * 2;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text(title, margin, 72);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+
+  const lines = doc.splitTextToSize(content || "", maxWidth);
+  doc.text(lines, margin, 96, { maxWidth });
+
+  doc.save(`${title.replace(/\s+/g, "_").toLowerCase()}.pdf`);
 }
 
 export default function ThemeGeneratorPage() {
@@ -337,6 +358,13 @@ export default function ThemeGeneratorPage() {
           <button type="button" onClick={handleCopy} disabled={!theme || loading}>
             Copier le thème
           </button>
+          <button
+            className="auth-btn"
+            onClick={() => downloadPdf("Theme numerologique", theme)}
+          >
+            Télécharger (PDF)
+          </button>
+
         </div>
 
         {loading && !theme && (
