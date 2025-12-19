@@ -493,7 +493,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       type: "theme",
       label: fullName ? `Thème numérologique ${fullName}` : "Thème numérologique",
       payload: req.body,
-      result_text: summaryText,
+      result_text: themeTexte,
     });
 
     return res.json({ success: true, theme: themeTexte });
