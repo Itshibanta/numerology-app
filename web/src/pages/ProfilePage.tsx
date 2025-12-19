@@ -173,125 +173,103 @@ export default function ProfilePage() {
   }, [params]);
 
   const content = useMemo(() => {
-    if (state.status !== "ready") return null;
-    const { user, history } = state.data;
-    const planInfo = formatPlan(user.plan);
+  if (state.status !== "ready") return null;
+  const { user, history } = state.data;
+  const planInfo = formatPlan(user.plan);
 
-    if (tab === "profile") {
-      return (
-        <div className="profile-panel">
-          <div className="profile-row">
-            <span className="profile-label">Prénom</span>
-            <span className="profile-value">{user.firstName}</span>
-          </div>
-          <div className="profile-row">
-            <span className="profile-label">Nom</span>
-            <span className="profile-value">{user.lastName}</span>
-          </div>
-          <div className="profile-row">
-            <span className="profile-label">Email</span>
-            <span className="profile-value">{user.email}</span>
-          </div>
-        </div>
-      );
-    }
-
-    if (tab === "plan") {
-      return (
-        <div className="profile-panel">
-          <div className="profile-row">
-            <span className="profile-label">Plan actif</span>
-            <span className="profile-value">{planInfo.name}</span>
-          </div>
-
-          <div className="profile-row">
-            <span className="profile-label">Générations / mois</span>
-            <span className="profile-value">
-              {typeof planInfo.limit === "string" ? planInfo.limit : planInfo.limit}
-            </span>
-          </div>
-
-          <div className="profile-row">
-            <span className="profile-label">Prix</span>
-            <span className="profile-value">{planInfo.price}</span>
-          </div>
-        </div>
-      );
-    }
-
-    // history
+  if (tab === "profile") {
     return (
       <div className="profile-panel">
-        {history.length === 0 ? (
-          <p>Aucune génération pour le moment.</p>
-        ) : (
-          <div className="history-list">
-            {history.map((h, idx) => (
-              <div className="history-item" key={h.id || `${h.date}-${idx}`}>
-                <div className="history-main">
-                  <div className="history-title">{h.label}</div>
-                  <div className="history-date">{new Date(h.date).toLocaleString()}</div>
+        <div className="profile-row">
+          <span className="profile-label">Prénom</span>
+          <span className="profile-value">{user.firstName}</span>
+        </div>
+        <div className="profile-row">
+          <span className="profile-label">Nom</span>
+          <span className="profile-value">{user.lastName}</span>
+        </div>
+        <div className="profile-row">
+          <span className="profile-label">Email</span>
+          <span className="profile-value">{user.email}</span>
+        </div>
+      </div>
+    );
+  }
 
-                  <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-                    <button type="button" onClick={() => openGeneration(h.id)}>
-                      Voir
-                    </button>
+  if (tab === "plan") {
+    return (
+      <div className="profile-panel">
+        <div className="profile-row">
+          <span className="profile-label">Plan actif</span>
+          <span className="profile-value">{planInfo.name}</span>
+        </div>
 
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        const gen = await getGeneration(h.id);
-                        downloadPDF(gen.label || "Thème numérologique", gen.result_text || "");
-                      }}
-                    >
-                      Télécharger PDF
-                    </button>
-                  </div>
-                </div>
+        <div className="profile-row">
+          <span className="profile-label">Générations / mois</span>
+          <span className="profile-value">
+            {typeof planInfo.limit === "string" ? planInfo.limit : planInfo.limit}
+          </span>
+        </div>
 
-                <div className="history-tag">
-                  {h.type === "summary" ? "Gratuit" : "Complet"}
-                </div>
+        <div className="profile-row">
+          <span className="profile-label">Prix</span>
+          <span className="profile-value">{planInfo.price}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // history
+  return (
+    <div className="profile-panel">
+      {history.length === 0 ? (
+        <p>Aucune génération pour le moment.</p>
+      ) : (
+        <div className="history-list">
+          {history.map((h, idx) => (
+            <div className="history-item" key={h.id || `${h.date}-${idx}`}>
+              <div className="history-main">
+                <div className="history-title">{h.label}</div>
+                <div className="history-date">{new Date(h.date).toLocaleString()}</div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }, [state, tab]);
 
-  if (state.status === "loading") {
-    return (
-      <div className="app-container">
-        <section className="card">
-          <div className="theme-header">
-            <h2>Mon profil</h2>
-            <button type="button" onClick={logoutAndRedirect}>
-              Se déconnecter
-            </button>
-          </div>
-          <p>Chargement...</p>
-        </section>
-      </div>
-    );
-  }
+              <div
+                className="history-tag"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 8,
+                }}
+              >
+                <div>{h.type === "summary" ? "Gratuit" : "Complet"}</div>
 
-  if (state.status === "error") {
-    return (
-      <div className="app-container">
-        <section className="card">
-          <div className="theme-header">
-            <h2>Mon profil</h2>
-            <button type="button" onClick={logoutAndRedirect}>
-              Se déconnecter
-            </button>
-          </div>
-          <p className="error-message">Erreur : {state.message}</p>
-        </section>
-      </div>
-    );
-  }
+                {h.type === "theme" && (
+                  <button
+                    type="button"
+                    className="auth-btn"
+                    style={{ padding: "8px 12px", width: "fit-content" }}
+                    onClick={async () => {
+                      const gen = await getGeneration(h.id);
+                      downloadPDF(
+                        gen.label || "Thème numérologique",
+                        gen.result_text || ""
+                      );
+                    }}
+                  >
+                    Télécharger (PDF)
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}, [state, tab]);
 
+if (state.status === "loading") {
   return (
     <div className="app-container">
       <section className="card">
@@ -301,78 +279,108 @@ export default function ProfilePage() {
             Se déconnecter
           </button>
         </div>
-
-        <div className="profile-tabs">
-          <button
-            type="button"
-            className={`profile-tab ${tab === "profile" ? "active" : ""}`}
-            onClick={() => setTab("profile")}
-          >
-            Profil Utilisateur
-          </button>
-          <button
-            type="button"
-            className={`profile-tab ${tab === "plan" ? "active" : ""}`}
-            onClick={() => setTab("plan")}
-          >
-            Plan en cours
-          </button>
-          <button
-            type="button"
-            className={`profile-tab ${tab === "history" ? "active" : ""}`}
-            onClick={() => setTab("history")}
-          >
-            Historique de génération
-          </button>
-        </div>
-
-        {content}
+        <p>Chargement...</p>
       </section>
-
-      {/* Modal */}
-      {selectedText !== null && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 16,
-            zIndex: 9999,
-          }}
-          onClick={() => setSelectedText(null)}
-        >
-          <div
-            style={{
-              background: "white",
-              borderRadius: 12,
-              maxWidth: 800,
-              width: "100%",
-              maxHeight: "80vh",
-              overflow: "auto",
-              padding: 16,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-              <h3 style={{ margin: 0 }}>{selectedTitle}</h3>
-              <button type="button" onClick={() => setSelectedText(null)}>
-                Fermer
-              </button>
-            </div>
-
-            {modalLoading ? (
-              <p>Chargement…</p>
-            ) : modalError ? (
-              <p className="auth-error">{modalError}</p>
-            ) : (
-              <pre style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{selectedText}</pre>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+
+if (state.status === "error") {
+  return (
+    <div className="app-container">
+      <section className="card">
+        <div className="theme-header">
+          <h2>Mon profil</h2>
+          <button type="button" onClick={logoutAndRedirect}>
+            Se déconnecter
+          </button>
+        </div>
+        <p className="error-message">Erreur : {state.message}</p>
+      </section>
+    </div>
+  );
+}
+
+return (
+  <div className="app-container">
+    <section className="card">
+      <div className="theme-header">
+        <h2>Mon profil</h2>
+        <button type="button" onClick={logoutAndRedirect}>
+          Se déconnecter
+        </button>
+      </div>
+
+      <div className="profile-tabs">
+        <button
+          type="button"
+          className={`profile-tab ${tab === "profile" ? "active" : ""}`}
+          onClick={() => setTab("profile")}
+        >
+          Profil Utilisateur
+        </button>
+        <button
+          type="button"
+          className={`profile-tab ${tab === "plan" ? "active" : ""}`}
+          onClick={() => setTab("plan")}
+        >
+          Plan en cours
+        </button>
+        <button
+          type="button"
+          className={`profile-tab ${tab === "history" ? "active" : ""}`}
+          onClick={() => setTab("history")}
+        >
+          Historique de génération
+        </button>
+      </div>
+
+      {content}
+    </section>
+
+    {/* Modal - garde-le seulement si tu l’utilises encore */}
+    {selectedText !== null && (
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 16,
+          zIndex: 9999,
+        }}
+        onClick={() => setSelectedText(null)}
+      >
+        <div
+          style={{
+            background: "white",
+            borderRadius: 12,
+            maxWidth: 800,
+            width: "100%",
+            maxHeight: "80vh",
+            overflow: "auto",
+            padding: 16,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+            <h3 style={{ margin: 0 }}>{selectedTitle}</h3>
+            <button type="button" onClick={() => setSelectedText(null)}>
+              Fermer
+            </button>
+          </div>
+
+          {modalLoading ? (
+            <p>Chargement…</p>
+          ) : modalError ? (
+            <p className="auth-error">{modalError}</p>
+          ) : (
+            <pre style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{selectedText}</pre>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+)};
