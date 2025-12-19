@@ -1,68 +1,54 @@
+// web/src/pages/SignUpPage.tsx
 import { useState } from "react";
-import { registerUser } from "../api";
 import "../App.css";
 import { supabase } from "../supabaseClient";
 
-
 export default function SignUpPage() {
   const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName]  = useState("");
-  const [email, setEmail]       = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError]       = useState("");
+
+  const [error, setError] = useState<string>("");
+  const [info, setInfo] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-
   async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+    e.preventDefault();
+    setError("");
+    setInfo("");
+    setLoading(true);
 
-  try {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { firstName, lastName },
-        emailRedirectTo:
-          "https://classy-sfogliatella-0aecf9.netlify.app/signin?confirmed=1",
-      },
-    });
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { firstName, lastName },
+          emailRedirectTo:
+            "https://classy-sfogliatella-0aecf9.netlify.app/signin?confirmed=1",
+        },
+      });
 
-    if (error) {
-      const msg = (error.message || "").toLowerCase();
-      if (
-        msg.includes("already") ||
-        msg.includes("registered") ||
-        msg.includes("exists")
-      ) {
-        setError("Un compte existe déjà avec cet email. Connectez-vous.");
-      } else {
-        setError("Inscription impossible : " + error.message);
+      if (signUpError) {
+        // Ici tu gères juste les "vraies" erreurs techniques
+        setError("Inscription impossible : " + signUpError.message);
+        return;
       }
-      return;
-    }
 
-    /**
-     * IMPORTANT :
-     * Supabase peut renvoyer error=null même si l'email existe
-     * (anti-énumération). Donc on reste UX-safe.
-     */
-    if (data?.user) {
+      // Option A (anti-énumération) : message neutre systématique
+      setInfo(
+        "Si un compte existe déjà, connectez-vous. Sinon, vérifiez vos emails pour confirmer l’inscription."
+      );
+
+      // Redirection rapide vers la page connexion (message affiché là-bas si tu veux)
       window.location.href = "/signin?registered=1";
-      return;
+    } catch (err: any) {
+      setError(err?.message || "Impossible de créer le compte.");
+    } finally {
+      setLoading(false);
     }
-
-    // fallback safe
-    setError(
-      "Si ce compte existe déjà, connectez-vous. Sinon, vérifiez votre email pour confirmer l’inscription."
-    );
-  } catch (err: any) {
-    setError(err?.message || "Impossible de créer le compte.");
-  } finally {
-    setLoading(false);
   }
-}
 
   return (
     <div className="auth-container">
@@ -73,14 +59,14 @@ export default function SignUpPage() {
         <input
           required
           value={firstName}
-          onChange={e => setFirstName(e.target.value)}
+          onChange={(e) => setFirstName(e.target.value)}
         />
 
         <label>Nom</label>
         <input
           required
           value={lastName}
-          onChange={e => setLastName(e.target.value)}
+          onChange={(e) => setLastName(e.target.value)}
         />
 
         <label>Email</label>
@@ -88,7 +74,7 @@ export default function SignUpPage() {
           type="email"
           required
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <label>Mot de passe</label>
@@ -97,10 +83,15 @@ export default function SignUpPage() {
           required
           minLength={6}
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         {error && <p className="auth-error">{error}</p>}
+        {info && (
+          <p className="auth-info" style={{ marginTop: "10px" }}>
+            {info}
+          </p>
+        )}
 
         <button type="submit" className="auth-btn" disabled={loading}>
           {loading ? "Création..." : "S’inscrire"}
