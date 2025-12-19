@@ -12,7 +12,8 @@
     "jspdf": "^3.0.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0"
+    "react-router-dom": "^6.28.0",
+    "jspdf": "10.8.2"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",
