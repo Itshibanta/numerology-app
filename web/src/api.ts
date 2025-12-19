@@ -13,6 +13,16 @@ export class ApiError extends Error {
   }
 }
 
+export async function getGeneration(id: string) {
+  const token = localStorage.getItem("auth_token");
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/generations/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json?.error || "GENERATION_FETCH_FAILED");
+  return json.generation as { id: string; type: string; label: string; result_text: string };
+}
+
 async function parseApiError(res: Response): Promise<ApiError> {
   const text = await res.text();
 
@@ -140,7 +150,7 @@ export async function loginUser(payload: LoginPayload) {
 export type MeResponse = {
   success: true;
   user: { firstName: string; lastName: string; email: string; plan: string };
-  history: { date: string; type: "summary" | "theme"; label: string }[];
+  history: { id: string; date: string; type: "summary" | "theme"; label: string }[];
 };
 
 export async function getMe(): Promise<MeResponse> {

@@ -42,7 +42,7 @@ export default function SignInPage() {
       // Garde ton système existant: token en localStorage pour appeler ton backend
       localStorage.setItem("auth_token", data.session.access_token);
 
-      window.location.href = "/profile";
+      window.location.href = "/";
     } catch (err: any) {
       setError(err?.message || "Connexion impossible.");
     } finally {
