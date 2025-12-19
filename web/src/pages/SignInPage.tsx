@@ -11,7 +11,6 @@ export default function SignInPage() {
 
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const confirmed = params.get("confirmed") === "1";
-  const registered = params.get("registered") === "1";
 
   useEffect(() => {
     // Nettoie un éventuel token legacy pour éviter les effets bizarres
@@ -55,15 +54,9 @@ export default function SignInPage() {
     <div className="auth-container">
       <h2>Connexion</h2>
 
-      {registered && (
-        <p className="auth-info">
-          Compte créé. Vérifiez vos emails pour confirmer votre inscription.
-        </p>
-      )}
-
       {confirmed && (
         <p className="auth-info">
-          Email confirmé. Vous pouvez maintenant vous connecter.
+          Email confirmé Vous pouvez maintenant vous connecter.
         </p>
       )}
 

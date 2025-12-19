@@ -12,6 +12,7 @@ export default function SignUpPage() {
   const [error, setError] = useState<string>("");
   const [info, setInfo] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,18 +32,15 @@ export default function SignUpPage() {
       });
 
       if (signUpError) {
-        // Ici tu gères juste les "vraies" erreurs techniques
         setError("Inscription impossible : " + signUpError.message);
         return;
       }
 
-      // Option A (anti-énumération) : message neutre systématique
+      // Option A (anti-énumération) : message neutre, même si l'email existe déjà
+      setSubmitted(true);
       setInfo(
         "Si un compte existe déjà, connectez-vous. Sinon, vérifiez vos emails pour confirmer l’inscription."
       );
-
-      // Redirection rapide vers la page connexion (message affiché là-bas si tu veux)
-      window.location.href = "/signin?registered=1";
     } catch (err: any) {
       setError(err?.message || "Impossible de créer le compte.");
     } finally {
@@ -54,12 +52,16 @@ export default function SignUpPage() {
     <div className="auth-container">
       <h2>Créer un compte</h2>
 
+      {error && <p className="auth-error">{error}</p>}
+      {info && <p className="auth-info">{info}</p>}
+
       <form onSubmit={handleSubmit} className="auth-form">
         <label>Prénom</label>
         <input
           required
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
+          disabled={submitted}
         />
 
         <label>Nom</label>
@@ -67,6 +69,7 @@ export default function SignUpPage() {
           required
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
+          disabled={submitted}
         />
 
         <label>Email</label>
@@ -75,6 +78,7 @@ export default function SignUpPage() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={submitted}
         />
 
         <label>Mot de passe</label>
@@ -84,17 +88,15 @@ export default function SignUpPage() {
           minLength={6}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={submitted}
         />
 
-        {error && <p className="auth-error">{error}</p>}
-        {info && (
-          <p className="auth-info" style={{ marginTop: "10px" }}>
-            {info}
-          </p>
-        )}
-
-        <button type="submit" className="auth-btn" disabled={loading}>
-          {loading ? "Création..." : "S’inscrire"}
+        <button
+          type="submit"
+          className="auth-btn"
+          disabled={loading || submitted}
+        >
+          {submitted ? "Email envoyé ✅" : loading ? "Création..." : "S’inscrire"}
         </button>
       </form>
 
