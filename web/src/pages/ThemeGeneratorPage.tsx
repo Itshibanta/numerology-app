@@ -158,65 +158,67 @@ export default function ThemeGeneratorPage() {
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setTheme("");
-    setSubscriptionInactive(false);
+async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+  setError(null);
+  setTheme("");
+  setSubscriptionInactive(false);
 
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
+  const token = localStorage.getItem("auth_token");
+  if (!token) {
+    setShowAuthModal(true);
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    if (!form.prenom || !form.nomFamille || !form.dateNaissance) {
+      throw new Error(
+        "Le prénom, le nom de famille et la date de naissance sont obligatoires."
+      );
+    }
+
+    const lieuNaissanceCombine = [form.villeNaissance, form.paysNaissance]
+      .filter(Boolean)
+      .join(", ");
+
+    const payload = {
+      prenom: form.prenom,
+      secondPrenom: form.secondPrenom,
+      nomFamille: form.nomFamille,
+      nomMarital: form.nomMarital,
+      dateNaissance: form.dateNaissance,
+      lieuNaissance: lieuNaissanceCombine,
+      heureNaissance: form.heureNaissance,
+    };
+
+    const result = await generateTheme(payload);
+    setTheme(typeof result === "string" ? result : JSON.stringify(result, null, 2));
+  } catch (err: any) {
+    if (err instanceof ApiError && err.code === "NO_ACTIVE_SUBSCRIPTION") {
+      setSubscriptionInactive(true);
+      setError(null);
+      return;
+    }
+
+    if (err instanceof ApiError && err.code === "QUOTA_EXCEEDED") {
+      setQuotaInfo(err.meta || null);
+      setShowQuotaModal(true);
+      setError(null);
+      return;
+    }
+
+    if (err instanceof ApiError && err.code === "AUTH_REQUIRED") {
       setShowAuthModal(true);
       return;
     }
 
-    setLoading(true);
-
-    try {
-      if (!form.prenom || !form.nomFamille || !form.dateNaissance) {
-        throw new Error(
-          "Le prénom, le nom de famille et la date de naissance sont obligatoires."
-        );
-      }
-
-      const lieuNaissanceCombine = [form.villeNaissance, form.paysNaissance]
-        .filter(Boolean)
-        .join(", ");
-
-      const payload = {
-        prenom: form.prenom,
-        secondPrenom: form.secondPrenom,
-        nomFamille: form.nomFamille,
-        nomMarital: form.nomMarital,
-        dateNaissance: form.dateNaissance,
-        lieuNaissance: lieuNaissanceCombine,
-        heureNaissance: form.heureNaissance,
-      };
-
-      const result = await generateTheme(payload);
-      setTheme(typeof result === "string" ? result : JSON.stringify(result, null, 2));
-      } catch (err: any) {
-        if (err instanceof ApiError && err.code === "NO_ACTIVE_SUBSCRIPTION") {
-          setSubscriptionInactive(true);
-          setError(null);
-          return;
-        }
-
-        if (err instanceof ApiError && err.code === "QUOTA_EXCEEDED") {
-          setQuotaInfo(err.meta || null);
-          setShowQuotaModal(true);
-          setError(null);
-          return;
-        }
-
-        if (err instanceof ApiError && err.code === "AUTH_REQUIRED") {
-          setShowAuthModal(true);
-          return;
-        }
-
-        setError(err?.message || "Erreur inconnue.");
-      }
-
+    setError(err?.message || "Erreur inconnue.");
+  } finally {
+    setLoading(false);
+  }
+}
 
   function handleCopy() {
     if (!theme) return;
@@ -487,4 +489,4 @@ export default function ThemeGeneratorPage() {
       </section>
     </div>
   );
-}}
+}
