@@ -49,22 +49,78 @@ function parseThemeBlocks(raw: string): Block[] {
   return blocks;
 }
 
-function downloadPdf(title: string, content: string) {
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
+/**
+ * PDF propre :
+ * - multi-pages
+ * - titres formatés (=== H1 === / --- H2 ---)
+ * - wrap du texte
+ */
+function downloadPDF(title: string, rawTheme: string) {
+  const doc = new jsPDF("p", "mm", "a4");
 
+  const marginX = 16;
+  const marginY = 18;
   const pageWidth = doc.internal.pageSize.getWidth();
-  const margin = 48;
-  const maxWidth = pageWidth - margin * 2;
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const maxWidth = pageWidth - marginX * 2;
 
+  let y = marginY;
+
+  const newPageIfNeeded = (extraHeight = 0) => {
+    if (y + extraHeight > pageHeight - marginY) {
+      doc.addPage();
+      y = marginY;
+    }
+  };
+
+  // Header
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
-  doc.text(title, margin, 72);
+  doc.text(title, marginX, y);
+  y += 10;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
+  const blocks = parseThemeBlocks(rawTheme);
 
-  const lines = doc.splitTextToSize(content || "", maxWidth);
-  doc.text(lines, margin, 96, { maxWidth });
+  for (const b of blocks) {
+    if (b.type === "h1") {
+      newPageIfNeeded(10);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text(b.title, marginX, y);
+      y += 8;
+      continue;
+    }
+
+    if (b.type === "h2") {
+      newPageIfNeeded(8);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text(b.title, marginX, y);
+      y += 7;
+      continue;
+    }
+
+    // Text block
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+
+    const paragraphs = (b.content || "").split("\n");
+    for (const p of paragraphs) {
+      const trimmed = p.trim();
+      if (!trimmed) {
+        y += 4;
+        continue;
+      }
+
+      const wrapped = doc.splitTextToSize(trimmed, maxWidth);
+      for (const line of wrapped) {
+        newPageIfNeeded(6);
+        doc.text(line, marginX, y);
+        y += 6;
+      }
+      y += 2; // petit espace après paragraphe
+    }
+  }
 
   doc.save(`${title.replace(/\s+/g, "_").toLowerCase()}.pdf`);
 }
@@ -105,7 +161,6 @@ export default function ThemeGeneratorPage() {
     setError(null);
     setTheme("");
 
-    // ✅ Blocage front : pas de token => popup + stop
     const token = localStorage.getItem("auth_token");
     if (!token) {
       setShowAuthModal(true);
@@ -136,7 +191,6 @@ export default function ThemeGeneratorPage() {
       };
 
       const result = await generateTheme(payload);
-
       setTheme(typeof result === "string" ? result : JSON.stringify(result, null, 2));
     } catch (err: any) {
       if (err instanceof ApiError && err.code === "QUOTA_EXCEEDED") {
@@ -164,11 +218,18 @@ export default function ThemeGeneratorPage() {
     });
   }
 
+  const canUseActions = !!theme && !loading;
+
   return (
     <div className="app-container">
       {/* MODAL AUTH REQUIRED */}
       {showAuthModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true" onClick={() => setShowAuthModal(false)}>
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowAuthModal(false)}
+        >
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h3>Compte requis</h3>
             <p>Pour générer votre thème numérologique, vous devez créer un compte.</p>
@@ -204,11 +265,17 @@ export default function ThemeGeneratorPage() {
 
       {/* MODAL QUOTA */}
       {showQuotaModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true" onClick={() => setShowQuotaModal(false)}>
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setShowQuotaModal(false)}
+        >
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h3>Quota mensuel atteint</h3>
             <p>
-              Tu as utilisé {quotaInfo?.count ?? 1} / {quotaInfo?.limit ?? 1} génération(s) sur cette période d'abonnement.
+              Tu as utilisé {quotaInfo?.count ?? 1} / {quotaInfo?.limit ?? 1} génération(s)
+              sur cette période d&apos;abonnement.
             </p>
 
             <div className="modal-actions">
@@ -355,16 +422,21 @@ export default function ThemeGeneratorPage() {
       <section className="card">
         <div className="theme-header">
           <h2>Thème numérologique</h2>
-          <button type="button" onClick={handleCopy} disabled={!theme || loading}>
-            Copier le thème
-          </button>
-          <button
-            className="auth-btn"
-            onClick={() => downloadPdf("Theme numerologique", theme)}
-          >
-            Télécharger (PDF)
-          </button>
 
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
+            <button type="button" onClick={handleCopy} disabled={!canUseActions}>
+              Copier le thème
+            </button>
+
+            <button
+              type="button"
+              onClick={() => downloadPDF("Thème numérologique", theme)}
+              disabled={!canUseActions}
+              className={`btn ${!canUseActions ? "btn-disabled" : ""}`}
+            >
+              Télécharger (PDF)
+            </button>
+          </div>
         </div>
 
         {loading && !theme && (
