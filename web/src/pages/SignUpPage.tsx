@@ -14,39 +14,55 @@ export default function SignUpPage() {
 
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { firstName, lastName },
-          emailRedirectTo: `https://classy-sfogliatella-0aecf9.netlify.app/signin?confirmed=1`,
-        },
-      });
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { firstName, lastName },
+        emailRedirectTo:
+          "https://classy-sfogliatella-0aecf9.netlify.app/signin?confirmed=1",
+      },
+    });
 
-      if (error) {
-        const msg = (error.message || "").toLowerCase();
-        if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
-          setError("Un compte existe déjà avec cet email. Connectez-vous.");
-        } else {
-          setError("Inscription impossible : " + error.message);
-        }
-        return;
+    if (error) {
+      const msg = (error.message || "").toLowerCase();
+      if (
+        msg.includes("already") ||
+        msg.includes("registered") ||
+        msg.includes("exists")
+      ) {
+        setError("Un compte existe déjà avec cet email. Connectez-vous.");
+      } else {
+        setError("Inscription impossible : " + error.message);
       }
-
-      // UX V1: on redirige tout de suite
-      window.location.href = "/signin?registered=1";
-    } catch (err: any) {
-      setError(err?.message || "Impossible de créer le compte.");
-    } finally {
-      setLoading(false);
+      return;
     }
-  }
 
+    /**
+     * IMPORTANT :
+     * Supabase peut renvoyer error=null même si l'email existe
+     * (anti-énumération). Donc on reste UX-safe.
+     */
+    if (data?.user) {
+      window.location.href = "/signin?registered=1";
+      return;
+    }
+
+    // fallback safe
+    setError(
+      "Si ce compte existe déjà, connectez-vous. Sinon, vérifiez votre email pour confirmer l’inscription."
+    );
+  } catch (err: any) {
+    setError(err?.message || "Impossible de créer le compte.");
+  } finally {
+    setLoading(false);
+  }
+}
 
   return (
     <div className="auth-container">

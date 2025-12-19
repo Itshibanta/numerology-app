@@ -151,6 +151,8 @@ export default function ThemeGeneratorPage() {
     month?: string;
   } | null>(null);
 
+  const [subscriptionInactive, setSubscriptionInactive] = useState(false);
+
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -160,6 +162,7 @@ export default function ThemeGeneratorPage() {
     e.preventDefault();
     setError(null);
     setTheme("");
+    setSubscriptionInactive(false);
 
     const token = localStorage.getItem("auth_token");
     if (!token) {
@@ -192,24 +195,28 @@ export default function ThemeGeneratorPage() {
 
       const result = await generateTheme(payload);
       setTheme(typeof result === "string" ? result : JSON.stringify(result, null, 2));
-    } catch (err: any) {
-      if (err instanceof ApiError && err.code === "QUOTA_EXCEEDED") {
-        setQuotaInfo(err.meta || null);
-        setShowQuotaModal(true);
-        setError(null);
-        return;
+      } catch (err: any) {
+        if (err instanceof ApiError && err.code === "NO_ACTIVE_SUBSCRIPTION") {
+          setSubscriptionInactive(true);
+          setError(null);
+          return;
+        }
+
+        if (err instanceof ApiError && err.code === "QUOTA_EXCEEDED") {
+          setQuotaInfo(err.meta || null);
+          setShowQuotaModal(true);
+          setError(null);
+          return;
+        }
+
+        if (err instanceof ApiError && err.code === "AUTH_REQUIRED") {
+          setShowAuthModal(true);
+          return;
+        }
+
+        setError(err?.message || "Erreur inconnue.");
       }
 
-      if (err instanceof ApiError && err.code === "AUTH_REQUIRED") {
-        setShowAuthModal(true);
-        return;
-      }
-
-      setError(err?.message || "Erreur inconnue.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   function handleCopy() {
     if (!theme) return;
@@ -421,6 +428,23 @@ export default function ThemeGeneratorPage() {
 
       <section className="card">
         <div className="theme-header">
+          {subscriptionInactive && (
+            <div className="auth-error-box" style={{ marginBottom: "20px" }}>
+              <strong>Abonnement inactif</strong>
+              <p style={{ marginTop: "6px" }}>
+                Ton abonnement n’est plus actif.  
+                Réactive-le pour continuer à générer des thèmes numérologiques.
+              </p>
+
+              <button
+                className="auth-btn"
+                style={{ marginTop: "10px" }}
+                onClick={() => (window.location.href = "/pricing")}
+              >
+                Voir les abonnements
+              </button>
+            </div>
+          )}
           <h2>Thème numérologique</h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
@@ -463,4 +487,4 @@ export default function ThemeGeneratorPage() {
       </section>
     </div>
   );
-}
+}}
