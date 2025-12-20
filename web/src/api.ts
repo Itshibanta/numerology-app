@@ -101,7 +101,6 @@ export type ThemeFormData = {
   nomMarital: string;
   dateNaissance: string;
   lieuNaissance: string;
-  heureNaissance: string;
 };
 
 export async function generateTheme(formData: ThemeFormData): Promise<string> {

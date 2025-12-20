@@ -67,7 +67,6 @@ async function generateNumerologyTheme(input) {
     nomMarital,
     dateNaissance,
     lieuNaissance,
-    heureNaissance,
   } = input;
 
   const openai = getOpenAIClient();
@@ -83,7 +82,6 @@ INFORMATIONS D'ÉTAT CIVIL :
 - Nom de famille après mariage : ${nomMarital || "Non renseigné"}
 - Date de naissance : ${dateNaissance || "Non renseigné"}
 - Lieu de naissance : ${lieuNaissance || "Non renseigné"}
-- Heure de naissance : ${heureNaissance || "Non renseigné"}
 
 ${OUTPUT_FORMAT_RULES}
 
@@ -119,7 +117,6 @@ async function generateNumerologySummary(input) {
     nomMarital,
     dateNaissance,
     lieuNaissance,
-    heureNaissance,
   } = input;
 
   const openai = getOpenAIClient();
@@ -163,7 +160,6 @@ INFORMATIONS D'ÉTAT CIVIL :
 - Nom de famille après mariage : ${nomMarital || "Non renseigné"}
 - Date de naissance : ${dateNaissance || "Non renseigné"}
 - Lieu de naissance : ${lieuNaissance || "Non renseigné"}
-- Heure de naissance : ${heureNaissance || "Non renseigné"}
 
 ${OUTPUT_FORMAT_RULES}
 `.trim();

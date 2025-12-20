@@ -449,7 +449,6 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       nomMarital,
       dateNaissance,
       lieuNaissance,
-      heureNaissance,
     } = req.body || {};
 
     if (!prenom || !nomFamille || !dateNaissance) {
@@ -466,7 +465,6 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
         nomMarital,
         dateNaissance,
         lieuNaissance,
-        heureNaissance,
       });
 
       await supabaseAdmin.from("generations").insert({
@@ -487,7 +485,6 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       nomMarital,
       dateNaissance,
       lieuNaissance,
-      heureNaissance,
     });
 
     await supabaseAdmin.from("generations").insert({

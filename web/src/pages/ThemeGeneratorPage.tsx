@@ -13,7 +13,6 @@ type FormData = {
   villeNaissance: string;
   paysNaissance: string;
   lieuNaissance: string;
-  heureNaissance: string;
 };
 
 type Block =
@@ -135,7 +134,6 @@ export default function ThemeGeneratorPage() {
     villeNaissance: "",
     paysNaissance: "",
     lieuNaissance: "",
-    heureNaissance: "",
   });
 
   const [theme, setTheme] = useState<string>("");
@@ -190,7 +188,6 @@ async function handleSubmit(e: FormEvent<HTMLFormElement>) {
       nomMarital: form.nomMarital,
       dateNaissance: form.dateNaissance,
       lieuNaissance: lieuNaissanceCombine,
-      heureNaissance: form.heureNaissance,
     };
 
     const result = await generateTheme(payload);
@@ -403,18 +400,6 @@ async function handleSubmit(e: FormEvent<HTMLFormElement>) {
               value={form.paysNaissance}
               onChange={handleChange}
               placeholder="France"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="heureNaissance">Heure de naissance</label>
-            <input
-              id="heureNaissance"
-              name="heureNaissance"
-              type="text"
-              value={form.heureNaissance}
-              onChange={handleChange}
-              placeholder="HH:MM (si connue)"
             />
           </div>
 

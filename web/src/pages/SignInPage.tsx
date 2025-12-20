@@ -89,7 +89,7 @@ export default function SignInPage() {
       </p>
 
       <p style={{ marginTop: "-10px" }}>
-        Mot de passe oublié ? <a href="/reset-password">Réinitialisez-le</a>
+        Mot de passe oublié ? <a href="/reset-password">Réinitialisez-le mot</a>
       </p>
     </div>
   );
