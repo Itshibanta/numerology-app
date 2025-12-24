@@ -9,13 +9,16 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "Bundler",
+    "types": ["vite/client"],
+
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
 
-    "jsx": "react-jsx",              // 👈 TRÈS IMPORTANT
+    "jsx": "react-jsx",
     "verbatimModuleSyntax": true
   },
   "include": ["src"]

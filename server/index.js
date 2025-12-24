@@ -46,12 +46,6 @@ if (NODE_ENV === "production") {
 }
 
 const app = express();
-app.use((req, res, next) => {
-  if (req.originalUrl === "/stripe/webhook") {
-    return next(); // on laisse express.raw gérer
-  }
-  return express.json()(req, res, next);
-});
 
 app.set("trust proxy", 1);
 
@@ -68,7 +62,6 @@ console.log("ROUTE REGISTERED: POST /auth/register");
    STRIPE INIT
 =========================================== */
 const stripeKey = process.env.STRIPE_SECRET_KEY;
-const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 const stripe = stripeKey
   ? new Stripe(stripeKey, { apiVersion: "2024-06-20" })
@@ -129,15 +122,19 @@ async function ensureProfileExists(user) {
   if (insErr) throw insErr;
 }
 
-
-function getSubPriceId(subscription) {
-  return subscription?.items?.data?.[0]?.price?.id || null;
-}
-
 /* ===========================================
    STRIPE WEBHOOK (RAW BODY FIRST)
 =========================================== */
+// 1) Webhook RAW en premier
 app.post("/stripe/webhook", express.raw({ type: "application/json" }), stripeWebhookHandler);
+
+// 2) JSON parser pour tout le reste (en skip webhook)
+app.use((req, res, next) => {
+  if (req.originalUrl === "/stripe/webhook") return next();
+  return express.json({ limit: "100kb" })(req, res, next);
+});
+
+
 
 /* ===========================================
    STANDARD MIDDLEWARES
@@ -238,14 +235,6 @@ app.post(
         }
       }
 
-      // ✅ URL FRONT BLINDÉE (Stripe exige https)
-      const frontendUrlRaw =
-        process.env.FRONTEND_URL || "http://localhost:5173";
-
-      const frontendUrl = frontendUrlRaw.startsWith("http")
-        ? frontendUrlRaw
-        : `https://${frontendUrlRaw}`;
-
       const successUrl = `${FRONTEND_URL}/profile?checkout=success`;
       const cancelUrl = `${FRONTEND_URL}/pricing?checkout=cancel`;
 
@@ -291,25 +280,13 @@ app.post("/auth/register", async (req, res) => {
     });
 
     if (error || !data?.user) {
-      return res.status(400).json({ error: "REGISTER_FAILED", detail: error?.message });
+      return res
+        .status(400)
+        .json({ error: "REGISTER_FAILED", detail: error?.message });
     }
 
+    // IMPORTANT: ne touche pas profiles ici (V1)
     return res.json({ ok: true, needsEmailConfirmation: true });
-
-
-    // Garantit le profil + met à jour les noms
-    await ensureProfileExists({ id: data.user.id, email });
-
-    const { error: upErr } = await supabaseAdmin
-      .from("profiles")
-      .update({ first_name: firstName, last_name: lastName })
-      .eq("id", data.user.id);
-
-    if (upErr) {
-      // pas bloquant pour le signup, mais loggable
-      console.error("PROFILE_UPDATE_FAILED:", upErr);
-    }
-
   } catch (e) {
     console.error("REGISTER error:", e);
     return res.status(500).json({ error: "INTERNAL" });
@@ -333,6 +310,19 @@ app.post("/auth/login", async (req, res) => {
 
     // profil requis
     await ensureProfileExists({ id: data.user.id, email: data.user.email });
+
+    const meta = data.user.user_metadata || {};
+    const firstName = meta.firstName || "";
+    const lastName = meta.lastName || "";
+
+    if (firstName || lastName) {
+      const { error: upErr } = await supabaseAdmin
+        .from("profiles")
+        .update({ first_name: firstName, last_name: lastName })
+        .eq("id", data.user.id);
+
+      if (upErr) console.error("PROFILE_NAME_UPDATE_FAILED:", upErr);
+    }
 
     const { data: profile, error: pErr } = await supabaseAdmin
       .from("profiles")
@@ -471,7 +461,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
         user_id: userId,
         type: "summary",
         label: fullName ? `Résumé thème ${fullName}` : "Résumé thème",
-        payload: req.body,
+        payload: req.body || {},
         result_text: summaryText,
       });
 
@@ -491,7 +481,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       user_id: userId,
       type: "theme",
       label: fullName ? `Thème numérologique ${fullName}` : "Thème numérologique",
-      payload: req.body,
+      payload: req.body || {},
       result_text: themeTexte,
     });
 
@@ -587,6 +577,16 @@ app.get("/generations/:id", async (req, res) => {
 /* ===========================================
    START SERVER
 =========================================== */
+app.use((err, req, res, next) => {
+  console.error("UNHANDLED_ERROR:", err);
+
+  if (err?.message === "CORS_BLOCKED") {
+    return res.status(403).json({ error: "CORS_BLOCKED" });
+  }
+
+  return res.status(500).json({ error: "INTERNAL" });
+});
+
 app.use((req, res) => {
   res.status(404).json({ error: "NOT_FOUND", path: req.path });
 });

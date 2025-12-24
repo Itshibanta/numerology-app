@@ -5,6 +5,7 @@ require("dotenv").config();
 // IDs d'assistants (doivent être dans server/.env)
 const NUMEROLOGY_ASSISTANT_ID = process.env.NUMEROLOGY_ASSISTANT_ID;
 const NUMEROLOGY_SUMMARY_ASSISTANT_ID = process.env.NUMEROLOGY_SUMMARY_ASSISTANT_ID;
+const { computeNumerology } = require("./numerologyCalc");
 
 if (!NUMEROLOGY_ASSISTANT_ID || !NUMEROLOGY_SUMMARY_ASSISTANT_ID) {
   throw new Error(
@@ -72,6 +73,15 @@ async function generateNumerologyTheme(input) {
   const openai = getOpenAIClient();
   const thread = await openai.beta.threads.create();
 
+  const calc = computeNumerology({
+  prenom,
+  secondPrenom,
+  nomFamille,
+  nomMarital,
+  dateNaissance,
+});
+
+
   const userMessage = `
 L'utilisateur souhaite générer un thème numérologique complet.
 
@@ -121,6 +131,15 @@ async function generateNumerologySummary(input) {
 
   const openai = getOpenAIClient();
   const thread = await openai.beta.threads.create();
+
+  const calc = computeNumerology({
+  prenom,
+  secondPrenom,
+  nomFamille,
+  nomMarital,
+  dateNaissance,
+});
+
 
   const userMessage = `
 L'utilisateur souhaite obtenir une VERSION RÉSUMÉE de son thème numérologique.
