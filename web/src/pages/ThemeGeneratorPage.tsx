@@ -124,6 +124,30 @@ function downloadPDF(title: string, rawTheme: string) {
   doc.save(`${title.replace(/\s+/g, "_").toLowerCase()}.pdf`);
 }
 
+function themeToPlainText(raw: string) {
+  return (raw || "")
+    .split("\n")
+    .map((line) => {
+      const t = line.trim();
+
+      // === TITRE ===  -> TITRE
+      if (t.startsWith("===") && t.endsWith("===")) {
+        return t.replace(/===/g, "").trim();
+      }
+
+      // --- Sous-titre --- -> Sous-titre
+      if (t.startsWith("---") && t.endsWith("---")) {
+        return t.replace(/---/g, "").trim();
+      }
+
+      return line;
+    })
+    // nettoie les espaces/retours trop agressifs
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 export default function ThemeGeneratorPage() {
   const [form, setForm] = useState<FormData>({
     prenom: "",
@@ -217,11 +241,18 @@ async function handleSubmit(e: FormEvent<HTMLFormElement>) {
   }
 }
 
-  function handleCopy() {
-    if (!theme) return;
-    navigator.clipboard.writeText(theme).catch(() => {
+const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    if (!theme || !canUseActions) return;
+
+    try {
+      await navigator.clipboard.writeText(themeToPlainText(theme));
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch {
       setError("Impossible de copier dans le presse-papiers.");
-    });
+    }
   }
 
   const canUseActions = !!theme && !loading;
@@ -435,9 +466,15 @@ async function handleSubmit(e: FormEvent<HTMLFormElement>) {
           <h2>Thème numérologique</h2>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
-            <button type="button" onClick={handleCopy} disabled={!canUseActions}>
-              Copier le thème
+            <button
+              type="button"
+              onClick={handleCopy}
+              disabled={!canUseActions}
+              className={`btn ${!canUseActions ? "btn-disabled" : ""} ${copied ? "btn-success" : ""}`}
+            >
+              {copied ? "Copié !" : "Copier le thème"}
             </button>
+
 
             <button
               type="button"

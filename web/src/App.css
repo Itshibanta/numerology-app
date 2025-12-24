@@ -1501,4 +1501,20 @@ main.app-container + footer.site-footer {
   flex-wrap: wrap;
 }
 
+.btn {
+  transition: transform 120ms ease, opacity 120ms ease, filter 120ms ease;
+}
 
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-success {
+  animation: pop 220ms ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
