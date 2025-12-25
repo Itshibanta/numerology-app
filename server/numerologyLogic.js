@@ -1,11 +1,11 @@
 // server/numerologyLogic.js
 const OpenAI = require("openai");
 require("dotenv").config();
+const { computeNumerology } = require("./numerologyCalc");
 
 // IDs d'assistants (doivent être dans server/.env)
 const NUMEROLOGY_ASSISTANT_ID = process.env.NUMEROLOGY_ASSISTANT_ID;
 const NUMEROLOGY_SUMMARY_ASSISTANT_ID = process.env.NUMEROLOGY_SUMMARY_ASSISTANT_ID;
-const { computeNumerology } = require("./numerologyCalc");
 
 if (!NUMEROLOGY_ASSISTANT_ID || !NUMEROLOGY_SUMMARY_ASSISTANT_ID) {
   throw new Error(
@@ -59,32 +59,25 @@ Chaque sous-section (à l'intérieur d'une section principale) doit commencer pa
 - Si une section n’a pas de sous-sections, tu écris directement le contenu après le titre H1.
 `.trim();
 
-// ========================== THÈME COMPLET ==========================
-async function generateNumerologyTheme(input) {
-  const {
-    prenom,
-    secondPrenom,
-    nomFamille,
-    nomMarital,
-    dateNaissance,
-    lieuNaissance,
-  } = input;
+// Règles de garde : le modèle NE DOIT PAS recalculer
+const CALC_GUARD_RULES = `
+CALCULS OFFICIELS (SOURCE DE VÉRITÉ — INTERDICTION ABSOLUE DE RECALCULER) :
+- Tu n'as PAS le droit de recalculer les nombres.
+- Tu dois utiliser exclusivement les valeurs fournies dans le bloc "computed".
+- Tu dois afficher les lignes de calcul EXACTEMENT telles que fournies dans "calc_lines" lorsque tu expliques un nombre (sans en inventer d'autres).
+- Tu n'inventes aucun nombre, aucune ligne de calcul, aucune valeur.
+`.trim();
 
-  const openai = getOpenAIClient();
-  const thread = await openai.beta.threads.create();
-
-  const calc = computeNumerology({
+// Petit utilitaire pour factoriser l'état civil
+function buildCivilBlock({
   prenom,
   secondPrenom,
   nomFamille,
   nomMarital,
   dateNaissance,
-});
-
-
-  const userMessage = `
-L'utilisateur souhaite générer un thème numérologique complet.
-
+  lieuNaissance,
+}) {
+  return `
 INFORMATIONS D'ÉTAT CIVIL :
 - Prénom : ${prenom || "Non renseigné"}
 - Second prénom(s) : ${secondPrenom || "Non renseigné"}
@@ -92,6 +85,41 @@ INFORMATIONS D'ÉTAT CIVIL :
 - Nom de famille après mariage : ${nomMarital || "Non renseigné"}
 - Date de naissance : ${dateNaissance || "Non renseigné"}
 - Lieu de naissance : ${lieuNaissance || "Non renseigné"}
+`.trim();
+}
+
+// On réduit computeNumerology à ce qu'on envoie à GPT
+function buildCalcPayload(input) {
+  const calc = computeNumerology({
+    prenom: input.prenom,
+    secondPrenom: input.secondPrenom,
+    nomFamille: input.nomFamille,
+    nomMarital: input.nomMarital,
+    dateNaissance: input.dateNaissance,
+  });
+
+  return {
+    computed: calc.computed,
+    calc_lines: calc.calc_lines,
+  };
+}
+
+// ========================== THÈME COMPLET ==========================
+async function generateNumerologyTheme(input) {
+  const openai = getOpenAIClient();
+  const thread = await openai.beta.threads.create();
+
+  const calcPayload = buildCalcPayload(input);
+
+  const userMessage = `
+L'utilisateur souhaite générer un thème numérologique complet.
+
+${buildCivilBlock(input)}
+
+${CALC_GUARD_RULES}
+
+BLOC DE CALCULS À UTILISER TEL QUEL (SOURCE DE VÉRITÉ) :
+${JSON.stringify(calcPayload, null, 2)}
 
 ${OUTPUT_FORMAT_RULES}
 
@@ -100,6 +128,11 @@ CONTRAINTE IMPORTANTE :
 - À l’intérieur d’une section principale, si tu détailles des éléments (ex: Chemin de Vie, Nombre d’Expression, etc.),
   tu DOIS les écrire en sous-sections avec le format --- ... ---.
 `.trim();
+
+  if (process.env.NUMEROLOGY_DEBUG === "1") {
+    console.log("[NUM_THEME] calcPayload:", JSON.stringify(calcPayload, null, 2));
+    console.log("[NUM_THEME] userMessage:", userMessage);
+  }
 
   await openai.beta.threads.messages.create(thread.id, {
     role: "user",
@@ -120,26 +153,10 @@ CONTRAINTE IMPORTANTE :
 
 // ========================== RÉSUMÉ (FREE PLAN) ==========================
 async function generateNumerologySummary(input) {
-  const {
-    prenom,
-    secondPrenom,
-    nomFamille,
-    nomMarital,
-    dateNaissance,
-    lieuNaissance,
-  } = input;
-
   const openai = getOpenAIClient();
   const thread = await openai.beta.threads.create();
 
-  const calc = computeNumerology({
-  prenom,
-  secondPrenom,
-  nomFamille,
-  nomMarital,
-  dateNaissance,
-});
-
+  const calcPayload = buildCalcPayload(input);
 
   const userMessage = `
 L'utilisateur souhaite obtenir une VERSION RÉSUMÉE de son thème numérologique.
@@ -172,16 +189,20 @@ texte
 PHRASE FINALE OBLIGATOIRE (exacte, seule à la fin) :
 "Pour une analyse complète incluant : Arbre de Vie numérologique, Décors de Vie, Théâtre de Vie (4 actes), Leçon d'Âme, Année personnelle, Année clé, Analyse karmique et Conclusion approfondie, consulte la version complète."
 
-INFORMATIONS D'ÉTAT CIVIL :
-- Prénom : ${prenom || "Non renseigné"}
-- Second prénom(s) : ${secondPrenom || "Non renseigné"}
-- Nom de famille : ${nomFamille || "Non renseigné"}
-- Nom de famille après mariage : ${nomMarital || "Non renseigné"}
-- Date de naissance : ${dateNaissance || "Non renseigné"}
-- Lieu de naissance : ${lieuNaissance || "Non renseigné"}
+${buildCivilBlock(input)}
+
+${CALC_GUARD_RULES}
+
+BLOC DE CALCULS À UTILISER TEL QUEL (SOURCE DE VÉRITÉ) :
+${JSON.stringify(calcPayload, null, 2)}
 
 ${OUTPUT_FORMAT_RULES}
 `.trim();
+
+  if (process.env.NUMEROLOGY_DEBUG === "1") {
+    console.log("[NUM_SUMMARY] calcPayload:", JSON.stringify(calcPayload, null, 2));
+    console.log("[NUM_SUMMARY] userMessage:", userMessage);
+  }
 
   await openai.beta.threads.messages.create(thread.id, {
     role: "user",
