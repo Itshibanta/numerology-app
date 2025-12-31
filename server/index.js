@@ -259,6 +259,50 @@ app.post(
   }
 );
 
+/* ===== Stripe Billing Portal (annulation / gestion abonnement) ===== */
+app.post(
+  "/stripe/create-portal-session",
+  requireAuth,
+  async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(500).json({ error: "STRIPE_DISABLED" });
+      }
+
+      const userId = req.user.id;
+
+      // On récupère le stripe_customer_id dans le profil
+      const { data: profile, error: pErr } = await supabaseAdmin
+        .from("profiles")
+        .select("stripe_customer_id")
+        .eq("id", userId)
+        .single();
+
+      if (pErr || !profile) {
+        console.error("PROFILE_NOT_FOUND for portal", { userId, pErr });
+        return res.status(500).json({ error: "PROFILE_NOT_FOUND" });
+      }
+
+      if (!profile.stripe_customer_id) {
+        return res.status(400).json({ error: "NO_STRIPE_CUSTOMER" });
+      }
+
+      // URL de retour après gestion de l'abonnement
+      const returnUrl = `${FRONTEND_URL}/profile?portal=done`;
+
+      const session = await stripe.billingPortal.sessions.create({
+        customer: profile.stripe_customer_id,
+        return_url: returnUrl,
+      });
+
+      return res.json({ url: session.url });
+    } catch (e) {
+      console.error("PORTAL_SESSION_FAILED", e);
+      return res.status(500).json({ error: "PORTAL_SESSION_FAILED" });
+    }
+  }
+);
+
 /* =========================
    AUTH - REGISTER
 ========================= */

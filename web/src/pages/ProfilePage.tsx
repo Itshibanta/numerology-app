@@ -14,11 +14,18 @@ type ViewState =
 function formatPlan(plan: string) {
   const p = (plan || "").toLowerCase();
 
-  if (p === "free") return { name: "Découverte (gratuit)", limit: 1, price: "0 € / mois" };
-  if (p === "essentiel") return { name: "Essentiel", limit: 1, price: "19,99 € / mois" };
-  if (p === "praticien") return { name: "Praticien", limit: 5, price: "49,99 € / mois" };
+  if (p === "free")
+    return { name: "Découverte (gratuit)", limit: 1, price: "0 € / mois" };
+  if (p === "essentiel")
+    return { name: "Essentiel", limit: 1, price: "19,99 € / mois" };
+  if (p === "praticien")
+    return { name: "Praticien", limit: 5, price: "49,99 € / mois" };
   if (p === "pro_illimite" || p === "pro")
-    return { name: "Pro Illimité", limit: "Illimité" as const, price: "149,99 € / mois" };
+    return {
+      name: "Pro Illimité",
+      limit: "Illimité" as const,
+      price: "149,99 € / mois",
+    };
 
   return { name: plan || "Inconnu", limit: "?" as const, price: "—" };
 }
@@ -101,7 +108,8 @@ function downloadPDF(title: string, content: string) {
     }
   }
 
-  doc.save(`${(title || "theme").replace(/\s+/g, "_").toLowerCase()}.pdf`);
+  doc
+    .save(`${(title || "theme").replace(/\s+/g, "_").toLowerCase()}.pdf`);
 }
 
 export default function ProfilePage() {
@@ -130,6 +138,46 @@ export default function ProfilePage() {
     }
   }
 
+  // ✅ Gérer / annuler l'abonnement via Stripe Billing Portal
+  async function handleManageSubscription() {
+    try {
+      const token = localStorage.getItem("auth_token");
+      if (!token) {
+        alert("Tu dois être connecté pour gérer ton abonnement.");
+        return;
+      }
+
+      const baseUrl = import.meta.env.VITE_API_URL || "";
+      const url = baseUrl
+        ? `${baseUrl}/stripe/create-portal-session`
+        : "/stripe/create-portal-session";
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.url) {
+        console.error("PORTAL_SESSION_ERROR", data);
+        alert(
+          "Impossible d’ouvrir la page de gestion d’abonnement pour le moment."
+        );
+        return;
+      }
+
+      // Redirection vers Stripe (gestion / annulation)
+      window.location.href = data.url;
+    } catch (e) {
+      console.error("PORTAL_SESSION_FAILED", e);
+      alert("Erreur lors de l’ouverture de la page d’abonnement.");
+    }
+  }
+
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (!token) {
@@ -147,7 +195,8 @@ export default function ProfilePage() {
         localStorage.setItem("user", JSON.stringify(data.user));
       } catch (e: unknown) {
         if (cancelled) return;
-        const message = e instanceof Error ? e.message : "Erreur inconnue.";
+        const message =
+          e instanceof Error ? e.message : "Erreur inconnue.";
         setState({ status: "error", message });
       }
     };
@@ -173,214 +222,262 @@ export default function ProfilePage() {
   }, [params]);
 
   const content = useMemo(() => {
-  if (state.status !== "ready") return null;
-  const { user, history } = state.data;
-  const planInfo = formatPlan(user.plan);
+    if (state.status !== "ready") return null;
+    const { user, history } = state.data;
+    const planInfo = formatPlan(user.plan);
 
-  if (tab === "profile") {
+    if (tab === "profile") {
+      return (
+        <div className="profile-panel">
+          <div className="profile-row">
+            <span className="profile-label">Prénom</span>
+            <span className="profile-value">{user.firstName}</span>
+          </div>
+          <div className="profile-row">
+            <span className="profile-label">Nom</span>
+            <span className="profile-value">{user.lastName}</span>
+          </div>
+          <div className="profile-row">
+            <span className="profile-label">Email</span>
+            <span className="profile-value">{user.email}</span>
+          </div>
+        </div>
+      );
+    }
+
+    if (tab === "plan") {
+      return (
+        <div className="profile-panel">
+          <div className="profile-row">
+            <span className="profile-label">Plan actif</span>
+            <span className="profile-value">{planInfo.name}</span>
+          </div>
+
+          <div className="profile-row">
+            <span className="profile-label">Générations / mois</span>
+            <span className="profile-value">
+              {typeof planInfo.limit === "string"
+                ? planInfo.limit
+                : planInfo.limit}
+            </span>
+          </div>
+
+          <div className="profile-row">
+            <span className="profile-label">Prix</span>
+            <span className="profile-value">{planInfo.price}</span>
+          </div>
+
+          {/* Bouton gestion / annulation abonnement : uniquement si plan ≠ free */}
+          {user.plan !== "free" && (
+            <div className="profile-subscription-actions">
+              <button
+                type="button"
+                className="profile-portal-button"
+                onClick={handleManageSubscription}
+              >
+                Gérer mon abonnement (annuler, modifier)
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // history
     return (
       <div className="profile-panel">
-        <div className="profile-row">
-          <span className="profile-label">Prénom</span>
-          <span className="profile-value">{user.firstName}</span>
-        </div>
-        <div className="profile-row">
-          <span className="profile-label">Nom</span>
-          <span className="profile-value">{user.lastName}</span>
-        </div>
-        <div className="profile-row">
-          <span className="profile-label">Email</span>
-          <span className="profile-value">{user.email}</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (tab === "plan") {
-    return (
-      <div className="profile-panel">
-        <div className="profile-row">
-          <span className="profile-label">Plan actif</span>
-          <span className="profile-value">{planInfo.name}</span>
-        </div>
-
-        <div className="profile-row">
-          <span className="profile-label">Générations / mois</span>
-          <span className="profile-value">
-            {typeof planInfo.limit === "string" ? planInfo.limit : planInfo.limit}
-          </span>
-        </div>
-
-        <div className="profile-row">
-          <span className="profile-label">Prix</span>
-          <span className="profile-value">{planInfo.price}</span>
-        </div>
-      </div>
-    );
-  }
-
-  // history
-  return (
-    <div className="profile-panel">
-      {history.length === 0 ? (
-        <p>Aucune génération pour le moment.</p>
-      ) : (
-        <div className="history-list">
-          {history.map((h, idx) => (
-            <div className="history-item" key={h.id || `${h.date}-${idx}`}>
-              <div className="history-main">
-                <div className="history-title">{h.label}</div>
-                <div className="history-date">{new Date(h.date).toLocaleString()}</div>
-              </div>
-
+        {history.length === 0 ? (
+          <p>Aucune génération pour le moment.</p>
+        ) : (
+          <div className="history-list">
+            {history.map((h, idx) => (
               <div
-                className="history-tag"
+                className="history-item"
+                key={h.id || `${h.date}-${idx}`}
+              >
+                <div className="history-main">
+                  <div className="history-title">{h.label}</div>
+                  <div className="history-date">
+                    {new Date(h.date).toLocaleString()}
+                  </div>
+                </div>
+
+                <div
+                  className="history-tag"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    gap: 8,
+                  }}
+                >
+                  <div>
+                    {h.type === "summary" ? "Gratuit" : "Complet"}
+                  </div>
+
+                  {h.type === "theme" && (
+                    <button
+                      type="button"
+                      className="auth-btn"
+                      style={{
+                        padding: "8px 12px",
+                        width: "fit-content",
+                      }}
+                      onClick={async () => {
+                        const gen = await getGeneration(h.id);
+                        downloadPDF(
+                          gen.label || "Thème numérologique",
+                          gen.result_text || ""
+                        );
+                      }}
+                    >
+                      Télécharger (PDF)
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }, [state, tab, handleManageSubscription]);
+
+  if (state.status === "loading") {
+    return (
+      <div className="app-container">
+        <section className="card">
+          <div className="theme-header">
+            <h2>Mon profil</h2>
+            <button type="button" onClick={logoutAndRedirect}>
+              Se déconnecter
+            </button>
+          </div>
+          <p>Chargement...</p>
+        </section>
+      </div>
+    );
+  }
+
+  if (state.status === "error") {
+    return (
+      <div className="app-container">
+        <section className="card">
+          <div className="theme-header">
+            <h2>Mon profil</h2>
+            <button type="button" onClick={logoutAndRedirect}>
+              Se déconnecter
+            </button>
+          </div>
+          <p className="error-message">Erreur : {state.message}</p>
+        </section>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-container">
+      <section className="card">
+        <div className="theme-header">
+          <h2>Mon profil</h2>
+          <button type="button" onClick={logoutAndRedirect}>
+            Se déconnecter
+          </button>
+        </div>
+
+        <div className="profile-tabs">
+          <button
+            type="button"
+            className={`profile-tab ${
+              tab === "profile" ? "active" : ""
+            }`}
+            onClick={() => setTab("profile")}
+          >
+            Profil Utilisateur
+          </button>
+          <button
+            type="button"
+            className={`profile-tab ${
+              tab === "plan" ? "active" : ""
+            }`}
+            onClick={() => setTab("plan")}
+          >
+            Plan en cours
+          </button>
+          <button
+            type="button"
+            className={`profile-tab ${
+              tab === "history" ? "active" : ""
+            }`}
+            onClick={() => setTab("history")}
+          >
+            Historique de génération
+          </button>
+        </div>
+
+        {content}
+      </section>
+
+      {/* Modal */}
+      {selectedText !== null && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+            zIndex: 9999,
+          }}
+          onClick={() => setSelectedText(null)}
+        >
+          <div
+            style={{
+              background: "white",
+              borderRadius: 12,
+              maxWidth: 800,
+              width: "100%",
+              maxHeight: "80vh",
+              overflow: "auto",
+              padding: 16,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 12,
+              }}
+            >
+              <h3 style={{ margin: 0 }}>{selectedTitle}</h3>
+              <button
+                type="button"
+                onClick={() => setSelectedText(null)}
+              >
+                Fermer
+              </button>
+            </div>
+
+            {modalLoading ? (
+              <p>Chargement…</p>
+            ) : modalError ? (
+              <p className="auth-error">{modalError}</p>
+            ) : (
+              <pre
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  gap: 8,
+                  whiteSpace: "pre-wrap",
+                  marginTop: 12,
                 }}
               >
-                <div>{h.type === "summary" ? "Gratuit" : "Complet"}</div>
-
-                {h.type === "theme" && (
-                  <button
-                    type="button"
-                    className="auth-btn"
-                    style={{ padding: "8px 12px", width: "fit-content" }}
-                    onClick={async () => {
-                      const gen = await getGeneration(h.id);
-                      downloadPDF(
-                        gen.label || "Thème numérologique",
-                        gen.result_text || ""
-                      );
-                    }}
-                  >
-                    Télécharger (PDF)
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+                {selectedText}
+              </pre>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
-}, [state, tab]);
-
-if (state.status === "loading") {
-  return (
-    <div className="app-container">
-      <section className="card">
-        <div className="theme-header">
-          <h2>Mon profil</h2>
-          <button type="button" onClick={logoutAndRedirect}>
-            Se déconnecter
-          </button>
-        </div>
-        <p>Chargement...</p>
-      </section>
-    </div>
-  );
 }
-
-if (state.status === "error") {
-  return (
-    <div className="app-container">
-      <section className="card">
-        <div className="theme-header">
-          <h2>Mon profil</h2>
-          <button type="button" onClick={logoutAndRedirect}>
-            Se déconnecter
-          </button>
-        </div>
-        <p className="error-message">Erreur : {state.message}</p>
-      </section>
-    </div>
-  );
-}
-
-return (
-  <div className="app-container">
-    <section className="card">
-      <div className="theme-header">
-        <h2>Mon profil</h2>
-        <button type="button" onClick={logoutAndRedirect}>
-          Se déconnecter
-        </button>
-      </div>
-
-      <div className="profile-tabs">
-        <button
-          type="button"
-          className={`profile-tab ${tab === "profile" ? "active" : ""}`}
-          onClick={() => setTab("profile")}
-        >
-          Profil Utilisateur
-        </button>
-        <button
-          type="button"
-          className={`profile-tab ${tab === "plan" ? "active" : ""}`}
-          onClick={() => setTab("plan")}
-        >
-          Plan en cours
-        </button>
-        <button
-          type="button"
-          className={`profile-tab ${tab === "history" ? "active" : ""}`}
-          onClick={() => setTab("history")}
-        >
-          Historique de génération
-        </button>
-      </div>
-
-      {content}
-    </section>
-
-    {/* Modal - garde-le seulement si tu l’utilises encore */}
-    {selectedText !== null && (
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 16,
-          zIndex: 9999,
-        }}
-        onClick={() => setSelectedText(null)}
-      >
-        <div
-          style={{
-            background: "white",
-            borderRadius: 12,
-            maxWidth: 800,
-            width: "100%",
-            maxHeight: "80vh",
-            overflow: "auto",
-            padding: 16,
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-            <h3 style={{ margin: 0 }}>{selectedTitle}</h3>
-            <button type="button" onClick={() => setSelectedText(null)}>
-              Fermer
-            </button>
-          </div>
-
-          {modalLoading ? (
-            <p>Chargement…</p>
-          ) : modalError ? (
-            <p className="auth-error">{modalError}</p>
-          ) : (
-            <pre style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{selectedText}</pre>
-          )}
-        </div>
-      </div>
-    )}
-  </div>
-)};

@@ -1735,3 +1735,27 @@ button:hover {
 .profile-tabs button:active {
   transform: scale(0.97);
 }
+
+.profile-subscription-actions {
+  margin-top: 16px;
+}
+
+.profile-portal-button {
+  background: #9db8b5;
+  color: #2f2722;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.profile-portal-button:hover {
+  background: #89a5a2;
+}
+
+.profile-portal-button:active {
+  transform: scale(0.97);
+}
