@@ -1698,37 +1698,37 @@ button:hover {
   line-height: 1.6;
 }
 
-/* =============== */
-/* BOUTONS PROFIL  */
-/* =============== */
+/* ======================= */
+/*  Onglets page "Profil"  */
+/* ======================= */
 
 .profile-tabs {
   display: flex;
   gap: 12px;
 }
 
-/* bouton par défaut */
+/* état normal */
 .profile-tabs button {
-  background: #3f7f5a;          /* vert principal du site */
-  color: #ffffff;
-  border: none;
+  background: #9db8b5;       /* vert demandé */
+  color: #2f2722;            /* texte noir demandé */
 
-  border-radius: 999px;          /* arrondi pill comme avant */
+  border: none;
+  border-radius: 999px;      /* pilule conservée */
   padding: 10px 22px;
 
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
 }
 
-/* hover = un peu plus foncé */
+/* au survol */
 .profile-tabs button:hover {
-  background: #366c4e;
+  background: #93aca8;       /* très léger foncé */
 }
 
-/* bouton sélectionné (actif) */
+/* bouton actif / sélectionné */
 .profile-tabs button.active {
-  background: #2c5a3e;          /* vert foncé, lisible */
-  color: #ffffff;
+  background: #89a5a2;       /* plus foncé, lisible */
+  color: #2f2722;
 }
 
 /* clic */
