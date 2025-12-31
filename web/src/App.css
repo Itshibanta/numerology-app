@@ -1521,7 +1521,7 @@ main.app-container + footer.site-footer {
 
 .contact-container {
   max-width: 900px;
-  margin: 60px auto;
+  margin: 24px auto;
   padding: 0 16px;
   text-align: center;
 }
