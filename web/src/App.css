@@ -1710,7 +1710,7 @@ button:hover {
 /* état normal */
 .profile-tabs button {
   background: #9db8b5;       /* vert demandé */
-  color: #d1c7b5;            /* texte noir demandé */
+  color: white;            /* texte noir demandé */
 
   border: none;
   border-radius: 999px;      /* pilule conservée */
@@ -1728,7 +1728,7 @@ button:hover {
 /* bouton actif / sélectionné */
 .profile-tabs button.active {
   background: #89a5a2;       /* plus foncé, lisible */
-  color: #d1c7b5;
+  color: white;
 }
 
 /* clic */
