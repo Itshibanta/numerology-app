@@ -5,141 +5,98 @@ export default function ContactPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<null | "ok" | "error">(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSuccess(null);
-    setError(null);
-    setSubmitting(true);
+    setStatus(null);
 
-    try {
-      const res = await fetch(
-        import.meta.env.VITE_API_URL
-          ? `${import.meta.env.VITE_API_URL}/contact`
-          : "/contact",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ firstName, lastName, email, message }),
-        }
-      );
+    const res = await fetch("/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ firstName, lastName, email, message }),
+    });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Une erreur est survenue.");
-
-      setSuccess("Votre message a bien été envoyé.");
+    if (res.ok) {
+      setStatus("ok");
       setFirstName("");
       setLastName("");
       setEmail("");
       setMessage("");
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setSubmitting(false);
+    } else {
+      setStatus("error");
     }
   }
 
   return (
-    <main className="container mx-auto max-w-4xl px-6 py-16">
+    <main className="contact-container">
 
-      {/* TITRE */}
-      <h1 className="text-4xl font-bold text-center mb-3">
+      <h1 className="contact-title">
         Contactez-nous
       </h1>
 
-      {/* SOUS TITRE */}
-      <p className="text-center text-gray-600 mb-12">
-        Une question, un retour ou une demande&nbsp;?
-        Envoyez-nous un message via ce formulaire.
+      <p className="contact-subtitle">
+        Une question&nbsp;? Un retour&nbsp;? Envoyez-nous un message.
       </p>
 
-      {/* CARTE */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-[#FAF7F1] border border-gray-200 rounded-3xl p-8 shadow-sm"
-      >
+      <form onSubmit={handleSubmit} className="contact-card">
 
-        <h2 className="text-xl font-semibold mb-6">
-          Vos informations
-        </h2>
+        <h2 className="contact-card-title">Vos informations</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="contact-grid">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Prénom *
-            </label>
+            <label>Prénom *</label>
             <input
-              type="text"
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              onChange={e => setFirstName(e.target.value)}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Nom *
-            </label>
+            <label>Nom *</label>
             <input
-              type="text"
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              onChange={e => setLastName(e.target.value)}
               required
             />
           </div>
         </div>
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">
-            Adresse email *
-          </label>
+        <div className="contact-field">
+          <label>Email *</label>
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            onChange={e => setEmail(e.target.value)}
             required
           />
         </div>
 
-        <div className="mb-8">
-          <label className="block text-sm font-medium mb-1">
-            Message *
-          </label>
+        <div className="contact-field">
+          <label>Message *</label>
           <textarea
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[140px]"
+            onChange={e => setMessage(e.target.value)}
             required
           />
         </div>
 
-        {/* ALERTES */}
-        {error && (
-          <p className="text-sm text-red-600 mb-4">
-            {error}
+        {status === "ok" && (
+          <p className="contact-success">
+            Message envoyé avec succès.
           </p>
         )}
 
-        {success && (
-          <p className="text-sm text-green-700 mb-4">
-            {success}
+        {status === "error" && (
+          <p className="contact-error">
+            Une erreur est survenue.
           </p>
         )}
 
-        {/* BOUTON ALIGNÉ À DROITE */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="px-6 py-2 rounded-full bg-[#97A995] text-white font-medium disabled:opacity-60"
-          >
-            {submitting ? "Envoi..." : "Envoyer"}
+        <div className="contact-button-row">
+          <button type="submit">
+            Envoyer
           </button>
         </div>
 
