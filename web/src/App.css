@@ -1717,3 +1717,8 @@ button:hover {
   background: #8faa8e;   /* vert plus soutenu, dans ta palette */
   color: white;
 }
+
+.profile-tabs button:focus {
+  outline: 2px solid #1f8f5a;
+  outline-offset: 2px;
+}
