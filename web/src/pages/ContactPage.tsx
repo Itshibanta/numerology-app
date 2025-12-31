@@ -28,121 +28,122 @@ export default function ContactPage() {
       );
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Une erreur est survenue.");
 
-      if (!res.ok) {
-        throw new Error(data?.error || "Une erreur est survenue.");
-      }
-
-      setSuccess("Votre message a bien été envoyé. Nous vous répondrons dès que possible.");
+      setSuccess("Votre message a bien été envoyé.");
       setFirstName("");
       setLastName("");
       setEmail("");
       setMessage("");
     } catch (err: any) {
-      setError(err.message || "Impossible d’envoyer le message pour le moment.");
+      setError(err.message);
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <main className="container mx-auto max-w-3xl px-6 py-16">
-      <section className="mb-10">
-        <h1 className="text-4xl font-bold tracking-tight mb-3">
-          Contact
-        </h1>
-        <p className="text-lg text-gray-600">
-          Une question sur la plateforme, un retour ou une demande spécifique&nbsp;?
-          Utilisez le formulaire ci-dessous ou écrivez-nous directement par email.
-        </p>
-      </section>
+    <main className="container mx-auto max-w-4xl px-6 py-16">
 
-      <section className="mb-8 border border-gray-200 rounded-lg p-4 bg-gray-50">
-        <p className="text-gray-700 mb-1">
-          Vous pouvez aussi nous contacter directement à l’adresse suivante&nbsp;:
-        </p>
-        <p className="font-medium">
-          <a href="mailto:contact@clesdesnombres.com" className="underline">
-            contact@clesdesnombres.com
-          </a>
-        </p>
-      </section>
+      {/* TITRE */}
+      <h1 className="text-4xl font-bold text-center mb-3">
+        Contactez-nous
+      </h1>
 
-      <section>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Prénom
-              </label>
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Nom
-              </label>
-              <input
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2"
-                required
-              />
-            </div>
-          </div>
+      {/* SOUS TITRE */}
+      <p className="text-center text-gray-600 mb-12">
+        Une question, un retour ou une demande&nbsp;?
+        Envoyez-nous un message via ce formulaire.
+      </p>
 
+      {/* CARTE */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-[#FAF7F1] border border-gray-200 rounded-3xl p-8 shadow-sm"
+      >
+
+        <h2 className="text-xl font-semibold mb-6">
+          Vos informations
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Adresse email
+              Prénom *
             </label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Message
+              Nom *
             </label>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 min-h-[140px]"
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
               required
             />
           </div>
+        </div>
 
-          {error && (
-            <p className="text-sm text-red-600">
-              {error}
-            </p>
-          )}
+        <div className="mb-6">
+          <label className="block text-sm font-medium mb-1">
+            Adresse email *
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
+            required
+          />
+        </div>
 
-          {success && (
-            <p className="text-sm text-green-600">
-              {success}
-            </p>
-          )}
+        <div className="mb-8">
+          <label className="block text-sm font-medium mb-1">
+            Message *
+          </label>
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 min-h-[140px]"
+            required
+          />
+        </div>
 
+        {/* ALERTES */}
+        {error && (
+          <p className="text-sm text-red-600 mb-4">
+            {error}
+          </p>
+        )}
+
+        {success && (
+          <p className="text-sm text-green-700 mb-4">
+            {success}
+          </p>
+        )}
+
+        {/* BOUTON ALIGNÉ À DROITE */}
+        <div className="flex justify-end">
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center px-4 py-2 rounded-md border border-transparent bg-black text-white text-sm font-medium disabled:opacity-60"
+            className="px-6 py-2 rounded-full bg-[#97A995] text-white font-medium disabled:opacity-60"
           >
-            {submitting ? "Envoi en cours..." : "Envoyer"}
+            {submitting ? "Envoi..." : "Envoyer"}
           </button>
-        </form>
-      </section>
+        </div>
+
+      </form>
     </main>
   );
 }
