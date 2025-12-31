@@ -1,9 +1,43 @@
 // web/src/pages/HomePage.tsx
-
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import creatorPhoto from "../assets/creator.jpg";
 
 export default function HomePage() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const faqItems = [
+    {
+      question: "La numérologie, c’est quoi exactement ?",
+      answer:
+        "C’est un outil de connaissance de soi basé sur la symbolique des nombres. L’idée n’est pas de prédire ton avenir, mais de te proposer des pistes de réflexion sur tes tendances, tes forces, tes défis et la manière dont tu fonctionnes.",
+    },
+    {
+      question: "Est-ce que les résultats sont précis ou garantis ?",
+      answer:
+        "La numérologie reste un outil symbolique et introspectif. Le thème donne un cadre de lecture, pas des vérités absolues. Vous gardez toujours votre libre arbitre et vos décisions vous appartiennent.",
+    },
+    {
+      question: "Quelles informations avez-vous besoin de fournir pour générer un thème ?",
+      answer:
+        "Principalement le prénom, le nom de famille et ta date de naissance. Les autres champs (second prénom, nom marital, lieu, heure) permettent d’affiner certains calculs, mais le cœur du thème repose sur l'état civil de base.",
+    },
+    {
+      question: "Combien de temps faut-il pour obtenir ton thème ?",
+      answer:
+        "Une fois l'état civil renseigné, le calcul des nombres et la génération du texte prennent généralement quelques secondes. Il est ensuite possible de relire le thème, l’imprimer ou l’utiliser comme support de séance.",
+    },
+    {
+      question: "Peut-on annuler l'abonnement à tout moment ?",
+      answer:
+        "Oui. Les formules fonctionnent sans engagement. Il est possible de gérer ou résilier l'abonnement directement depuis l’espace Mon profil.",
+    },
+  ];
+
+  const toggleFaq = (index: number) => {
+    setOpenIndex((current) => (current === index ? null : index));
+  };
+
   return (
     <div className="home-root">
       {/* ========================== */}
@@ -434,6 +468,42 @@ export default function HomePage() {
           <a href="/theme" className="cta-btn">
             Générer mon thème
           </a>
+        </div>
+      </section>
+      
+      {/* ====================================== */}
+      {/* SECTION : FAQ                         */}
+      {/* ====================================== */}
+      <section className="home-section home-faq-section">
+        <h2>Questions fréquentes</h2>
+        <p className="home-faq-intro">
+          Voici quelques réponses aux questions qui reviennent le plus souvent.
+        </p>
+
+        <div className="faq-list">
+          {faqItems.map((item, index) => (
+            <div
+              key={index}
+              className={`faq-item ${openIndex === index ? "faq-item-open" : ""}`}
+            >
+              <button
+                type="button"
+                className="faq-question"
+                onClick={() => toggleFaq(index)}
+              >
+                <span>{item.question}</span>
+                <span className={`faq-icon ${openIndex === index ? "open" : ""}`}>
+                  {openIndex === index ? "–" : "+"}
+                </span>
+              </button>
+
+              {openIndex === index && (
+                <div className="faq-answer">
+                  <p>{item.answer}</p>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </section>
     </div>
