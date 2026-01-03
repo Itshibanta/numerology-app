@@ -175,10 +175,37 @@ export default function ThemeGeneratorPage() {
 
   const [subscriptionInactive, setSubscriptionInactive] = useState(false);
 
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    function formatDateNaissance(raw: string): string {
+    // garde uniquement les chiffres
+    let v = raw.replace(/\D/g, "");
+
+    // limite à 8 chiffres (JJMMAAAA)
+    v = v.slice(0, 8);
+
+    // insère les slashes
+    if (v.length >= 5) {
+      // JJ/MM/AAAA
+      v = v.replace(/(\d{2})(\d{2})(\d{1,4})/, "$1/$2/$3");
+    } else if (v.length >= 3) {
+      // JJ/MM
+      v = v.replace(/(\d{2})(\d{1,2})/, "$1/$2");
+    }
+
+    return v;
   }
+  
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+
+    let nextValue = value;
+
+    if (name === "dateNaissance") {
+      nextValue = formatDateNaissance(value);
+    }
+
+    setForm((prev) => ({ ...prev, [name]: nextValue }));
+  }
+
 
 async function handleSubmit(e: FormEvent<HTMLFormElement>) {
   e.preventDefault();
@@ -407,6 +434,8 @@ const [copied, setCopied] = useState(false);
               onChange={handleChange}
               placeholder="JJ/MM/AAAA"
               required
+              inputMode="numeric"
+              maxLength={10}
             />
           </div>
 
