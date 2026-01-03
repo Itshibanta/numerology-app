@@ -152,6 +152,8 @@ export default function ProfilePage() {
         ? `${baseUrl}/stripe/create-portal-session`
         : "/stripe/create-portal-session";
 
+      console.log("[PORTAL] Calling:", url);
+
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -160,20 +162,34 @@ export default function ProfilePage() {
         },
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      console.log("[PORTAL] Raw response:", res.status, text);
+
+      let data: any = null;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (parseErr) {
+        console.error("[PORTAL] JSON parse error:", parseErr);
+        throw new Error(
+          "Réponse invalide du serveur (pas du JSON). " +
+            text.slice(0, 200)
+        );
+      }
 
       if (!res.ok || !data?.url) {
-        console.error("PORTAL_SESSION_ERROR", data);
+        console.error("[PORTAL] Error payload:", data);
         alert(
-          "Impossible d’ouvrir la page de gestion d’abonnement pour le moment."
+          data?.error === "NO_STRIPE_CUSTOMER"
+            ? "Aucun abonnement Stripe n’est rattaché à ce compte."
+            : "Impossible d’ouvrir la page de gestion d’abonnement pour le moment."
         );
         return;
       }
 
       // Redirection vers Stripe (gestion / annulation)
       window.location.href = data.url;
-    } catch (e) {
-      console.error("PORTAL_SESSION_FAILED", e);
+    } catch (e: any) {
+      console.error("PORTAL_SESSION_FAILED (front):", e);
       alert("Erreur lors de l’ouverture de la page d’abonnement.");
     }
   }
@@ -275,7 +291,7 @@ export default function ProfilePage() {
                 className="profile-portal-button"
                 onClick={handleManageSubscription}
               >
-                Gérer mon abonnement (annuler, modifier)
+                Gérer mon abonnement
               </button>
             </div>
           )}
