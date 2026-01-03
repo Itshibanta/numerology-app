@@ -1,7 +1,7 @@
 // web/src/pages/ProfilePage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getMe, getGeneration, type MeResponse } from "../api";
+import { getMe, getGeneration, createPortalSession, type MeResponse } from "../api";
 import { jsPDF } from "jspdf";
 
 type TabKey = "profile" | "plan" | "history";
@@ -147,52 +147,16 @@ export default function ProfilePage() {
         return;
       }
 
-      const baseUrl = import.meta.env.VITE_API_URL || "";
-      const url = baseUrl
-        ? `${baseUrl}/stripe/create-portal-session`
-        : "/stripe/create-portal-session";
-
-      console.log("[PORTAL] Calling:", url);
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const text = await res.text();
-      console.log("[PORTAL] Raw response:", res.status, text);
-
-      let data: any = null;
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch (parseErr) {
-        console.error("[PORTAL] JSON parse error:", parseErr);
-        throw new Error(
-          "Réponse invalide du serveur (pas du JSON). " +
-            text.slice(0, 200)
-        );
-      }
-
-      if (!res.ok || !data?.url) {
-        console.error("[PORTAL] Error payload:", data);
-        alert(
-          data?.error === "NO_STRIPE_CUSTOMER"
-            ? "Aucun abonnement Stripe n’est rattaché à ce compte."
-            : "Impossible d’ouvrir la page de gestion d’abonnement pour le moment."
-        );
-        return;
-      }
+      const url = await createPortalSession();
 
       // Redirection vers Stripe (gestion / annulation)
-      window.location.href = data.url;
+      window.location.href = url;
     } catch (e: any) {
       console.error("PORTAL_SESSION_FAILED (front):", e);
-      alert("Erreur lors de l’ouverture de la page d’abonnement.");
+      alert(e?.message || "Erreur lors de l’ouverture de la page d’abonnement.");
     }
   }
+
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -357,7 +321,7 @@ export default function ProfilePage() {
         )}
       </div>
     );
-  }, [state, tab, handleManageSubscription]);
+  }, [state, tab]);
 
   if (state.status === "loading") {
     return (

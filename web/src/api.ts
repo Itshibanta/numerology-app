@@ -188,3 +188,21 @@ export async function createCheckoutSession(plan_key: string): Promise<string> {
 
   return data.url;
 }
+
+export async function createPortalSession(): Promise<string> {
+  // On utilise le helper "request" qui gère déjà:
+  // - API_BASE_URL
+  // - auth_token
+  // - 401
+  // - parsing JSON / erreurs serveur
+  const data = await request<{ url?: string; error?: string }>("/stripe/create-portal-session", {
+    method: "POST",
+  });
+
+  if (!data?.url) {
+    console.error("createPortalSession: missing url in response", data);
+    throw new ApiError("URL de portail manquante dans la réponse serveur.", "NO_PORTAL_URL");
+  }
+
+  return data.url;
+}
