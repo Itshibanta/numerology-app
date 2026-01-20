@@ -94,18 +94,26 @@ async function startCheckout(planKey: string) {
 }
 
 const PricingPage = () => {
+  const cachedPlan = getCurrentPlan();
+
   const [currentPlan, setCurrentPlan] = useState<CurrentPlanState>({
-    status: "loading",
-    plan: getCurrentPlan(),
+    status: cachedPlan ? "ready" : "loading",
+    plan: cachedPlan,
   });
 
   useEffect(() => {
     let cancelled = false;
 
-    const refresh = async () => {
-      const plan = await fetchCurrentPlan();
-      if (!cancelled) setCurrentPlan({ status: "ready", plan });
-    };
+  const refresh = async () => {
+  const fresh = await fetchCurrentPlan();
+
+  if (!cancelled) {
+    setCurrentPlan((prev) => ({
+      status: "ready",
+      plan: fresh ?? prev.plan, // garde le cache si l’API échoue
+    }));
+  }
+};
 
     refresh();
 
@@ -121,10 +129,14 @@ const PricingPage = () => {
 
   const plan = currentPlan.plan;
   const isAuthed = Boolean(normalizeToken(localStorage.getItem("auth_token")));
-  const isCurrent = (planKey: string) => isAuthed && plan === planKey;
+  const isCurrent = (planKey: string) => 
+    isAuthed && plan === planKey;
 
-  const btnText = (planKey: string) =>
-    isCurrent(planKey) ? "Plan actuel" : "Choisir ce plan";
+  const btnText = (planKey: string) => {
+    if (!isAuthed) return "Choisir ce plan";
+    if (currentPlan.status === "loading" && !currentPlan.plan) return "Vérification...";
+    return isCurrent(planKey) ? "Plan actuel" : "Choisir ce plan";
+  };
 
 const btnDisabled = (planKey: string) => isCurrent(planKey);
 
