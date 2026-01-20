@@ -78,7 +78,11 @@ function downloadPDF(title: string, rawTheme: string) {
   doc.text(title, marginX, y);
   y += 10;
 
-  const blocks = parseThemeBlocks(rawTheme);
+  // jsPDF (polices standard) ne gère pas correctement certains caractères (ex: →)
+  const safeTheme = (rawTheme || "")
+    .replaceAll("→", "->")   // ou "⇒" si tu veux tester
+
+  const blocks = parseThemeBlocks(safeTheme);
 
   for (const b of blocks) {
     if (b.type === "h1") {
