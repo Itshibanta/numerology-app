@@ -38,7 +38,12 @@ function parseThemeBlocksWeb(raw: string): Block[] {
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (!trimmed) continue; // ✅ web: on ignore les lignes vides
+
+    // ✅ WEB: on conserve les lignes vides pour créer de l'air
+    if (!trimmed) {
+      blocks.push({ type: "text", content: "" });
+      continue;
+    }
 
     if (trimmed.startsWith("===") && trimmed.endsWith("===")) {
       blocks.push({ type: "h1", title: trimmed.replace(/===/g, "").trim() });
@@ -587,6 +592,9 @@ const [copied, setCopied] = useState(false);
             {parseThemeBlocksWeb(theme).map((b, i) => {
               if (b.type === "h1") return <div key={i} className="theme-h1">{b.title}</div>;
               if (b.type === "h2") return <div key={i} className="theme-h2">{b.title}</div>;
+
+              if (!b.content) return <div key={i} style={{ height: 18 }} />;
+
               return <p key={i} className="theme-text">{b.content}</p>;
             })}
           </div>
