@@ -3,6 +3,18 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { ApiError, generateTheme } from "../api";
 import { jsPDF } from "jspdf";
+import dejaVuRegularTtfUrl from "../assets/fonts/DejaVuSans.ttf";
+import dejaVuBoldTtfUrl from "../assets/fonts/DejaVuSans-Bold.ttf";
+
+async function fetchAsBase64(url: string): Promise<string> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("FONT_FETCH_FAILED");
+  const buf = await res.arrayBuffer();
+  let binary = "";
+  const bytes = new Uint8Array(buf);
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
 
 type FormData = {
   prenom: string;
@@ -26,7 +38,10 @@ function parseThemeBlocks(raw: string): Block[] {
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (!trimmed) continue;
+    if (!trimmed) {
+      blocks.push({ type: "text", content: "" });
+      continue;
+    }
 
     if (trimmed.startsWith("===") && trimmed.endsWith("===")) {
       blocks.push({ type: "h1", title: trimmed.replace(/===/g, "").trim() });
@@ -54,8 +69,18 @@ function parseThemeBlocks(raw: string): Block[] {
  * - titres formatés (=== H1 === / --- H2 ---)
  * - wrap du texte
  */
-function downloadPDF(title: string, rawTheme: string) {
+async function downloadPDF(title: string, rawTheme: string) {
   const doc = new jsPDF("p", "mm", "a4");
+
+  const regularBase64 = await fetchAsBase64(dejaVuRegularTtfUrl);
+  doc.addFileToVFS("DejaVuSans.ttf", regularBase64);
+  doc.addFont("DejaVuSans.ttf", "DejaVuSans", "normal");
+
+  const boldBase64 = await fetchAsBase64(dejaVuBoldTtfUrl);
+  doc.addFileToVFS("DejaVuSans-Bold.ttf", boldBase64);
+  doc.addFont("DejaVuSans-Bold.ttf", "DejaVuSans", "bold");
+
+  doc.setFont("DejaVuSans", "normal");
 
   const marginX = 16;
   const marginY = 18;
@@ -73,21 +98,17 @@ function downloadPDF(title: string, rawTheme: string) {
   };
 
   // Header
-  doc.setFont("helvetica", "bold");
+  doc.setFont("DejaVuSans", "bold");
   doc.setFontSize(16);
   doc.text(title, marginX, y);
   y += 10;
 
-  // jsPDF (polices standard) ne gère pas correctement certains caractères (ex: →)
-  const safeTheme = (rawTheme || "")
-    .replaceAll("→", "->")   // ou "⇒" si tu veux tester
-
-  const blocks = parseThemeBlocks(safeTheme);
+  const blocks = parseThemeBlocks(rawTheme);
 
   for (const b of blocks) {
     if (b.type === "h1") {
       newPageIfNeeded(10);
-      doc.setFont("helvetica", "bold");
+      doc.setFont("DejaVuSans", "bold");
       doc.setFontSize(14);
       doc.text(b.title, marginX, y);
       y += 8;
@@ -96,7 +117,7 @@ function downloadPDF(title: string, rawTheme: string) {
 
     if (b.type === "h2") {
       newPageIfNeeded(8);
-      doc.setFont("helvetica", "bold");
+      doc.setFont("DejaVuSans", "bold");
       doc.setFontSize(12);
       doc.text(b.title, marginX, y);
       y += 7;
@@ -104,14 +125,14 @@ function downloadPDF(title: string, rawTheme: string) {
     }
 
     // Text block
-    doc.setFont("helvetica", "normal");
+    doc.setFont("DejaVuSans", "normal");
     doc.setFontSize(11);
 
     const paragraphs = (b.content || "").split("\n");
     for (const p of paragraphs) {
       const trimmed = p.trim();
       if (!trimmed) {
-        y += 4;
+        y += 7;
         continue;
       }
 
@@ -121,7 +142,7 @@ function downloadPDF(title: string, rawTheme: string) {
         doc.text(line, marginX, y);
         y += 6;
       }
-      y += 2; // petit espace après paragraphe
+      y += 5; // petit espace après paragraphe
     }
   }
 
@@ -511,7 +532,7 @@ const [copied, setCopied] = useState(false);
 
             <button
               type="button"
-              onClick={() => downloadPDF("Thème numérologique", theme)}
+              onClick={async () => await downloadPDF("Thème numérologique", theme)}
               disabled={!canUseActions}
               className={`btn ${!canUseActions ? "btn-disabled" : ""}`}
             >
@@ -537,6 +558,10 @@ const [copied, setCopied] = useState(false);
             {parseThemeBlocks(theme).map((b, i) => {
               if (b.type === "h1") return <div key={i} className="theme-h1">{b.title}</div>;
               if (b.type === "h2") return <div key={i} className="theme-h2">{b.title}</div>;
+
+              // ✅ ligne vide = espace visible
+              if (!b.content) return <div key={i} style={{ height: 18 }} />;
+
               return <p key={i} className="theme-text">{b.content}</p>;
             })}
           </div>
