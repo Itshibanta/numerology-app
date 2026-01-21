@@ -32,14 +32,43 @@ type Block =
   | { type: "h2"; title: string }
   | { type: "text"; content: string };
 
-function parseThemeBlocks(raw: string): Block[] {
+function parseThemeBlocksWeb(raw: string): Block[] {
+  const lines = raw.split("\n");
+  const blocks: Block[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue; // ✅ web: on ignore les lignes vides
+
+    if (trimmed.startsWith("===") && trimmed.endsWith("===")) {
+      blocks.push({ type: "h1", title: trimmed.replace(/===/g, "").trim() });
+      continue;
+    }
+
+    if (trimmed.startsWith("---") && trimmed.endsWith("---")) {
+      blocks.push({ type: "h2", title: trimmed.replace(/---/g, "").trim() });
+      continue;
+    }
+
+    blocks.push({ type: "text", content: line });
+  }
+
+  if (blocks.length === 0 && raw.trim()) {
+    blocks.push({ type: "text", content: raw.trim() });
+  }
+
+  return blocks;
+}
+
+function parseThemeBlocksPdf(raw: string): Block[] {
+  // ✅ PDF: conserve les lignes vides pour recréer l’air
   const lines = raw.split("\n");
   const blocks: Block[] = [];
 
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed) {
-      blocks.push({ type: "text", content: "" });
+      blocks.push({ type: "text", content: "" }); // espace
       continue;
     }
 
@@ -103,7 +132,7 @@ async function downloadPDF(title: string, rawTheme: string) {
   doc.text(title, marginX, y);
   y += 10;
 
-  const blocks = parseThemeBlocks(rawTheme);
+  const blocks = parseThemeBlocksPdf(rawTheme);
 
   for (const b of blocks) {
     if (b.type === "h1") {
@@ -555,13 +584,9 @@ const [copied, setCopied] = useState(false);
 
         {theme && (
           <div className="theme-render">
-            {parseThemeBlocks(theme).map((b, i) => {
+            {parseThemeBlocksWeb(theme).map((b, i) => {
               if (b.type === "h1") return <div key={i} className="theme-h1">{b.title}</div>;
               if (b.type === "h2") return <div key={i} className="theme-h2">{b.title}</div>;
-
-              // ✅ ligne vide = espace visible
-              if (!b.content) return <div key={i} style={{ height: 18 }} />;
-
               return <p key={i} className="theme-text">{b.content}</p>;
             })}
           </div>
