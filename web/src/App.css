@@ -1759,3 +1759,65 @@ button:hover {
 .profile-portal-button:active {
   transform: scale(0.97);
 }
+
+/* =========================================
+   PRICING — FIX MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+  .pricing-card-featured {
+    order: -1;
+  }
+
+
+  /* 1️⃣ La grille devient une colonne */
+  .pricing-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  /* 2️⃣ Les cartes prennent toute la largeur */
+  .pricing-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.4rem 1.4rem 2rem;
+  }
+
+  /* 3️⃣ On enlève toute contrainte de hauteur */
+  .pricing-card-header {
+    min-height: auto;
+    padding-top: 0.8rem;
+  }
+
+  /* 4️⃣ Ta tagline reste lisible */
+  .pricing-tagline {
+    position: static;
+    transform: none;
+    margin-bottom: 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  /* 5️⃣ Prix plus lisible sur mobile */
+  .pricing-price {
+    font-size: 1.6rem;
+  }
+
+  /* 6️⃣ Bouton full width bien visible */
+  .btn-plan,
+  .btn-plan-current {
+    width: 100%;
+    margin-top: 1.2rem;
+  }
+
+  /* 7️⃣ Texte plus respirant */
+  .pricing-features li {
+    font-size: 0.95rem;
+  }
+
+  /* 8️⃣ Marge finale propre */
+  .pricing-note {
+    margin-top: 1.6rem;
+    margin-bottom: 0;
+  }
+}
