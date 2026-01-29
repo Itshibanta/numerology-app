@@ -553,12 +553,12 @@ const [copied, setCopied] = useState(false);
           )}
           <h2>Thème numérologique</h2>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
+          <div className="theme-actions">
             <button
               type="button"
               onClick={handleCopy}
               disabled={!canUseActions}
-              className={`btn ${!canUseActions ? "btn-disabled" : ""} ${copied ? "btn-success" : ""}`}
+              className={`btn theme-action ${!canUseActions ? "btn-disabled" : ""} ${copied ? "btn-success" : ""}`}
             >
               {copied ? "Copié !" : "Copier le thème"}
             </button>
@@ -568,7 +568,7 @@ const [copied, setCopied] = useState(false);
               type="button"
               onClick={async () => await downloadPDF("Thème numérologique", theme)}
               disabled={!canUseActions}
-              className={`btn ${!canUseActions ? "btn-disabled" : ""}`}
+              className={`btn theme-action ${!canUseActions ? "btn-disabled" : ""}`}
             >
               Télécharger (PDF)
             </button>

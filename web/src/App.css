@@ -1821,3 +1821,29 @@ button:hover {
     margin-bottom: 0;
   }
 }
+
+/* =========================================
+   THEME ACTIONS (Copier / Télécharger)
+========================================= */
+
+.theme-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Mobile: bulles plus petites */
+@media (max-width: 768px) {
+  .theme-actions {
+    gap: 8px;
+  }
+
+  .theme-action {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    border-radius: 999px;
+    min-height: 36px;
+    line-height: 1.1;
+  }
+}
