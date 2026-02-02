@@ -224,7 +224,9 @@ app.post(
       const userId = req.user.id;
 
       // ✅ GARANTIT que le profil existe
-      await ensureProfileExists({ id: userId });
+      const { data } = await supabaseAdmin.auth.getUser(getBearerToken(req));
+      await ensureProfileExists(data.user);
+
 
       const { data: profile, error: pErr } = await supabaseAdmin
         .from("profiles")
@@ -376,7 +378,7 @@ app.post("/auth/login", async (req, res) => {
     }
 
     // profil requis
-    await ensureProfileExists(userData.user);
+    await ensureProfileExists(data.user);
 
     const meta = data.user.user_metadata || {};
     const firstName = meta.firstName || "";
@@ -549,7 +551,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
     await supabaseAdmin.from("generations").insert({
       user_id: userId,
       type: "theme",
-      label: fullName ? `Thème numérologique ${fullName}` : "Thème numérologique",
+      label: targetName ? `Thème numérologique ${targetName}` : "Thème numérologique",
       payload: req.body || {},
       result_text: themeTexte,
     });
@@ -574,7 +576,7 @@ app.get("/me", async (req, res) => {
 
     const userId = data.user.id;
 
-    await ensureProfileExists(userData.user);
+    await ensureProfileExists(data.user);
 
     const { data: profile, error: pErr } = await supabaseAdmin
       .from("profiles")
