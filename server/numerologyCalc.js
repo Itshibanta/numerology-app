@@ -161,9 +161,58 @@ function reduceNumber(n) {
   return cur;
 }
 
-function karmicDisplayIfAny(rawTotal, reducedFinal) {
-  if (KARMIC_NUMBERS.has(rawTotal)) return `${rawTotal}/${reducedFinal}`;
-  return null;
+function reduceSecondary(n) {
+  // Réduction "secondaire" (pour afficher 11/2, 22/4, 33/6, 44/8)
+  // Ici on ignore volontairement le stop sur maîtres-nombres.
+  let cur = Number(n);
+  while (cur >= 10) cur = sumDigits(cur);
+  return cur;
+}
+
+function reduceWithTrace(n) {
+  const path = [];
+  let cur = Number(n);
+  path.push(cur);
+
+  // On tag le premier palier "spécial" rencontré (y compris si c'est le nombre brut)
+  let firstSpecial = null;      // ex: 11, 13
+  let firstSpecialType = null;  // "master" | "karmic"
+
+  const tagIfSpecial = (val) => {
+    if (firstSpecial != null) return;
+    if (MASTER_NUMBERS.has(val)) {
+      firstSpecial = val;
+      firstSpecialType = "master";
+    } else if (KARMIC_NUMBERS.has(val)) {
+      firstSpecial = val;
+      firstSpecialType = "karmic";
+    }
+  };
+
+  tagIfSpecial(cur);
+
+  // Trace de réduction (on suit tous les paliers)
+  while (cur >= 10) {
+    cur = sumDigits(cur);
+    path.push(cur);
+    tagIfSpecial(cur);
+
+    // On continue la trace même si on tombe sur un maître-nombre,
+    // car on veut pouvoir afficher 11/2 etc (via reduceSecondary).
+    // Mais pour la valeur "finale" utilisée dans les calculs, on garde ton reduceNumber existant.
+    if (MASTER_NUMBERS.has(cur)) break;
+  }
+
+  const finalKept = reduceNumber(n); // ta règle existante: stop sur maîtres-nombres
+
+  let display = null;
+  if (firstSpecialType === "master") {
+    display = `${firstSpecial}/${reduceSecondary(firstSpecial)}`; // 11/2, 22/4...
+  } else if (firstSpecialType === "karmic") {
+    display = `${firstSpecial}/${reduceSecondary(firstSpecial)}`; // 13/4, 14/5...
+  }
+
+  return { finalKept, path, display, firstSpecial, firstSpecialType };
 }
 
 function letterValue(ch) {
@@ -338,8 +387,10 @@ function computeNumerology(inputs, opts = {}) {
 
   // ==== Expression ====
   const exprTotal = sumLetters(fullBirthNameN);
-  const exprReduced = reduceNumber(exprTotal);
-  const exprKarmic = karmicDisplayIfAny(exprTotal, exprReduced);
+  const exprTrace = reduceWithTrace(exprTotal);
+  const exprReduced = exprTrace.finalKept;
+  const exprKarmic = exprTrace.display;
+
 
   // ==== Ressource ====
   const resRaw = cvReduced + exprReduced;
@@ -347,19 +398,22 @@ function computeNumerology(inputs, opts = {}) {
 
   // ==== Actif (prénom usuel) ====
   const actifTotal = sumLetters(prenomN);
-  const actifReduced = reduceNumber(actifTotal);
-  const actifKarmic = karmicDisplayIfAny(actifTotal, actifReduced);
+  const actifTrace = reduceWithTrace(actifTotal);
+  const actifReduced = actifTrace.finalKept;
+  const actifKarmic = actifTrace.display;
 
   // ==== Héréditaire (nom naissance) ====
   const heredTotal = sumLetters(nomN);
-  const heredReduced = reduceNumber(heredTotal);
-  const heredKarmic = karmicDisplayIfAny(heredTotal, heredReduced);
+  const heredTrace = reduceWithTrace(heredTotal);
+  const heredReduced = heredTrace.finalKept;
+  const heredKarmic = heredTrace.display;
 
   // ==== Moi Intime (consonnes) ====
   const consonantsMI = birthTokens.flatMap(extractConsonantsSmart);
   const miTotal = consonantsMI.reduce((a, ch) => a + letterValue(ch), 0);
-  const miReduced = reduceNumber(miTotal);
-  const miKarmic = karmicDisplayIfAny(miTotal, miReduced);
+  const miTrace = reduceWithTrace(miTotal);
+  const miReduced = miTrace.finalKept;
+  const miKarmic = miTrace.display;
 
   // ==== Défi Moi Intime ====
   const missingConsonants = consonantsMI.length === 0;
@@ -382,8 +436,9 @@ function computeNumerology(inputs, opts = {}) {
   // ==== Élan Spirituel (voyelles) ====
   const vowelsES = birthTokens.flatMap(extractVowelsSmart);
   const esTotal = vowelsES.reduce((a, ch) => a + letterValue(ch), 0);
-  const esReduced = reduceNumber(esTotal);
-  const esKarmic = karmicDisplayIfAny(esTotal, esReduced);
+  const esTrace = reduceWithTrace(esTotal);
+  const esReduced = esTrace.finalKept;
+  const esKarmic = esTrace.display;
 
   // ==== Défi Élan Spirituel ====
   const defiESraw = defiMIraw;
@@ -404,13 +459,15 @@ function computeNumerology(inputs, opts = {}) {
   let marital = null;
   if (maritalN) {
     const mTotal = sumLetters(maritalN);
-    const mReduced = reduceNumber(mTotal);
+    const mTrace = reduceWithTrace(mTotal);
+    const mReduced = mTrace.finalKept;
     marital = {
       total: mTotal,
       reduced: mReduced,
-      karmic: karmicDisplayIfAny(mTotal, mReduced),
+      karmic: mTrace.display,
     };
   }
+
 
   // ==== Décors de vie ====
   const cycleFormatif = reduceNumber(month);
@@ -445,7 +502,7 @@ function computeNumerology(inputs, opts = {}) {
 
   // ==== Année personnelle ====
   const targetYearReduced = reduceNumber(sumDigits(targetYear));
-  const anneePersRaw = dayReduced + monthReduced + targetYearReduced;
+  const anneePersRaw = day + month + targetYearReduced;
   const anneePers = reduceNumber(anneePersRaw);
 
   // ==== Année clé (sans réduction) ====
@@ -589,9 +646,10 @@ function computeNumerology(inputs, opts = {}) {
       `Année cible = ${targetYear}`,
       `Année cible: somme chiffres = ${String(targetYear).split("").join("+")} = ${sumDigits(targetYear)}`,
       `Année cible (réduite) = ${targetYearReduced}`,
-      `Jour (réduit) = ${dayReduced}`,
-      `Mois (réduit) = ${monthReduced}`,
-      `${dayReduced}+${monthReduced}+${targetYearReduced} = ${anneePersRaw} → ${anneePers}`,
+      `Jour = ${day}`,
+      `Mois = ${month}`,
+      `${day}+${month}+${targetYearReduced} = ${anneePersRaw} → ${anneePers}`,
+      ...reductionOpsIfNeeded(anneePersRaw),
     ],
 
     annee_cle: [

@@ -485,6 +485,8 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       lieuNaissance,
     } = req.body || {};
 
+    const targetName = `${prenom || ""} ${nomFamille || ""}`.trim();
+
     if (!prenom || !nomFamille || !dateNaissance) {
       return res.status(400).json({ error: "MISSING_FIELDS" });
     }
@@ -504,7 +506,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
       await supabaseAdmin.from("generations").insert({
         user_id: userId,
         type: "summary",
-        label: fullName ? `Résumé thème ${fullName}` : "Résumé thème",
+        label: targetName ? `Résumé thème ${targetName}` : "Résumé thème",
         payload: req.body || {},
         result_text: summaryText,
       });
