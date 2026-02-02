@@ -103,23 +103,46 @@ async function requireAuth(req, res, next) {
 async function ensureProfileExists(user) {
   const userId = user.id;
 
+  const meta = user.user_metadata || {};
+  const metaFirst = (meta.firstName || meta.first_name || "").trim();
+  const metaLast = (meta.lastName || meta.last_name || "").trim();
+
   const { data: existing, error } = await supabaseAdmin
     .from("profiles")
-    .select("id")
+    .select("id, first_name, last_name")
     .eq("id", userId)
     .maybeSingle();
 
   if (error) throw error;
-  if (existing) return;
 
-  const { error: insErr } = await supabaseAdmin.from("profiles").insert({
-    id: userId,
-    plan: "free",
-    first_name: "",
-    last_name: "",
-  });
+  // 1) si pas de profil -> insert
+  if (!existing) {
+    const { error: insErr } = await supabaseAdmin.from("profiles").insert({
+      id: userId,
+      plan: "free",
+      first_name: metaFirst || null,
+      last_name: metaLast || null,
+    });
+    if (insErr) throw insErr;
+    return;
+  }
 
-  if (insErr) throw insErr;
+  // 2) si profil existe mais noms vides -> hydrate depuis metadata
+  const needFirst = !existing.first_name && metaFirst;
+  const needLast = !existing.last_name && metaLast;
+
+  if (needFirst || needLast) {
+    const patch = {};
+    if (needFirst) patch.first_name = metaFirst;
+    if (needLast) patch.last_name = metaLast;
+
+    const { error: upErr } = await supabaseAdmin
+      .from("profiles")
+      .update(patch)
+      .eq("id", userId);
+
+    if (upErr) throw upErr;
+  }
 }
 
 /* ===========================================
@@ -353,7 +376,7 @@ app.post("/auth/login", async (req, res) => {
     }
 
     // profil requis
-    await ensureProfileExists({ id: data.user.id, email: data.user.email });
+    await ensureProfileExists(userData.user);
 
     const meta = data.user.user_metadata || {};
     const firstName = meta.firstName || "";
@@ -440,7 +463,7 @@ app.post("/generate-theme", generateLimiter, async (req, res) => {
     const userId = userData.user.id;
 
     // profil garanti
-    await ensureProfileExists({ id: userId, email: userData.user.email });
+    await ensureProfileExists(userData.user);
 
     // récup plan
     const { data: profile, error: pErr } = await supabaseAdmin
@@ -551,7 +574,7 @@ app.get("/me", async (req, res) => {
 
     const userId = data.user.id;
 
-    await ensureProfileExists({ id: userId, email: data.user.email });
+    await ensureProfileExists(userData.user);
 
     const { data: profile, error: pErr } = await supabaseAdmin
       .from("profiles")
