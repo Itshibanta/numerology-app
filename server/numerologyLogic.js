@@ -2,6 +2,7 @@
 const OpenAI = require("openai");
 require("dotenv").config();
 const { computeNumerology } = require("./numerologyCalc");
+const { getDefinitionByKey } = require("./definitionsCatalog");
 
 // IDs d'assistants (doivent être dans server/.env)
 const NUMEROLOGY_ASSISTANT_ID = process.env.NUMEROLOGY_ASSISTANT_ID;
@@ -38,6 +39,37 @@ function extractTextFromMessages(messages) {
   }
 
   return textPart.text.value;
+}
+
+function injectDefinitionsInText(text) {
+  const TITLE_TO_KEY = {
+    "Chemin de Vie": "chemin_de_vie",
+    "Nombre d’Expression": "nombre_expression",
+    "Nombre Ressource": "nombre_ressource",
+    "Nombre Actif": "nombre_actif",
+    "Nombre Héréditaire": "nombre_hereditaire",
+    "Nombre Moi Intime": "nombre_moi_intime",
+    "Défi du Moi Intime": "defi_moi_intime",
+    "Nombre de Réalisation": "nombre_realisation",
+    "Nombre d’Élan Spirituel": "nombre_elan_spirituel",
+    "Nombre Défi de l’Élan Spirituel": "defi_elan_spirituel",
+    "Défi du Nombre d’Expression": "defi_nombre_expression",
+    "Nombre d’Équilibre": "nombre_equilibre",
+  };
+
+  return text.replace(
+    /^---\s*(.+?)\s*---$/gm,
+    (match, rawTitle) => {
+      const title = rawTitle.trim();
+      const key = TITLE_TO_KEY[title];
+      const def = key ? getDefinitionByKey(key) : null;
+
+      if (!def) return match;
+
+      return `--- ${title} ---
+${def.definition}`;
+    }
+  );
 }
 
 // Format commun (H1 + H2) : robuste et simple à parser côté front
@@ -148,7 +180,9 @@ CONTRAINTE IMPORTANTE :
   }
 
   const messages = await openai.beta.threads.messages.list(run.thread_id);
-  return extractTextFromMessages(messages);
+  let text = extractTextFromMessages(messages);
+  text = injectDefinitionsInText(text);
+  return text;
 }
 
 // ========================== RÉSUMÉ (FREE PLAN) ==========================
