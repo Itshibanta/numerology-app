@@ -575,13 +575,7 @@ const canUseActions = !!theme && !loading;
             <button
               type="button"
               onClick={async () => {
-                const first = [form.prenom, form.secondPrenom]
-                  .filter(Boolean)
-                  .join(" ")
-                  .trim();
-
-                const last = (form.nomMarital || form.nomFamille || "").trim();
-                const person = `${first} ${last}`.trim();
+                const person = `${form.prenom} ${form.nomFamille}`.trim();
 
                 const fileName = person ? `Thème - ${person}` : "Thème";
                 await downloadPDF("Thème", theme, fileName);
