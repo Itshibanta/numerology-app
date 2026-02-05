@@ -306,6 +306,18 @@ function buildCalcLines_digits(label, rawExpr) {
   return lines;
 }
 
+function appendSpecialDisplay(lines, display) {
+  if (!display) return lines;
+  // format cohérent : "11/2", "13/4" etc (une ligne seule)
+  lines.push(display);
+  return lines;
+}
+
+function buildCalcLines_letters_special(label, lettersList, sumTotal, display) {
+  const lines = buildCalcLines_letters(label, lettersList, sumTotal);
+  return appendSpecialDisplay(lines, display);
+}
+
 function buildCalcLines_letters(label, lettersList, sumTotal) {
   const lines = [];
 
@@ -377,7 +389,9 @@ function computeNumerology(inputs, opts = {}) {
 
   // ==== Chemin de Vie (JJ + MM + AAAA) ====
   const cvRaw = day + month + year;
-  const cvReduced = reduceNumber(cvRaw);
+  const cvTrace = reduceWithTrace(cvRaw);
+  const cvReduced = cvTrace.finalKept;
+  const cvKarmic = cvTrace.display; // ex "11/2" ou "13/4" ou null
 
   // === ÂGES OFFICIELS (Tableau récap) : lookup strict ===
   const recap = getRecapAges(cvReduced);
@@ -394,7 +408,10 @@ function computeNumerology(inputs, opts = {}) {
 
   // ==== Ressource ====
   const resRaw = cvReduced + exprReduced;
-  const resReduced = reduceNumber(resRaw);
+  const resTrace = reduceWithTrace(resRaw);
+  const resReduced = resTrace.finalKept;
+  const resKarmic = resTrace.display;
+
 
   // ==== Actif (prénom usuel) ====
   const actifTotal = sumLetters(prenomN);
@@ -431,7 +448,10 @@ function computeNumerology(inputs, opts = {}) {
   const dayReduced = reduceNumber(day);
   const monthReduced = reduceNumber(month);
   const realRaw = dayReduced + monthReduced;
-  const realReduced = reduceNumber(realRaw);
+  const realTrace = reduceWithTrace(realRaw);
+  const realReduced = realTrace.finalKept;
+  const realKarmic = realTrace.display;
+
 
   // ==== Élan Spirituel (voyelles) ====
   const vowelsES = birthTokens.flatMap(extractVowelsSmart);
@@ -453,7 +473,10 @@ function computeNumerology(inputs, opts = {}) {
   const equilibriumLetters = civilTokens.map((t) => t[0]).filter(Boolean);
   const equilibriumValues = equilibriumLetters.map(letterValue);
   const equilibriumTotal = equilibriumValues.reduce((a, x) => a + x, 0);
-  const equilibriumReduced = reduceNumber(equilibriumTotal);
+  const equilibriumTrace = reduceWithTrace(equilibriumTotal);
+  const equilibriumReduced = equilibriumTrace.finalKept;
+  const equilibriumKarmic = equilibriumTrace.display;
+
 
   // ==== Nom marital (si applicable) ====
   let marital = null;
@@ -543,128 +566,180 @@ function computeNumerology(inputs, opts = {}) {
   }
 
   // ==== LIGNES FACTUELLES DE CALCUL ====
-  const calc_lines = {
-    chemin_de_vie: [
-      `JJ = ${String(day).padStart(2, "0")}`,
-      `MM = ${String(month).padStart(2, "0")}`,
-      `AAAA = ${String(year)}`,
-      `${day}+${month}+${year} = ${cvRaw}`,
-      ...reductionOpsIfNeeded(cvRaw),
-    ],
 
-    expression: buildCalcLines_letters(
-      "NOM COMPLET (NAISSANCE)",
-      Array.from(fullBirthNameN),
-      exprTotal
-    ),
+// helper affichage "11 / 2" au lieu de "11/2"
+const fmtKarmic = (s) => (s ? String(s).replace("/", " / ") : null);
 
-    ressource: [
-      `Chemin de Vie (réduit) = ${cvReduced}`,
-      `Expression (réduite) = ${exprReduced}`,
-      `${cvReduced}+${exprReduced} = ${resRaw}`,
-      ...reductionOpsIfNeeded(resRaw),
-    ],
+// 1) Lignes "letters" + ajout karmic à la fin si présent
+const expressionLines = buildCalcLines_letters(
+  "NOM COMPLET (NAISSANCE)",
+  Array.from(fullBirthNameN),
+  exprTotal
+);
+if (exprKarmic) expressionLines.push(fmtKarmic(exprKarmic));
 
-    actif: buildCalcLines_letters("PRÉNOM USUEL", Array.from(prenomN), actifTotal),
+const actifLines = buildCalcLines_letters(
+  "PRÉNOM USUEL",
+  Array.from(prenomN),
+  actifTotal
+);
+if (actifKarmic) actifLines.push(fmtKarmic(actifKarmic));
 
-    hereditaire: buildCalcLines_letters("NOM DE NAISSANCE", Array.from(nomN), heredTotal),
+const hereditaireLines = buildCalcLines_letters(
+  "NOM DE NAISSANCE",
+  Array.from(nomN),
+  heredTotal
+);
+if (heredKarmic) hereditaireLines.push(fmtKarmic(heredKarmic));
 
-    moi_intime: buildCalcLines_letters("CONSONNES (MOI INTIME)", consonantsMI, miTotal),
+const moiIntimeLines = buildCalcLines_letters(
+  "CONSONNES (MOI INTIME)",
+  consonantsMI,
+  miTotal
+);
+if (miKarmic) moiIntimeLines.push(fmtKarmic(miKarmic));
 
-    defi_moi_intime: [
-      `Première consonne = ${firstCons || ""} (${firstCons ? letterValue(firstCons) : 0})`,
-      `Dernière consonne = ${lastCons || ""} (${lastCons ? letterValue(lastCons) : 0})`,
-      `|${firstCons ? letterValue(firstCons) : 0}-${lastCons ? letterValue(lastCons) : 0}| = ${defiMIraw}`,
-      ...reductionOpsIfNeeded(defiMIraw),
-    ],
+const elanSpirituelLines = buildCalcLines_letters(
+  "VOYELLES (ÉLAN SPIRITUEL)",
+  vowelsES,
+  esTotal
+);
+if (esKarmic) elanSpirituelLines.push(fmtKarmic(esKarmic));
 
-    realisation: [
-      `Jour (réduit) = ${dayReduced}`,
-      `Mois (réduit) = ${monthReduced}`,
-      `${dayReduced}+${monthReduced} = ${realRaw}`,
-      ...reductionOpsIfNeeded(realRaw),
-    ],
+// nom marital (si applicable)
+let nomMaritalLines = [];
+if (maritalN) {
+  nomMaritalLines = buildCalcLines_letters(
+    "NOM MARITAL",
+    Array.from(maritalN),
+    marital.total
+  );
+  if (marital.karmic) nomMaritalLines.push(fmtKarmic(marital.karmic));
+}
 
-    elan_spirituel: buildCalcLines_letters("VOYELLES (ÉLAN SPIRITUEL)", vowelsES, esTotal),
+// 2) Bloc final calc_lines
+const calc_lines = {
+  chemin_de_vie: [
+    `JJ = ${String(day).padStart(2, "0")}`,
+    `MM = ${String(month).padStart(2, "0")}`,
+    `AAAA = ${String(year)}`,
+    `${day}+${month}+${year} = ${cvRaw}`,
+    ...reductionOpsIfNeeded(cvRaw),
+    ...(cvKarmic ? [fmtKarmic(cvKarmic)] : []), // ✅ 11 / 2, 13 / 4, etc
+  ],
 
-    defi_elan_spirituel: [
-      `Même formule que Défi du Moi Intime = ${defiESraw}`,
-      ...reductionOpsIfNeeded(defiESraw),
-    ],
+  expression: expressionLines,
 
-    defi_expression: [
-      `Élan Spirituel (réduit) = ${esReduced}`,
-      `Défi Élan Spirituel (réduit) = ${defiESreduced}`,
-      `${esReduced}+${defiESreduced} = ${defiExprRaw}`,
-      ...reductionOpsIfNeeded(defiExprRaw),
-    ],
+  ressource: [
+    `Chemin de Vie (réduit) = ${cvReduced}`,
+    `Expression (réduite) = ${exprReduced}`,
+    `${cvReduced}+${exprReduced} = ${resRaw}`,
+    ...reductionOpsIfNeeded(resRaw),
+    ...(resKarmic ? [fmtKarmic(resKarmic)] : []), // ✅ 11 / 2, 13 / 4, etc
+  ],
 
-    equilibre: [
-      `Référence (1ères lettres) = ${equilibriumLetters.join("")}`,
-      `${equilibriumValues.join("+")} = ${equilibriumTotal}`,
-      ...reductionOpsIfNeeded(equilibriumTotal),
-    ],
+  actif: actifLines,
 
-    nom_marital: maritalN
-      ? buildCalcLines_letters("NOM MARITAL", Array.from(maritalN), marital.total)
-      : [],
+  hereditaire: hereditaireLines,
 
-    decors: [
-      `Cycle Formatif (mois) = ${month} → ${cycleFormatif}`,
-      `Cycle Productif (jour) = ${day} → ${cycleProductif}`,
-      `Somme chiffres AAAA = ${String(year).split("").join("+")} = ${yearDigitsSum}`,
-      ...reductionOpsIfNeeded(yearDigitsSum),
-      `Cycle de Moisson = ${cycleMoissonRaw} → ${cycleMoisson}`,
-      `Début Cycle Productif (2e cycle) (Tableau récap) = ${recap.cycles.cycle2} ans`,
-      `Début Cycle de Moisson (3e cycle) (Tableau récap) = ${recap.cycles.cycle3} ans`,
-    ],
+  moi_intime: moiIntimeLines,
 
-    theatre: [
-      `Acte 1 = ${day}+${month} = ${day + month} → ${acte1}`,
-      `Acte 2 = ${day}+${year} = ${day + year} → ${acte2}`,
-      `Acte 3 = ${acte1}+${acte2} = ${acte1 + acte2} → ${acte3}`,
-      `Acte 4 = ${month}+${year} = ${month + year} → ${acte4}`,
-      `Début Acte 2 (Tableau récap) = ${recap.acts.acte2} ans`,
-      `Début Acte 3 (Tableau récap) = ${recap.acts.acte3} ans`,
-      `Début Acte 4 (Tableau récap) = ${recap.acts.acte4} ans`,
-    ],
+  defi_moi_intime: [
+    `Première consonne = ${firstCons || ""} (${firstCons ? letterValue(firstCons) : 0})`,
+    `Dernière consonne = ${lastCons || ""} (${lastCons ? letterValue(lastCons) : 0})`,
+    `|${firstCons ? letterValue(firstCons) : 0}-${lastCons ? letterValue(lastCons) : 0}| = ${defiMIraw}`,
+    ...reductionOpsIfNeeded(defiMIraw),
+  ],
 
-    lecon_ame: [
-      `${acte1}+${acte2}+${acte3}+${acte4} = ${leconAmeRaw}`,
-      ...reductionOpsIfNeeded(leconAmeRaw),
-    ],
+  realisation: [
+    `Jour (réduit) = ${dayReduced}`,
+    `Mois (réduit) = ${monthReduced}`,
+    `${dayReduced}+${monthReduced} = ${realRaw}`,
+    ...reductionOpsIfNeeded(realRaw),
+    ...(realKarmic ? [fmtKarmic(realKarmic)] : []),
+    // Si tu veux aussi karmic ici, il faudra calculer realKarmic via reduceWithTrace(realRaw)
+  ],
 
-    defis: [
-      `Année: somme chiffres AAAA = ${yearDigitsSum}`,
-      `Année (réduite) = ${yearReduced}`,
-      `1er Défi = |${dayReduced}-${monthReduced}| = ${defi1raw} → ${defi1}`,
-      `2e Défi = |${dayReduced}-${yearReduced}| = ${defi2raw} → ${defi2}`,
-      `Défi Majeur = |${defi1}-${defi2}| = ${defiMajorRaw} → ${defiMajor}`,
-    ],
+  elan_spirituel: elanSpirituelLines,
 
-    annee_personnelle: [
-      `Année cible = ${targetYear}`,
-      `Année cible: somme chiffres = ${String(targetYear).split("").join("+")} = ${sumDigits(targetYear)}`,
-      `Année cible (réduite) = ${targetYearReduced}`,
-      `Jour = ${day}`,
-      `Mois = ${month}`,
-      `${day}+${month}+${targetYearReduced} = ${anneePersRaw} → ${anneePers}`,
-      ...reductionOpsIfNeeded(anneePersRaw),
-    ],
+  defi_elan_spirituel: [
+    `Même formule que Défi du Moi Intime = ${defiESraw}`,
+    ...reductionOpsIfNeeded(defiESraw),
+  ],
 
-    annee_cle: [
+  defi_expression: [
+    `Élan Spirituel (réduit) = ${esReduced}`,
+    `Défi Élan Spirituel (réduit) = ${defiESreduced}`,
+    `${esReduced}+${defiESreduced} = ${defiExprRaw}`,
+    ...reductionOpsIfNeeded(defiExprRaw),
+  ],
+
+  equilibre: [
+    `Référence (1ères lettres) = ${equilibriumLetters.join("")}`,
+    `${equilibriumValues.join("+")} = ${equilibriumTotal}`,
+    ...reductionOpsIfNeeded(equilibriumTotal),
+    ...(equilibriumKarmic ? [fmtKarmic(equilibriumKarmic)] : [])
+    // idem: si tu veux karmic ici, calc eqKarmic via reduceWithTrace(equilibriumTotal)
+  ],
+
+  nom_marital: nomMaritalLines,
+
+  decors: [
+    `Cycle Formatif (mois) = ${month} → ${cycleFormatif}`,
+    `Cycle Productif (jour) = ${day} → ${cycleProductif}`,
+    `Somme chiffres AAAA = ${String(year).split("").join("+")} = ${yearDigitsSum}`,
+    ...reductionOpsIfNeeded(yearDigitsSum),
+    `Cycle de Moisson = ${cycleMoissonRaw} → ${cycleMoisson}`,
+    `Début Cycle Productif (2e cycle) (Tableau récap) = ${recap.cycles.cycle2} ans`,
+    `Début Cycle de Moisson (3e cycle) (Tableau récap) = ${recap.cycles.cycle3} ans`,
+  ],
+
+  theatre: [
+    `Acte 1 = ${day}+${month} = ${day + month} → ${acte1}`,
+    `Acte 2 = ${day}+${year} = ${day + year} → ${acte2}`,
+    `Acte 3 = ${acte1}+${acte2} = ${acte1 + acte2} → ${acte3}`,
+    `Acte 4 = ${month}+${year} = ${month + year} → ${acte4}`,
+    `Début Acte 2 (Tableau récap) = ${recap.acts.acte2} ans`,
+    `Début Acte 3 (Tableau récap) = ${recap.acts.acte3} ans`,
+    `Début Acte 4 (Tableau récap) = ${recap.acts.acte4} ans`,
+  ],
+
+  lecon_ame: [
+    `${acte1}+${acte2}+${acte3}+${acte4} = ${leconAmeRaw}`,
+    ...reductionOpsIfNeeded(leconAmeRaw),
+  ],
+
+  defis: [
+    `Année: somme chiffres AAAA = ${yearDigitsSum}`,
+    `Année (réduite) = ${yearReduced}`,
+    `1er Défi = |${dayReduced}-${monthReduced}| = ${defi1raw} → ${defi1}`,
+    `2e Défi = |${dayReduced}-${yearReduced}| = ${defi2raw} → ${defi2}`,
+    `Défi Majeur = |${defi1}-${defi2}| = ${defiMajorRaw} → ${defiMajor}`,
+  ],
+
+  annee_personnelle: [
+    `Année cible = ${targetYear}`,
+    `Année cible: somme chiffres = ${String(targetYear).split("").join("+")} = ${sumDigits(targetYear)}`,
+    `Année cible (réduite) = ${targetYearReduced}`,
+    `Jour = ${day}`,
+    `Mois = ${month}`,
+    `${day}+${month}+${targetYearReduced} = ${anneePersRaw} → ${anneePers}`,
+    ...reductionOpsIfNeeded(anneePersRaw),
+  ],
+
+  annee_cle: [
     `Jour+Mois = ${day}+${month} = ${day + month}`,
     `(Jour+Mois)+Année naissance = ${day + month}+${year} = ${anneeCle}`,
-    ],
+  ],
+};
 
-  };
 
   const computed = {
-    chemin_de_vie: { total: cvRaw, reduced: cvReduced },
+    chemin_de_vie: { total: cvRaw, reduced: cvReduced, karmic: cvKarmic },
 
     expression: { total: exprTotal, reduced: exprReduced, karmic: exprKarmic },
 
-    ressource: { total: resRaw, reduced: resReduced },
+    ressource: { total: resRaw, reduced: resReduced, karmic: resKarmic },
 
     actif: { total: actifTotal, reduced: actifReduced, karmic: actifKarmic },
 
@@ -680,7 +755,7 @@ function computeNumerology(inputs, opts = {}) {
       missingConsonants,
     },
 
-    realisation: { total: realRaw, reduced: realReduced },
+    realisation: { total: realRaw, reduced: realReduced, karmic: realKarmic },
 
     elan_spirituel: { total: esTotal, reduced: esReduced, karmic: esKarmic },
 
@@ -695,6 +770,7 @@ function computeNumerology(inputs, opts = {}) {
     equilibre: {
       total: equilibriumTotal,
       reduced: equilibriumReduced,
+      karmic: equilibriumKarmic,
       letters: equilibriumLetters,
     },
 

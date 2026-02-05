@@ -28,17 +28,17 @@ function getOpenAIClient() {
 
 // Utilitaire : extrait le texte d'un message assistant
 function extractTextFromMessages(messages) {
-  const assistantMessage = messages.data.find((msg) => msg.role === "assistant");
-  if (!assistantMessage) {
-    throw new Error("Aucun message assistant trouvé.");
-  }
+  const assistants = (messages?.data || []).filter((m) => m.role === "assistant");
+  if (!assistants.length) throw new Error("Aucun message assistant trouvé.");
 
-  const textPart = assistantMessage.content.find((part) => part.type === "text");
-  if (!textPart || !textPart.text || !textPart.text.value) {
-    throw new Error("Contenu texte vide dans la réponse assistant.");
-  }
+  // prend le plus récent (created_at le plus grand)
+  const assistantMessage = assistants.sort((a, b) => (b.created_at || 0) - (a.created_at || 0))[0];
 
-  return textPart.text.value;
+  const textPart = (assistantMessage.content || []).find((part) => part.type === "text");
+  const value = textPart?.text?.value;
+
+  if (!value) throw new Error("Contenu texte vide dans la réponse assistant.");
+  return value;
 }
 
 function injectDefinitionsInText(text) {
@@ -89,6 +89,7 @@ Chaque sous-section (à l'intérieur d'une section principale) doit commencer pa
 - Aucune autre forme de titres.
 - Le contenu vient juste après le titre, en texte normal.
 - Si une section n’a pas de sous-sections, tu écris directement le contenu après le titre H1.
+- Aucune mention de tes sources, ni même Tableau Récap.
 `.trim();
 
 // Règles de garde : le modèle NE DOIT PAS recalculer
@@ -99,6 +100,17 @@ CALCULS OFFICIELS (SOURCE DE VÉRITÉ — INTERDICTION ABSOLUE DE RECALCULER) :
 - Tu dois afficher les lignes de calcul EXACTEMENT telles que fournies dans "calc_lines" lorsque tu expliques un nombre (sans en inventer d'autres).
 - Tu n'inventes aucun nombre, aucune ligne de calcul, aucune valeur.
 `.trim();
+
+const SPECIAL_NUMBER_RULES = `
+RÈGLE MAÎTRES-NOMBRES & NOMBRES KARMIQUES (OBLIGATOIRE) :
+- Si, pour un nombre, le champ computed.<clé>.karmic est présent (ex: "11/2", "13/4", "22/4"...),
+  tu DOIS faire DEUX lectures distinctes :
+  1) Lecture du nombre spécial (11, 22, 33, 44 OU 13, 14, 16, 19) : potentiel / vibration / leçon.
+  2) Lecture du nombre réduit : ancrage concret / expression quotidienne.
+- Les maîtres-nombres et nombres karmiques ne sont jamais ignorés.
+- Tu dois mentionner la forme complète puis la réduction (ex: 11/2, 13/4) dans le texte.
+`.trim();
+
 
 // Petit utilitaire pour factoriser l'état civil
 function buildCivilBlock({
@@ -149,6 +161,8 @@ L'utilisateur souhaite générer un thème numérologique complet.
 ${buildCivilBlock(input)}
 
 ${CALC_GUARD_RULES}
+
+${SPECIAL_NUMBER_RULES}
 
 BLOC DE CALCULS À UTILISER TEL QUEL (SOURCE DE VÉRITÉ) :
 ${JSON.stringify(calcPayload, null, 2)}
@@ -226,6 +240,8 @@ PHRASE FINALE OBLIGATOIRE (exacte, seule à la fin) :
 ${buildCivilBlock(input)}
 
 ${CALC_GUARD_RULES}
+
+${SPECIAL_NUMBER_RULES}
 
 BLOC DE CALCULS À UTILISER TEL QUEL (SOURCE DE VÉRITÉ) :
 ${JSON.stringify(calcPayload, null, 2)}

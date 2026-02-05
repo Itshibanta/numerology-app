@@ -103,7 +103,14 @@ function parseThemeBlocksPdf(raw: string): Block[] {
  * - titres formatés (=== H1 === / --- H2 ---)
  * - wrap du texte
  */
-async function downloadPDF(title: string, rawTheme: string) {
+function safeFileName(name: string) {
+  return (name || "Thème")
+    .replace(/[\\/:*?"<>|]+/g, "")   // caractères interdits Windows
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function downloadPDF(title: string, rawTheme: string, fileName?: string) {
   const doc = new jsPDF("p", "mm", "a4");
 
   const regularBase64 = await fetchAsBase64(dejaVuRegularTtfUrl);
@@ -180,7 +187,8 @@ async function downloadPDF(title: string, rawTheme: string) {
     }
   }
 
-  doc.save(`${title.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+  const finalName = safeFileName(fileName || title);
+  doc.save(`${finalName}.pdf`);
 }
 
 function themeToPlainText(raw: string) {
@@ -329,6 +337,8 @@ async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 
 const [copied, setCopied] = useState(false);
 
+const canUseActions = !!theme && !loading;
+
   async function handleCopy() {
     if (!theme || !canUseActions) return;
 
@@ -340,8 +350,6 @@ const [copied, setCopied] = useState(false);
       setError("Impossible de copier dans le presse-papiers.");
     }
   }
-
-  const canUseActions = !!theme && !loading;
 
   return (
     <div className="app-container">
@@ -566,7 +574,18 @@ const [copied, setCopied] = useState(false);
 
             <button
               type="button"
-              onClick={async () => await downloadPDF("Thème numérologique", theme)}
+              onClick={async () => {
+                const first = [form.prenom, form.secondPrenom]
+                  .filter(Boolean)
+                  .join(" ")
+                  .trim();
+
+                const last = (form.nomMarital || form.nomFamille || "").trim();
+                const person = `${first} ${last}`.trim();
+
+                const fileName = person ? `Thème - ${person}` : "Thème";
+                await downloadPDF("Thème", theme, fileName);
+              }}
               disabled={!canUseActions}
               className={`btn theme-action ${!canUseActions ? "btn-disabled" : ""}`}
             >
