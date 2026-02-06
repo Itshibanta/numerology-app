@@ -690,8 +690,8 @@ const calc_lines = {
     `Somme chiffres AAAA = ${String(year).split("").join("+")} = ${yearDigitsSum}`,
     ...reductionOpsIfNeeded(yearDigitsSum),
     `Cycle de Moisson = ${cycleMoissonRaw} → ${cycleMoisson}`,
-    `Début Cycle Productif (2e cycle) (Tableau récap) = ${recap.cycles.cycle2} ans`,
-    `Début Cycle de Moisson (3e cycle) (Tableau récap) = ${recap.cycles.cycle3} ans`,
+    `Début Cycle Productif (2e cycle) = ${recap.cycles.cycle2} ans`,
+    `Début Cycle de Moisson (3e cycle) = ${recap.cycles.cycle3} ans`,
   ],
 
   theatre: [
@@ -699,9 +699,9 @@ const calc_lines = {
     `Acte 2 = ${day}+${year} = ${day + year} → ${acte2}`,
     `Acte 3 = ${acte1}+${acte2} = ${acte1 + acte2} → ${acte3}`,
     `Acte 4 = ${month}+${year} = ${month + year} → ${acte4}`,
-    `Début Acte 2 (Tableau récap) = ${recap.acts.acte2} ans`,
-    `Début Acte 3 (Tableau récap) = ${recap.acts.acte3} ans`,
-    `Début Acte 4 (Tableau récap) = ${recap.acts.acte4} ans`,
+    `Début Acte 2 = ${recap.acts.acte2} ans`,
+    `Début Acte 3 = ${recap.acts.acte3} ans`,
+    `Début Acte 4 = ${recap.acts.acte4} ans`,
   ],
 
   lecon_ame: [
