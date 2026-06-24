@@ -189,6 +189,37 @@ export async function createCheckoutSession(plan_key: string): Promise<string> {
   return data.url;
 }
 
+export type OneShotPayload = {
+  prenom: string;
+  secondPrenom: string;
+  nomFamille: string;
+  nomMarital: string;
+  dateNaissance: string;
+  lieuNaissance: string;
+  email: string;
+};
+
+// Démarre un paiement unique (one-shot) sans authentification.
+// Le compte est créé après paiement par le webhook Stripe.
+export async function createOneShotSession(payload: OneShotPayload): Promise<string> {
+  const res = await fetch(`${API_BASE_URL}/stripe/create-oneshot-session`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const json = await res.json().catch(() => ({} as any));
+
+  if (!res.ok || !json?.url) {
+    throw new ApiError(
+      json?.error || "Impossible de démarrer le paiement.",
+      "CHECKOUT_FAILED"
+    );
+  }
+
+  return json.url as string;
+}
+
 export async function createPortalSession(): Promise<string> {
   // On utilise le helper "request" qui gère déjà:
   // - API_BASE_URL

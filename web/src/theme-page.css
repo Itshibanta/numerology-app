@@ -1,0 +1,142 @@
+/* Styles spécifiques à la page /theme-numerologique (répliqués de site/) */
+.theme-page-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2.5rem;
+  align-items: start;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Stepper */
+.stepper {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border);
+}
+.step-tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--brown-muted);
+  text-align: center;
+  position: relative;
+  cursor: default;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+.step-tab.active {
+  color: var(--sage-dark);
+  border-bottom-color: var(--sage);
+}
+.step-tab .step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--brown-muted);
+  font-size: 0.78rem;
+  margin-right: 0.4rem;
+}
+.step-tab.active .step-num {
+  background: var(--sage);
+  color: #fff;
+}
+
+/* Steps visibility */
+.step-panel { display: none; }
+.step-panel.active { display: block; }
+
+/* Sidebar */
+.theme-sidebar { position: sticky; top: 90px; }
+.sidebar-card {
+  background: var(--cream-card);
+  border-radius: var(--radius-md);
+  padding: 1.6rem;
+  border: 1px solid var(--border);
+  margin-bottom: 1.2rem;
+}
+.sidebar-card h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--brown-dark);
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.88rem;
+}
+.sidebar-feature .icon { color: var(--sage); font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.sidebar-feature p { margin: 0; color: var(--brown-muted); line-height: 1.4; }
+
+/* Trust badges */
+.trust-strip { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.2rem; }
+.trust-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--brown-muted); }
+
+/* Form section */
+.form-card-large {
+  background: var(--cream-card);
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 2.4rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* Payment simulation */
+.payment-option {
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.payment-option.selected { border-color: var(--sage); }
+.payment-option-header { display: flex; justify-content: space-between; align-items: center; }
+.payment-option-header h4 { margin: 0; font-size: 0.95rem; }
+.card-icons { display: flex; gap: 0.3rem; }
+.card-icon { background: var(--border); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem; font-weight: 700; color: var(--brown-muted); }
+.stripe-form { margin-top: 1rem; }
+.stripe-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.93rem;
+  font-family: inherit;
+  background: var(--cream);
+  color: var(--brown);
+  margin-bottom: 0.8rem;
+}
+.stripe-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.stripe-label { font-size: 0.82rem; font-weight: 600; color: var(--brown); margin-bottom: 0.3rem; display: block; }
+.stripe-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; color: var(--brown-muted); margin-top: 0.5rem; }
+
+/* Confirmation */
+.confirmation-box { text-align: center; padding: 2.5rem 1.5rem; }
+.confirmation-icon { font-size: 3rem; margin-bottom: 1rem; }
+.password-field { max-width: 400px; margin: 1.5rem auto 0; }
+
+/* Rendu du thème généré (étape 3) */
+.theme-render { display: flex; flex-direction: column; gap: 4px; margin-top: 1.5rem; text-align: left; }
+.theme-render .theme-h1 { font-size: 1.3rem; font-weight: 800; color: var(--brown-dark); margin: 1.4rem 0 0.6rem; }
+.theme-render .theme-h2 { font-size: 1.05rem; font-weight: 700; color: var(--brown-dark); margin: 1rem 0 0.4rem; }
+.theme-render .theme-text { color: var(--brown); line-height: 1.8; margin: 0; }
+
+@media (max-width: 900px) {
+  .theme-page-layout { grid-template-columns: 1fr; }
+  .theme-sidebar { position: static; }
+}
+@media (max-width: 600px) {
+  .form-card-large { padding: 1.4rem 1.2rem; }
+}

@@ -3,6 +3,7 @@ require("dotenv").config();
 
 const {
   getPlanByKey,
+  getOneShotPlan,
   getPlansPublic,
   assertPlansConfigured,
 } = require("./plansCatalog");
@@ -283,6 +284,60 @@ app.post(
     }
   }
 );
+
+/* ===== Stripe Checkout ONE-SHOT (anonyme, mode: payment) =====
+   1 paiement = 1 thème. Pas d'authentification requise : le compte est
+   créé après paiement par le webhook. L'état civil voyage dans la metadata
+   de la session Stripe. */
+app.post("/stripe/create-oneshot-session", async (req, res) => {
+  try {
+    if (!stripe) {
+      return res.status(500).json({ error: "STRIPE_DISABLED" });
+    }
+
+    const plan = getOneShotPlan();
+    if (!plan || !plan.stripe_price_id) {
+      return res.status(500).json({ error: "PLAN_NOT_CONFIGURED" });
+    }
+
+    const {
+      prenom,
+      secondPrenom,
+      nomFamille,
+      nomMarital,
+      dateNaissance,
+      lieuNaissance,
+      email,
+    } = req.body || {};
+
+    if (!prenom || !nomFamille || !dateNaissance || !email) {
+      return res.status(400).json({ error: "MISSING_FIELDS" });
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: email,
+      line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
+      success_url: `${FRONTEND_URL}/theme-numerologique?purchase=success`,
+      cancel_url: `${FRONTEND_URL}/theme-numerologique?purchase=cancel`,
+      metadata: {
+        kind: "oneshot_theme",
+        email: String(email).slice(0, 200),
+        prenom: String(prenom || "").slice(0, 200),
+        secondPrenom: String(secondPrenom || "").slice(0, 200),
+        nomFamille: String(nomFamille || "").slice(0, 200),
+        nomMarital: String(nomMarital || "").slice(0, 200),
+        dateNaissance: String(dateNaissance || "").slice(0, 50),
+        lieuNaissance: String(lieuNaissance || "").slice(0, 200),
+      },
+    });
+
+    return res.json({ url: session.url });
+  } catch (e) {
+    console.error("ONESHOT_CHECKOUT_FAILED", e);
+    return res.status(500).json({ error: "CHECKOUT_FAILED" });
+  }
+});
 
 /* ===== Stripe Billing Portal (annulation / gestion abonnement) ===== */
 app.post(
@@ -640,6 +695,46 @@ app.get("/generations/:id", async (req, res) => {
     return res.json({ success: true, generation: gen });
   } catch (e) {
     console.error("GENERATION_GET error:", e);
+    return res.status(500).json({ error: "INTERNAL" });
+  }
+});
+
+/* =========================
+   GENERATION PDF (signed URL Storage)
+========================= */
+app.get("/generations/:id/pdf", async (req, res) => {
+  try {
+    const token = getBearerToken(req);
+    if (!token) return res.status(401).json({ error: "AUTH_REQUIRED" });
+
+    const { data, error } = await supabaseAdmin.auth.getUser(token);
+    if (error || !data?.user) return res.status(401).json({ error: "INVALID_TOKEN" });
+
+    const userId = data.user.id;
+    const genId = req.params.id;
+
+    const { data: gen, error: gErr } = await supabaseAdmin
+      .from("generations")
+      .select("id, pdf_path")
+      .eq("id", genId)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (gErr) return res.status(500).json({ error: "GEN_READ_FAILED", detail: gErr.message });
+    if (!gen) return res.status(404).json({ error: "NOT_FOUND" });
+    if (!gen.pdf_path) return res.status(404).json({ error: "PDF_NOT_READY" });
+
+    const { data: signed, error: sErr } = await supabaseAdmin.storage
+      .from("themes")
+      .createSignedUrl(gen.pdf_path, 600);
+
+    if (sErr || !signed?.signedUrl) {
+      return res.status(500).json({ error: "SIGNED_URL_FAILED", detail: sErr?.message });
+    }
+
+    return res.json({ success: true, url: signed.signedUrl });
+  } catch (e) {
+    console.error("GENERATION_PDF error:", e);
     return res.status(500).json({ error: "INTERNAL" });
   }
 });

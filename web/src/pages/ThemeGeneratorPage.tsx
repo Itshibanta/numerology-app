@@ -1,20 +1,8 @@
 // web/src/pages/ThemeGeneratorPage.tsx
-import { useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
-import { ApiError, generateTheme } from "../api";
-import { jsPDF } from "jspdf";
-import dejaVuRegularTtfUrl from "../assets/fonts/DejaVuSans.ttf";
-import dejaVuBoldTtfUrl from "../assets/fonts/DejaVuSans-Bold.ttf";
-
-async function fetchAsBase64(url: string): Promise<string> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("FONT_FETCH_FAILED");
-  const buf = await res.arrayBuffer();
-  let binary = "";
-  const bytes = new Uint8Array(buf);
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
+import { useState, useEffect } from "react";
+import type { ChangeEvent } from "react";
+import { createOneShotSession } from "../api";
+import "../theme-page.css";
 
 type FormData = {
   prenom: string;
@@ -24,196 +12,7 @@ type FormData = {
   dateNaissance: string;
   villeNaissance: string;
   paysNaissance: string;
-  lieuNaissance: string;
 };
-
-type Block =
-  | { type: "h1"; title: string }
-  | { type: "h2"; title: string }
-  | { type: "text"; content: string };
-
-function parseThemeBlocksWeb(raw: string): Block[] {
-  const lines = raw.split("\n");
-  const blocks: Block[] = [];
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    // ✅ WEB: on conserve les lignes vides pour créer de l'air
-    if (!trimmed) {
-      blocks.push({ type: "text", content: "" });
-      continue;
-    }
-
-    if (trimmed.startsWith("===") && trimmed.endsWith("===")) {
-      blocks.push({ type: "h1", title: trimmed.replace(/===/g, "").trim() });
-      continue;
-    }
-
-    if (trimmed.startsWith("---") && trimmed.endsWith("---")) {
-      blocks.push({ type: "h2", title: trimmed.replace(/---/g, "").trim() });
-      continue;
-    }
-
-    blocks.push({ type: "text", content: line });
-  }
-
-  if (blocks.length === 0 && raw.trim()) {
-    blocks.push({ type: "text", content: raw.trim() });
-  }
-
-  return blocks;
-}
-
-function parseThemeBlocksPdf(raw: string): Block[] {
-  // ✅ PDF: conserve les lignes vides pour recréer l’air
-  const lines = raw.split("\n");
-  const blocks: Block[] = [];
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) {
-      blocks.push({ type: "text", content: "" }); // espace
-      continue;
-    }
-
-    if (trimmed.startsWith("===") && trimmed.endsWith("===")) {
-      blocks.push({ type: "h1", title: trimmed.replace(/===/g, "").trim() });
-      continue;
-    }
-
-    if (trimmed.startsWith("---") && trimmed.endsWith("---")) {
-      blocks.push({ type: "h2", title: trimmed.replace(/---/g, "").trim() });
-      continue;
-    }
-
-    blocks.push({ type: "text", content: line });
-  }
-
-  if (blocks.length === 0 && raw.trim()) {
-    blocks.push({ type: "text", content: raw.trim() });
-  }
-
-  return blocks;
-}
-
-/**
- * PDF propre :
- * - multi-pages
- * - titres formatés (=== H1 === / --- H2 ---)
- * - wrap du texte
- */
-function safeFileName(name: string) {
-  return (name || "Thème")
-    .replace(/[\\/:*?"<>|]+/g, "")   // caractères interdits Windows
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-async function downloadPDF(title: string, rawTheme: string, fileName?: string) {
-  const doc = new jsPDF("p", "mm", "a4");
-
-  const regularBase64 = await fetchAsBase64(dejaVuRegularTtfUrl);
-  doc.addFileToVFS("DejaVuSans.ttf", regularBase64);
-  doc.addFont("DejaVuSans.ttf", "DejaVuSans", "normal");
-
-  const boldBase64 = await fetchAsBase64(dejaVuBoldTtfUrl);
-  doc.addFileToVFS("DejaVuSans-Bold.ttf", boldBase64);
-  doc.addFont("DejaVuSans-Bold.ttf", "DejaVuSans", "bold");
-
-  doc.setFont("DejaVuSans", "normal");
-
-  const marginX = 16;
-  const marginY = 18;
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const maxWidth = pageWidth - marginX * 2;
-
-  let y = marginY;
-
-  const newPageIfNeeded = (extraHeight = 0) => {
-    if (y + extraHeight > pageHeight - marginY) {
-      doc.addPage();
-      y = marginY;
-    }
-  };
-
-  // Header
-  doc.setFont("DejaVuSans", "bold");
-  doc.setFontSize(16);
-  doc.text(title, marginX, y);
-  y += 10;
-
-  const blocks = parseThemeBlocksPdf(rawTheme);
-
-  for (const b of blocks) {
-    if (b.type === "h1") {
-      newPageIfNeeded(10);
-      doc.setFont("DejaVuSans", "bold");
-      doc.setFontSize(14);
-      doc.text(b.title, marginX, y);
-      y += 8;
-      continue;
-    }
-
-    if (b.type === "h2") {
-      newPageIfNeeded(8);
-      doc.setFont("DejaVuSans", "bold");
-      doc.setFontSize(12);
-      doc.text(b.title, marginX, y);
-      y += 7;
-      continue;
-    }
-
-    // Text block
-    doc.setFont("DejaVuSans", "normal");
-    doc.setFontSize(11);
-
-    const paragraphs = (b.content || "").split("\n");
-    for (const p of paragraphs) {
-      const trimmed = p.trim();
-      if (!trimmed) {
-        y += 7;
-        continue;
-      }
-
-      const wrapped = doc.splitTextToSize(trimmed, maxWidth);
-      for (const line of wrapped) {
-        newPageIfNeeded(6);
-        doc.text(line, marginX, y);
-        y += 6;
-      }
-      y += 5; // petit espace après paragraphe
-    }
-  }
-
-  const finalName = safeFileName(fileName || title);
-  doc.save(`${finalName}.pdf`);
-}
-
-function themeToPlainText(raw: string) {
-  return (raw || "")
-    .split("\n")
-    .map((line) => {
-      const t = line.trim();
-
-      // === TITRE ===  -> TITRE
-      if (t.startsWith("===") && t.endsWith("===")) {
-        return t.replace(/===/g, "").trim();
-      }
-
-      // --- Sous-titre --- -> Sous-titre
-      if (t.startsWith("---") && t.endsWith("---")) {
-        return t.replace(/---/g, "").trim();
-      }
-
-      return line;
-    })
-    // nettoie les espaces/retours trop agressifs
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
 
 export default function ThemeGeneratorPage() {
   const [form, setForm] = useState<FormData>({
@@ -224,395 +23,226 @@ export default function ThemeGeneratorPage() {
     dateNaissance: "",
     villeNaissance: "",
     paysNaissance: "",
-    lieuNaissance: "",
   });
 
-  const [theme, setTheme] = useState<string>("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [purchased, setPurchased] = useState(false);
 
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  // Retour depuis Stripe Checkout
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    if (p.get("purchase") === "success") {
+      setPurchased(true);
+      window.scrollTo({ top: 0 });
+    } else if (p.get("purchase") === "cancel") {
+      setError("Paiement annulé. Vous pouvez réessayer quand vous voulez.");
+    }
+  }, []);
 
-  const [showQuotaModal, setShowQuotaModal] = useState(false);
-  const [quotaInfo, setQuotaInfo] = useState<{
-    count?: number;
-    limit?: number;
-    month?: string;
-  } | null>(null);
-
-  const [subscriptionInactive, setSubscriptionInactive] = useState(false);
-
-    function formatDateNaissance(raw: string): string {
-    // garde uniquement les chiffres
-    let v = raw.replace(/\D/g, "");
-
-    // limite à 8 chiffres (JJMMAAAA)
-    v = v.slice(0, 8);
-
-    // insère les slashes
+  function formatDateNaissance(raw: string): string {
+    let v = raw.replace(/\D/g, "").slice(0, 8);
     if (v.length >= 5) {
-      // JJ/MM/AAAA
       v = v.replace(/(\d{2})(\d{2})(\d{1,4})/, "$1/$2/$3");
     } else if (v.length >= 3) {
-      // JJ/MM
       v = v.replace(/(\d{2})(\d{1,2})/, "$1/$2");
     }
-
     return v;
   }
-  
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-
-    let nextValue = value;
-
-    if (name === "dateNaissance") {
-      nextValue = formatDateNaissance(value);
-    }
-
+    const nextValue = name === "dateNaissance" ? formatDateNaissance(value) : value;
     setForm((prev) => ({ ...prev, [name]: nextValue }));
   }
 
+  async function handlePay() {
+    setError(null);
 
-async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-  e.preventDefault();
-  setError(null);
-  setTheme("");
-  setSubscriptionInactive(false);
-
-  const token = localStorage.getItem("auth_token");
-  if (!token) {
-    setShowAuthModal(true);
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    if (!form.prenom || !form.nomFamille || !form.dateNaissance) {
-      throw new Error(
-        "Le prénom, le nom de famille et la date de naissance sont obligatoires."
+    if (!form.prenom || !form.nomFamille || !form.dateNaissance || !email) {
+      setError(
+        "Le prénom, le nom de famille, la date de naissance et l'email sont obligatoires."
       );
-    }
-
-    const lieuNaissanceCombine = [form.villeNaissance, form.paysNaissance]
-      .filter(Boolean)
-      .join(", ");
-
-    const payload = {
-      prenom: form.prenom,
-      secondPrenom: form.secondPrenom,
-      nomFamille: form.nomFamille,
-      nomMarital: form.nomMarital,
-      dateNaissance: form.dateNaissance,
-      lieuNaissance: lieuNaissanceCombine,
-    };
-
-    const result = await generateTheme(payload);
-    setTheme(typeof result === "string" ? result : JSON.stringify(result, null, 2));
-  } catch (err: any) {
-    if (err instanceof ApiError && err.code === "NO_ACTIVE_SUBSCRIPTION") {
-      setSubscriptionInactive(true);
-      setError(null);
       return;
     }
 
-    if (err instanceof ApiError && err.code === "QUOTA_EXCEEDED") {
-      setQuotaInfo(err.meta || null);
-      setShowQuotaModal(true);
-      setError(null);
-      return;
-    }
-
-    if (err instanceof ApiError && err.code === "AUTH_REQUIRED") {
-      setShowAuthModal(true);
-      return;
-    }
-
-    setError(err?.message || "Erreur inconnue.");
-  } finally {
-    setLoading(false);
-  }
-}
-
-const [copied, setCopied] = useState(false);
-
-const canUseActions = !!theme && !loading;
-
-  async function handleCopy() {
-    if (!theme || !canUseActions) return;
-
+    setLoading(true);
     try {
-      await navigator.clipboard.writeText(themeToPlainText(theme));
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1200);
-    } catch {
-      setError("Impossible de copier dans le presse-papiers.");
+      const lieuNaissance = [form.villeNaissance, form.paysNaissance]
+        .filter(Boolean)
+        .join(", ");
+
+      const url = await createOneShotSession({
+        prenom: form.prenom,
+        secondPrenom: form.secondPrenom,
+        nomFamille: form.nomFamille,
+        nomMarital: form.nomMarital,
+        dateNaissance: form.dateNaissance,
+        lieuNaissance,
+        email,
+      });
+
+      // Redirection vers la page de paiement sécurisée Stripe
+      window.location.href = url;
+    } catch (err: any) {
+      setError(err?.message || "Impossible de démarrer le paiement.");
+      setLoading(false);
     }
   }
 
-  return (
-    <div className="app-container">
-      {/* MODAL AUTH REQUIRED */}
-      {showAuthModal && (
-        <div
-          className="modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setShowAuthModal(false)}
-        >
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <h3>Compte requis</h3>
-            <p>Pour générer votre thème numérologique, vous devez créer un compte.</p>
-
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn-plan"
-                onClick={() => (window.location.href = "/signup")}
-              >
-                Créer un compte
-              </button>
-
-              <button
-                type="button"
-                className="btn-plan btn-plan-secondary"
-                onClick={() => (window.location.href = "/signin")}
-              >
-                Se connecter
-              </button>
-
-              <button
-                type="button"
-                className="btn-plan btn-plan-secondary"
-                onClick={() => setShowAuthModal(false)}
-              >
-                Fermer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL QUOTA */}
-      {showQuotaModal && (
-        <div
-          className="modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setShowQuotaModal(false)}
-        >
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <h3>Quota mensuel atteint</h3>
-            <p>
-              Tu as utilisé {quotaInfo?.count ?? 1} / {quotaInfo?.limit ?? 1} génération(s)
-              sur cette période d&apos;abonnement.
+  /* ---------- Vue confirmation (retour de Stripe) ---------- */
+  if (purchased) {
+    return (
+      <>
+        <div style={{ background: "var(--cream-warm)", padding: "2rem 0 0" }}>
+          <div className="container">
+            <h1 style={{ marginBottom: "0.4rem" }}>Merci pour votre commande</h1>
+            <p style={{ maxWidth: 600, marginBottom: 0, paddingBottom: "1.5rem" }}>
+              Votre paiement a bien été reçu.
             </p>
-
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn-plan"
-                onClick={() => (window.location.href = "/pricing")}
-              >
-                Voir les tarifs
-              </button>
-
-              <button
-                type="button"
-                className="btn-plan btn-plan-secondary"
-                onClick={() => setShowQuotaModal(false)}
-              >
-                Fermer
-              </button>
-            </div>
           </div>
         </div>
-      )}
 
-      <div className="text-center" style={{ maxWidth: 680, margin: "0 auto 1.8rem" }}>
-        <h1>Générez votre thème numérologique</h1>
-        <p className="hero-subtitle">
-          Renseignez votre état civil, puis lancez la génération de votre analyse complète et personnalisée.
-        </p>
+        <div className="theme-page-layout">
+          <div>
+            <div className="stepper">
+              <div className="step-tab"><span className="step-num">1</span> Vos informations</div>
+              <div className="step-tab"><span className="step-num">2</span> Paiement</div>
+              <div className="step-tab active"><span className="step-num">3</span> Confirmation</div>
+            </div>
+
+            <div className="form-card-large">
+              <div className="confirmation-box">
+                <div className="confirmation-icon">✨</div>
+                <h2>Votre thème numérologique est en cours de préparation</h2>
+                <p>
+                  Notre numérologue calcule et rédige votre analyse personnalisée.
+                  Vous recevrez votre thème complet <strong>dans les 24 heures</strong>.
+                </p>
+                <p>
+                  Un email vient de vous être envoyé à <strong>{email || "votre adresse"}</strong>{" "}
+                  pour <strong>créer votre mot de passe</strong> et accéder à votre espace
+                  personnel, où votre thème et son PDF seront disponibles.
+                </p>
+                <p style={{ fontSize: "0.85rem", color: "var(--brown-muted)", marginTop: "1rem" }}>
+                  Pensez à vérifier vos spams si vous ne voyez pas l'email d'ici quelques minutes.
+                </p>
+                <div style={{ marginTop: "1.5rem" }}>
+                  <a href="/signin" className="btn btn-primary">Accéder à mon espace</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ThemeSidebar />
+        </div>
+      </>
+    );
+  }
+
+  /* ---------- Vue formulaire + paiement ---------- */
+  return (
+    <>
+      <div style={{ background: "var(--cream-warm)", padding: "2rem 0 0" }}>
+        <div className="container">
+          <h1 style={{ marginBottom: "0.4rem" }}>Générez votre thème numérologique</h1>
+          <p style={{ maxWidth: 600, marginBottom: 0, paddingBottom: "1.5rem" }}>
+            Remplissez votre état civil complet pour que nous puissions calculer votre
+            analyse personnalisée. Plus les informations sont précises, plus le portrait
+            est juste.
+          </p>
+        </div>
       </div>
 
-      <section className="form-card">
-        <h2 style={{ marginBottom: "1rem" }}>Vos informations</h2>
-
-        <form className="form-grid" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="prenom">Prénom *</label>
-            <input
-              id="prenom"
-              name="prenom"
-              type="text"
-              value={form.prenom}
-              onChange={handleChange}
-              required
-              placeholder="Prénom"
-            />
+      <div className="theme-page-layout">
+        <div>
+          <div className="stepper">
+            <div className="step-tab active"><span className="step-num">1</span> Vos informations</div>
+            <div className="step-tab"><span className="step-num">2</span> Paiement</div>
+            <div className="step-tab"><span className="step-num">3</span> Confirmation</div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="secondPrenom">Second prénom(s)</label>
-            <input
-              id="secondPrenom"
-              name="secondPrenom"
-              type="text"
-              value={form.secondPrenom}
-              onChange={handleChange}
-              placeholder="Optionnel"
-            />
-          </div>
+          <div className="form-card-large">
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="prenom">Prénom <span style={{ color: "#b04747" }}>*</span></label>
+                <input id="prenom" name="prenom" type="text" value={form.prenom} onChange={handleChange} placeholder="Votre prénom usuel" autoComplete="given-name" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="secondPrenom">Second(s) prénom(s)</label>
+                <input id="secondPrenom" name="secondPrenom" type="text" value={form.secondPrenom} onChange={handleChange} placeholder="Optionnel" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="nomFamille">Nom de famille (naissance) <span style={{ color: "#b04747" }}>*</span></label>
+                <input id="nomFamille" name="nomFamille" type="text" value={form.nomFamille} onChange={handleChange} placeholder="Nom de naissance" autoComplete="family-name" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="nomMarital">Nom marital</label>
+                <input id="nomMarital" name="nomMarital" type="text" value={form.nomMarital} onChange={handleChange} placeholder="Optionnel" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="dateNaissance">Date de naissance <span style={{ color: "#b04747" }}>*</span></label>
+                <input id="dateNaissance" name="dateNaissance" type="text" value={form.dateNaissance} onChange={handleChange} inputMode="numeric" maxLength={10} placeholder="JJ/MM/AAAA" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="villeNaissance">Ville de naissance</label>
+                <input id="villeNaissance" name="villeNaissance" type="text" value={form.villeNaissance} onChange={handleChange} placeholder="Optionnel" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="paysNaissance">Pays de naissance</label>
+                <input id="paysNaissance" name="paysNaissance" type="text" value={form.paysNaissance} onChange={handleChange} placeholder="Optionnel" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">Adresse email <span style={{ color: "#b04747" }}>*</span></label>
+                <input id="email" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="votre@email.fr" autoComplete="email" />
+              </div>
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="nomFamille">Nom de famille *</label>
-            <input
-              id="nomFamille"
-              name="nomFamille"
-              type="text"
-              value={form.nomFamille}
-              onChange={handleChange}
-              required
-              placeholder="Nom de famille"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="nomMarital">Nom Marital</label>
-            <input
-              id="nomMarital"
-              name="nomMarital"
-              type="text"
-              value={form.nomMarital}
-              onChange={handleChange}
-              placeholder="Optionnel"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="dateNaissance">Date de naissance *</label>
-            <input
-              id="dateNaissance"
-              name="dateNaissance"
-              type="text"
-              value={form.dateNaissance}
-              onChange={handleChange}
-              placeholder="JJ/MM/AAAA"
-              required
-              inputMode="numeric"
-              maxLength={10}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="villeNaissance">Ville de naissance</label>
-            <input
-              id="villeNaissance"
-              name="villeNaissance"
-              type="text"
-              value={form.villeNaissance}
-              onChange={handleChange}
-              placeholder="Paris"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="paysNaissance">Pays de naissance</label>
-            <input
-              id="paysNaissance"
-              name="paysNaissance"
-              type="text"
-              value={form.paysNaissance}
-              onChange={handleChange}
-              placeholder="France"
-            />
-          </div>
-
-          <div className="form-actions">
-            <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: "100%", justifyContent: "center" }}>
-              {loading ? "Génération en cours..." : "Générer mon thème"}
-            </button>
-          </div>
-        </form>
-
-        {error && <p className="error-message">Erreur : {error}</p>}
-      </section>
-
-      <section className="card">
-        <div className="theme-header">
-          {subscriptionInactive && (
-            <div className="auth-error-box" style={{ marginBottom: "20px" }}>
-              <strong>Abonnement inactif</strong>
-              <p style={{ marginTop: "6px" }}>
-                Ton abonnement n’est plus actif.  
-                Réactive-le pour continuer à générer des thèmes numérologiques.
-              </p>
-
-              <button
-                className="auth-btn"
-                style={{ marginTop: "10px" }}
-                onClick={() => (window.location.href = "/pricing")}
-              >
-                Voir les abonnements
+            <div style={{ marginTop: "2rem" }}>
+              <button type="button" onClick={handlePay} disabled={loading} className="btn btn-primary btn-lg" style={{ width: "100%", justifyContent: "center" }}>
+                {loading ? "Redirection vers le paiement..." : "Payer 59,90 € et recevoir mon thème"}
               </button>
             </div>
-          )}
-          <h2>Thème numérologique</h2>
 
-          <div className="theme-actions">
-            <button
-              type="button"
-              onClick={handleCopy}
-              disabled={!canUseActions}
-              className={`btn theme-action ${!canUseActions ? "btn-disabled" : ""} ${copied ? "btn-success" : ""}`}
-            >
-              {copied ? "Copié !" : "Copier le thème"}
-            </button>
+            {error && <p style={{ color: "#b04747", marginTop: "1rem" }}>{error}</p>}
 
-
-            <button
-              type="button"
-              onClick={async () => {
-                const person = `${form.prenom} ${form.nomFamille}`.trim();
-
-                const fileName = person ? `Thème - ${person}` : "Thème";
-                await downloadPDF("Thème", theme, fileName);
-              }}
-              disabled={!canUseActions}
-              className={`btn theme-action ${!canUseActions ? "btn-disabled" : ""}`}
-            >
-              Télécharger (PDF)
-            </button>
+            <div className="stripe-badge" style={{ justifyContent: "center", marginTop: "1rem" }}>
+              🔒 Paiement sécurisé par Stripe — vos données bancaires ne nous sont jamais transmises
+            </div>
+            <p style={{ marginTop: "0.8rem", fontSize: "0.83rem", color: "var(--brown-muted)", textAlign: "center" }}>
+              Vos données d'état civil servent uniquement à générer votre thème. Aucune revente.
+            </p>
           </div>
         </div>
 
-        {loading && !theme && (
-          <p className="theme-placeholder">
-            Génération du thème en cours, quelques secondes...
-          </p>
-        )}
+        <ThemeSidebar />
+      </div>
+    </>
+  );
+}
 
-        {!loading && !theme && !error && (
-          <p className="theme-placeholder">
-            Le thème s&apos;affichera ici après la génération.
-          </p>
-        )}
+function ThemeSidebar() {
+  return (
+    <aside className="theme-sidebar">
+      <div className="sidebar-card">
+        <h4>Ce que vous allez recevoir</h4>
+        <div className="sidebar-feature"><span className="icon">✓</span><p><strong>Portrait psychologique complet</strong>, votre caractère profond, vos forces, vos zones d'ombre</p></div>
+        <div className="sidebar-feature"><span className="icon">✓</span><p><strong>Mission de vie</strong>, ce que votre chemin de vie révèle sur votre direction profonde</p></div>
+        <div className="sidebar-feature"><span className="icon">✓</span><p><strong>Vos nombres essentiels</strong>, Expression, Actif, Héréditaire, de l'Âme</p></div>
+        <div className="sidebar-feature"><span className="icon">✓</span><p><strong>Cycles &amp; Pinnacles</strong>, les grandes phases de votre vie</p></div>
+        <div className="sidebar-feature"><span className="icon">✓</span><p><strong>Année personnelle 2026</strong>, l'énergie de votre cycle actuel</p></div>
+        <div className="sidebar-feature"><span className="icon">✓</span><p><strong>Nombres karmiques</strong>, les défis récurrents à comprendre</p></div>
+        <div className="trust-strip">
+          <div className="trust-item">🔒 Données 100% confidentielles</div>
+          <div className="trust-item">✉️ Livraison sous 24h</div>
+          <div className="trust-item">⭐ Analyses rédigées par une numérologue</div>
+        </div>
+      </div>
 
-        {theme && (
-          <div className="theme-render">
-            {parseThemeBlocksWeb(theme).map((b, i) => {
-              if (b.type === "h1") return <div key={i} className="theme-h1">{b.title}</div>;
-              if (b.type === "h2") return <div key={i} className="theme-h2">{b.title}</div>;
-
-              if (!b.content) return <div key={i} style={{ height: 12 }} />;
-
-              return <p key={i} className="theme-text">{b.content}</p>;
-            })}
-          </div>
-        )}
-      </section>
-    </div>
+      <a href="/exemple-theme-numerologique/" className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", fontSize: "0.88rem" }}>
+        Voir un exemple de thème
+      </a>
+    </aside>
   );
 }

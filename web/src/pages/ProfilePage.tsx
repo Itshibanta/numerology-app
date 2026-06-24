@@ -15,16 +15,12 @@ function formatPlan(plan: string) {
   const p = (plan || "").toLowerCase();
 
   if (p === "free")
-    return { name: "Découverte (gratuit)", limit: 1, price: "0 € / mois" };
-  if (p === "essentiel")
-    return { name: "Essentiel", limit: 1, price: "19,99 € / mois" };
-  if (p === "praticien")
-    return { name: "Praticien", limit: 5, price: "49,99 € / mois" };
-  if (p === "pro_illimite" || p === "pro")
+    return { name: "Découverte (gratuit)", limit: "—" as const, price: "—" };
+  if (p === "oneshot")
     return {
-      name: "Pro Illimité",
-      limit: "Illimité" as const,
-      price: "149,99 € / mois",
+      name: "Thème numérologique",
+      limit: "1 acheté" as const,
+      price: "59,90 € (paiement unique)",
     };
 
   return { name: plan || "Inconnu", limit: "?" as const, price: "—" };
@@ -247,8 +243,9 @@ export default function ProfilePage() {
             <span className="profile-value">{planInfo.price}</span>
           </div>
 
-          {/* Bouton gestion / annulation abonnement : uniquement si plan ≠ free */}
-          {user.plan !== "free" && (
+          {/* Bouton gestion d'abonnement : uniquement pour les anciens plans récurrents
+              (le modèle one-shot n'a pas d'abonnement à gérer). */}
+          {["essentiel", "praticien", "pro_illimite", "pro"].includes(user.plan) && (
             <div className="profile-subscription-actions">
               <button
                 type="button"
@@ -356,11 +353,15 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="app-container">
+    <div className="content-wrapper">
+      <div className="text-center" style={{ marginBottom: "1.6rem" }}>
+        <h1>Mon profil</h1>
+        <p className="hero-subtitle">Vos informations, votre formule et vos thèmes générés.</p>
+      </div>
       <section className="card">
-        <div className="theme-header">
-          <h2>Mon profil</h2>
-          <button type="button" onClick={logoutAndRedirect}>
+        <div className="theme-header" style={{ marginBottom: "1.1rem" }}>
+          <h2 style={{ margin: 0 }}>Votre compte</h2>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={logoutAndRedirect}>
             Se déconnecter
           </button>
         </div>

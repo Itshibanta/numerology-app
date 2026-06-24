@@ -112,7 +112,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="app-container">
+      <main>
         <Routes>
           <Route path="/theme-numerologique" element={<ThemeGeneratorPage />} />
           <Route path="/signin" element={<SignInPage />} />

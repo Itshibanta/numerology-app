@@ -1,7 +1,23 @@
 // server/plansCatalog.js
 
-// ⚠️ Source de vérité côté serveur : c’est ICI que tu définis tes plans.
-// Le front ne doit pas hardcoder les prix, et le webhook ne doit pas dépendre de la table "plans".
+// ⚠️ Source de vérité côté serveur : c'est ICI que tu définis ton offre.
+// Le front ne doit pas hardcoder les prix, et le webhook ne doit pas dépendre
+// d'une table "plans".
+//
+// MODÈLE COMMERCIAL : paiement unique (one-shot) 59,90 € = 1 thème numérologique.
+// Les anciens abonnements (essentiel / praticien / pro_illimité) sont supprimés.
+// Le résumé gratuit est mis de côté : "free" reste l'état par défaut d'un compte
+// (aucune génération offerte).
+//
+// PRICE STRIPE : produit prod_TbWNCMyVsFmq0e / price_1TlmAwRYKflLSIEHbuydWnnD.
+// On lit la valeur depuis l'env. On accepte STRIPE_PRICE_ONESHOT en priorité,
+// et on retombe sur STRIPE_PRICE_PRO_ILLIMITE (variable déjà présente sur Render)
+// pour ne pas avoir à renommer la variable côté hébergeur.
+
+const ONESHOT_PRICE_ID =
+  process.env.STRIPE_PRICE_ONESHOT ||
+  process.env.STRIPE_PRICE_PRO_ILLIMITE ||
+  null;
 
 const PLANS = [
   {
@@ -9,37 +25,29 @@ const PLANS = [
     display_name: "Découverte",
     price_cents: 0,
     currency: "eur",
-    monthly_limit: 1, // 1 génération / mois (chez toi = résumé numérologique)
+    monthly_limit: 0, // aucune génération offerte (résumé gratuit mis de côté)
     stripe_price_id: null,
+    mode: null,
   },
   {
-    plan_key: "essentiel",
-    display_name: "Essentiel",
-    price_cents: 1999, // 19,99€/mois
+    plan_key: "oneshot",
+    display_name: "Thème numérologique",
+    price_cents: 5990, // 59,90 € TTC, paiement unique
     currency: "eur",
-    monthly_limit: 1, // 1 thème complet / mois
-    stripe_price_id: process.env.STRIPE_PRICE_ESSENTIEL || null,
-  },
-  {
-    plan_key: "praticien",
-    display_name: "Praticien",
-    price_cents: 4999, // 49,99€/mois
-    currency: "eur",
-    monthly_limit: 5, // 5 thèmes complets / mois
-    stripe_price_id: process.env.STRIPE_PRICE_PRATICIEN || null,
-  },
-  {
-    plan_key: "pro_illimite",
-    display_name: "Pro Illimité",
-    price_cents: 14999, // 149,99€/mois
-    currency: "eur",
-    monthly_limit: 999999, // "illimité" (simple pour V1)
-    stripe_price_id: process.env.STRIPE_PRICE_PRO_ILLIMITE || null,
+    monthly_limit: 999999, // pas de quota mensuel : 1 paiement = 1 thème
+    stripe_price_id: ONESHOT_PRICE_ID,
+    mode: "payment", // Stripe Checkout en mode paiement unique
+    one_shot: true,
   },
 ];
 
 function getPlanByKey(plan_key) {
   return PLANS.find((p) => p.plan_key === plan_key) || null;
+}
+
+// Le plan payant unique (utilisé par le checkout one-shot)
+function getOneShotPlan() {
+  return PLANS.find((p) => p.one_shot) || null;
 }
 
 function getPlanKeyByStripePriceId(priceId) {
@@ -48,13 +56,13 @@ function getPlanKeyByStripePriceId(priceId) {
 }
 
 function getPlansPublic() {
-  // Ce que tu peux renvoyer au front sans exposer les price_id Stripe
+  // Ce que l'on peut renvoyer au front sans exposer les price_id Stripe
   return PLANS.map(({ stripe_price_id, ...rest }) => rest);
 }
 
 function assertPlansConfigured() {
-  const paidPlans = PLANS.filter(p => p.plan_key !== "free");
-  const missing = paidPlans.filter(p => !p.stripe_price_id).map(p => p.plan_key);
+  const paidPlans = PLANS.filter((p) => p.plan_key !== "free");
+  const missing = paidPlans.filter((p) => !p.stripe_price_id).map((p) => p.plan_key);
   if (missing.length) {
     throw new Error(`Missing Stripe price IDs for plans: ${missing.join(", ")}`);
   }
@@ -63,6 +71,7 @@ function assertPlansConfigured() {
 module.exports = {
   PLANS,
   getPlanByKey,
+  getOneShotPlan,
   getPlanKeyByStripePriceId,
   getPlansPublic,
   assertPlansConfigured,

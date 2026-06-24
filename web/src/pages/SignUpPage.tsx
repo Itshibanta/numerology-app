@@ -49,60 +49,52 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="auth-container">
-      <h2>Créer un compte</h2>
+    <div className="content-wrapper" style={{ maxWidth: 560 }}>
+      <div className="text-center" style={{ marginBottom: "1.6rem" }}>
+        <h1>Créer un compte</h1>
+        <p className="hero-subtitle">Quelques secondes pour accéder à vos thèmes numérologiques.</p>
+      </div>
 
-      {error && <p className="auth-error">{error}</p>}
-      {info && <p className="auth-info">{info}</p>}
+      <div className="form-card">
+        {error && <p style={{ color: "#b04747", marginBottom: "1rem" }}>{error}</p>}
+        {info && (
+          <p style={{ background: "rgba(166,187,167,0.15)", border: "1px solid var(--sage)", borderRadius: "var(--radius-sm)", padding: "0.7rem 0.9rem", marginBottom: "1rem", color: "var(--brown-mid)" }}>
+            {info}
+          </p>
+        )}
 
-      <form onSubmit={handleSubmit} className="auth-form">
-        <label>Prénom</label>
-        <input
-          required
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          disabled={submitted}
-        />
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div className="form-group">
+            <label>Prénom</label>
+            <input required value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={submitted} />
+          </div>
 
-        <label>Nom</label>
-        <input
-          required
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          disabled={submitted}
-        />
+          <div className="form-group">
+            <label>Nom</label>
+            <input required value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={submitted} />
+          </div>
 
-        <label>Email</label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={submitted}
-        />
+          <div className="form-group">
+            <label>Email</label>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={submitted} />
+          </div>
 
-        <label>Mot de passe</label>
-        <input
-          type="password"
-          required
-          minLength={6}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={submitted}
-        />
+          <div className="form-group">
+            <label>Mot de passe</label>
+            <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} disabled={submitted} />
+          </div>
 
-        <button
-          type="submit"
-          className="auth-btn"
-          disabled={loading || submitted}
-        >
-          {submitted ? "Email envoyé ✅" : loading ? "Création..." : "S’inscrire"}
-        </button>
-      </form>
+          <div className="form-actions">
+            <button type="submit" className="btn btn-primary btn-lg" disabled={loading || submitted} style={{ width: "100%", justifyContent: "center" }}>
+              {submitted ? "Email envoyé ✅" : loading ? "Création..." : "S’inscrire"}
+            </button>
+          </div>
+        </form>
 
-      <p style={{ marginTop: "16px" }}>
-        Déjà un compte ? <a href="/signin">Connexion</a>
-      </p>
+        <p style={{ marginTop: "1.3rem", textAlign: "center", fontSize: "0.9rem" }}>
+          Déjà un compte ? <a href="/signin">Connexion</a>
+        </p>
+      </div>
     </div>
   );
 }

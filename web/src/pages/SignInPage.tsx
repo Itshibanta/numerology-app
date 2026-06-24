@@ -51,46 +51,46 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="auth-container">
-      <h2>Connexion</h2>
+    <div className="content-wrapper" style={{ maxWidth: 560 }}>
+      <div className="text-center" style={{ marginBottom: "1.6rem" }}>
+        <h1>Connexion</h1>
+        <p className="hero-subtitle">Accédez à votre compte et à vos thèmes numérologiques.</p>
+      </div>
 
-      {confirmed && (
-        <p className="auth-info">
-          Email confirmé Vous pouvez maintenant vous connecter.
+      <div className="form-card">
+        {confirmed && (
+          <p style={{ background: "rgba(166,187,167,0.15)", border: "1px solid var(--sage)", borderRadius: "var(--radius-sm)", padding: "0.7rem 0.9rem", marginBottom: "1rem", color: "var(--brown-mid)" }}>
+            Email confirmé. Vous pouvez maintenant vous connecter.
+          </p>
+        )}
+
+        {error && <p style={{ color: "#b04747", marginBottom: "1rem" }}>{error}</p>}
+
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div className="form-group">
+            <label>Email</label>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+
+          <div className="form-group">
+            <label>Mot de passe</label>
+            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          </div>
+
+          <div className="form-actions">
+            <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: "100%", justifyContent: "center" }}>
+              {loading ? "Connexion..." : "Se connecter"}
+            </button>
+          </div>
+        </form>
+
+        <p style={{ marginTop: "1.3rem", textAlign: "center", fontSize: "0.9rem" }}>
+          Pas encore de compte ? <a href="/signup">Créer un compte</a>
         </p>
-      )}
-
-      {error && <p className="auth-error">{error}</p>}
-
-      <form onSubmit={handleSubmit} className="auth-form">
-        <label>Email</label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <label>Mot de passe</label>
-        <input
-          type="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button type="submit" className="auth-btn" disabled={loading}>
-          {loading ? "Connexion..." : "Se connecter"}
-        </button>
-      </form>
-
-      <p style={{ marginTop: "24px" }}>
-        Pas encore de compte ? <a href="/signup">Créer un compte</a>
-      </p>
-
-      <p style={{ marginTop: "-10px" }}>
-        Mot de passe oublié ? <a href="/reset-password">Réinitialisez-le mot</a>
-      </p>
+        <p style={{ textAlign: "center", fontSize: "0.9rem", marginTop: "0.2rem" }}>
+          Mot de passe oublié ? <a href="/reset-password">Réinitialiser</a>
+        </p>
+      </div>
     </div>
   );
 }
