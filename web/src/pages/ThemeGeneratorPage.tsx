@@ -430,15 +430,15 @@ const canUseActions = !!theme && !loading;
         </div>
       )}
 
-      <header className="app-header">
-        <h1>Générateur de Thème Numérologique</h1>
-        <p>
-          Renseigne ton état civil, puis clique sur <strong>Générer mon thème</strong>.
+      <div className="text-center" style={{ maxWidth: 680, margin: "0 auto 1.8rem" }}>
+        <h1>Générez votre thème numérologique</h1>
+        <p className="hero-subtitle">
+          Renseignez votre état civil, puis lancez la génération de votre analyse complète et personnalisée.
         </p>
-      </header>
+      </div>
 
-      <section className="card">
-        <h2>Informations d&apos;état civil</h2>
+      <section className="form-card">
+        <h2 style={{ marginBottom: "1rem" }}>Vos informations</h2>
 
         <form className="form-grid" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -531,7 +531,7 @@ const canUseActions = !!theme && !loading;
           </div>
 
           <div className="form-actions">
-            <button type="submit" disabled={loading}>
+            <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: "100%", justifyContent: "center" }}>
               {loading ? "Génération en cours..." : "Générer mon thème"}
             </button>
           </div>

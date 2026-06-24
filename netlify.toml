@@ -1,9 +1,54 @@
+# ============================================================
+#  Build combiné : site statique SEO (racine) + app React (/app)
+#  IMPORTANT : dans l'UI Netlify, mettre "Base directory" = VIDE
+#  (racine) pour que ce fichier fasse autorité.
+# ============================================================
 [build]
-  base = "web"
-  command = "npm run build"
+  base = ""
   publish = "dist"
+  # 1) build de l'app React (assets sous /app/ grâce à vite base)
+  # 2) on assemble : site/ à la racine de dist, app React sous dist/app/
+  # 3) on retire la page statique /theme-numerologique (servie par React)
+  command = "npm --prefix web ci && npm --prefix web run build && rm -rf dist && mkdir -p dist && cp -R site/. dist/ && rm -rf dist/theme-numerologique && mkdir -p dist/app && cp -R web/dist/. dist/app/"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# ===== Routes applicatives (React SPA) -> coquille /app/index.html =====
+# Réécritures CIBLÉES (pas de /* fourre-tout) pour éviter les soft-404.
+[[redirects]]
+  from = "/theme-numerologique"
+  to = "/app/index.html"
+  status = 200
+  force = true
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/theme-numerologique/"
+  to = "/app/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/signin"
+  to = "/app/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/signup"
+  to = "/app/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/app/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/auth/callback"
+  to = "/app/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/reset-password"
+  to = "/app/index.html"
   status = 200

@@ -1,0 +1,82 @@
+# Clés Des Nombres
+
+> Clés Des Nombres édite des thèmes numérologiques personnalisés en français, générés à partir de l'état civil (prénom, nom, date de naissance). Le thème complet (59,90 €) analyse plus de 20 composantes, chemin de vie, nombre d'expression, nombre de l'âme, nombres maîtres et karmiques, cycles et année personnelle, pour offrir un portrait psychologique structuré et personnalisé. Approche : la numérologie comme outil de connaissance de soi, sans ésotérisme ni prédiction.
+
+Site : https://clesdesnombres.com
+Garantie satisfaction 14 jours. Une version gratuite limitée est disponible avant le thème complet.
+
+## Pages principales
+
+- [Thème Numérologique Personnalisé en Ligne](https://clesdesnombres.com/): version markdown: https://clesdesnombres.com/index.md
+- [Obtenir Mon Thème Numérologique, Formulaire](https://clesdesnombres.com/theme-numerologique/): version markdown: https://clesdesnombres.com/theme-numerologique/index.md
+- [Exemple de Thème Numérologique Complet](https://clesdesnombres.com/exemple-theme-numerologique/): version markdown: https://clesdesnombres.com/exemple-theme-numerologique/index.md
+
+## Guides, Chemin de vie
+
+- [Signification du Chemin de Vie en Numérologie, Calcul & Interprétation](https://clesdesnombres.com/signification-chemin-de-vie/): version markdown: https://clesdesnombres.com/signification-chemin-de-vie/index.md
+- [Chemin de Vie 1, Signification, Traits & Mission](https://clesdesnombres.com/chemin-de-vie-1/): version markdown: https://clesdesnombres.com/chemin-de-vie-1/index.md
+- [Chemin de Vie 2, Signification, Traits & Mission](https://clesdesnombres.com/chemin-de-vie-2/): version markdown: https://clesdesnombres.com/chemin-de-vie-2/index.md
+- [Chemin de Vie 3, Le Créatif, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-3/): version markdown: https://clesdesnombres.com/chemin-de-vie-3/index.md
+- [Chemin de Vie 4, Le Bâtisseur, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-4/): version markdown: https://clesdesnombres.com/chemin-de-vie-4/index.md
+- [Chemin de Vie 5, L'Aventurier, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-5/): version markdown: https://clesdesnombres.com/chemin-de-vie-5/index.md
+- [Chemin de Vie 6, Le Nourricier, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-6/): version markdown: https://clesdesnombres.com/chemin-de-vie-6/index.md
+- [Chemin de Vie 7, L'Analyste, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-7/): version markdown: https://clesdesnombres.com/chemin-de-vie-7/index.md
+- [Chemin de Vie 8, L'Ambitieux, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-8/): version markdown: https://clesdesnombres.com/chemin-de-vie-8/index.md
+- [Chemin de Vie 9, Le Sage, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-9/): version markdown: https://clesdesnombres.com/chemin-de-vie-9/index.md
+- [Chemin de Vie 11, Le Visionnaire, l'Inspirateur](https://clesdesnombres.com/chemin-de-vie-11/): version markdown: https://clesdesnombres.com/chemin-de-vie-11/index.md
+- [Chemin de Vie 22, Le Maître Bâtisseur](https://clesdesnombres.com/chemin-de-vie-22/): version markdown: https://clesdesnombres.com/chemin-de-vie-22/index.md
+- [Chemin de Vie 33, Le Maître de l'Amour, le Guide](https://clesdesnombres.com/chemin-de-vie-33/): version markdown: https://clesdesnombres.com/chemin-de-vie-33/index.md
+- [Chemin de Vie 44, Le Maître de la Matière, le Bâtisseur d'Abondance](https://clesdesnombres.com/chemin-de-vie-44/): version markdown: https://clesdesnombres.com/chemin-de-vie-44/index.md
+
+## Guides, Année personnelle
+
+- [Année Personnelle en Numérologie 2026, Calcul & Signification](https://clesdesnombres.com/signification-annee-personnelle/): version markdown: https://clesdesnombres.com/signification-annee-personnelle/index.md
+- [Année Personnelle 1 en 2026, Nouveau Départ](https://clesdesnombres.com/annee-personnelle-1/): version markdown: https://clesdesnombres.com/annee-personnelle-1/index.md
+- [Année Personnelle 2 en 2026, Patience et Coopération](https://clesdesnombres.com/annee-personnelle-2/): version markdown: https://clesdesnombres.com/annee-personnelle-2/index.md
+- [Année Personnelle 3 en 2026, Expression et Créativité](https://clesdesnombres.com/annee-personnelle-3/): version markdown: https://clesdesnombres.com/annee-personnelle-3/index.md
+- [Année Personnelle 4 en 2026, Travail et Fondations](https://clesdesnombres.com/annee-personnelle-4/): version markdown: https://clesdesnombres.com/annee-personnelle-4/index.md
+- [Année Personnelle 5 en 2026, Changement et Liberté](https://clesdesnombres.com/annee-personnelle-5/): version markdown: https://clesdesnombres.com/annee-personnelle-5/index.md
+- [Année Personnelle 6 en 2026, Amour et Responsabilité](https://clesdesnombres.com/annee-personnelle-6/): version markdown: https://clesdesnombres.com/annee-personnelle-6/index.md
+- [Année Personnelle 7 en 2026, Introspection et Spiritualité](https://clesdesnombres.com/annee-personnelle-7/): version markdown: https://clesdesnombres.com/annee-personnelle-7/index.md
+- [Année Personnelle 8 en 2026, Réussite et Pouvoir](https://clesdesnombres.com/annee-personnelle-8/): version markdown: https://clesdesnombres.com/annee-personnelle-8/index.md
+- [Année Personnelle 9 en 2026, Achèvement et Bilan](https://clesdesnombres.com/annee-personnelle-9/): version markdown: https://clesdesnombres.com/annee-personnelle-9/index.md
+- [Année Personnelle 11 en 2026, Intuition et Révélations](https://clesdesnombres.com/annee-personnelle-11/): version markdown: https://clesdesnombres.com/annee-personnelle-11/index.md
+- [Année Personnelle 22 en 2026, Grande Construction](https://clesdesnombres.com/annee-personnelle-22/): version markdown: https://clesdesnombres.com/annee-personnelle-22/index.md
+- [Année Personnelle 33 en 2026, Amour et Service](https://clesdesnombres.com/annee-personnelle-33/): version markdown: https://clesdesnombres.com/annee-personnelle-33/index.md
+- [Année Personnelle 44 en 2026, Maîtrise Matérielle](https://clesdesnombres.com/annee-personnelle-44/): version markdown: https://clesdesnombres.com/annee-personnelle-44/index.md
+
+## Guides, Nombres maîtres
+
+- [Les Nombres Maîtres 11, 22, 33, 44 en Numérologie, Signification](https://clesdesnombres.com/nombres-maitres/): version markdown: https://clesdesnombres.com/nombres-maitres/index.md
+- [Nombre Maître 11, L'Illuminé, le Canal Intuitif](https://clesdesnombres.com/nombre-maitre-11/): version markdown: https://clesdesnombres.com/nombre-maitre-11/index.md
+- [Nombre Maître 22, Le Maître Bâtisseur](https://clesdesnombres.com/nombre-maitre-22/): version markdown: https://clesdesnombres.com/nombre-maitre-22/index.md
+- [Nombre Maître 33, Le Maître Enseignant, le Guérisseur](https://clesdesnombres.com/nombre-maitre-33/): version markdown: https://clesdesnombres.com/nombre-maitre-33/index.md
+- [Nombre Maître 44, Le Maître de la Matière, le Bâtisseur d'Abondance](https://clesdesnombres.com/nombre-maitre-44/): version markdown: https://clesdesnombres.com/nombre-maitre-44/index.md
+
+## Guides, Nombres karmiques
+
+- [Nombres Karmiques en Numérologie, Dettes 13, 14, 16, 19](https://clesdesnombres.com/nombres-karmiques/): version markdown: https://clesdesnombres.com/nombres-karmiques/index.md
+- [Nombre Karmique 13, La Dette du Travail](https://clesdesnombres.com/nombre-karmique-13/): version markdown: https://clesdesnombres.com/nombre-karmique-13/index.md
+- [Nombre Karmique 14, La Dette de la Liberté](https://clesdesnombres.com/nombre-karmique-14/): version markdown: https://clesdesnombres.com/nombre-karmique-14/index.md
+- [Nombre Karmique 16, La Dette de l'Ego](https://clesdesnombres.com/nombre-karmique-16/): version markdown: https://clesdesnombres.com/nombre-karmique-16/index.md
+- [Nombre Karmique 19, La Dette de l'Indépendance](https://clesdesnombres.com/nombre-karmique-19/): version markdown: https://clesdesnombres.com/nombre-karmique-19/index.md
+
+## Blog
+
+- [Blog Numérologie, Articles & Guides Pratiques](https://clesdesnombres.com/blog-numerologique/): version markdown: https://clesdesnombres.com/blog-numerologique/index.md
+- [Comment Calculer son Année Personnelle, Guide 2026](https://clesdesnombres.com/blog-numerologique/comment-calculer-son-annee-personnelle/): version markdown: https://clesdesnombres.com/blog-numerologique/comment-calculer-son-annee-personnelle/index.md
+- [Comment Calculer son Chemin de Vie, Méthode Complète](https://clesdesnombres.com/blog-numerologique/comment-calculer-son-chemin-de-vie/): version markdown: https://clesdesnombres.com/blog-numerologique/comment-calculer-son-chemin-de-vie/index.md
+- [Comment Lire son Thème Numérologique, Guide Pratique](https://clesdesnombres.com/blog-numerologique/comment-lire-un-theme-numerologique/): version markdown: https://clesdesnombres.com/blog-numerologique/comment-lire-un-theme-numerologique/index.md
+- [Comprendre son Thème Numérologique en Profondeur](https://clesdesnombres.com/blog-numerologique/comprendre-un-theme-numerologique/): version markdown: https://clesdesnombres.com/blog-numerologique/comprendre-un-theme-numerologique/index.md
+- [Numérologie vs Astrologie, Quelles Différences ?](https://clesdesnombres.com/blog-numerologique/difference-astrologie-numerologie/): version markdown: https://clesdesnombres.com/blog-numerologique/difference-astrologie-numerologie/index.md
+- [Les Nombres Maîtres 11, 22, 33, Guide Complet](https://clesdesnombres.com/blog-numerologique/nombres-maitres-numerologie/): version markdown: https://clesdesnombres.com/blog-numerologique/nombres-maitres-numerologie/index.md
+- [Numérologie et Développement Personnel, 5 Applications](https://clesdesnombres.com/blog-numerologique/numerologie-et-developpement-personnel/): version markdown: https://clesdesnombres.com/blog-numerologique/numerologie-et-developpement-personnel/index.md
+- [Numérologie Karmique, Dettes et Leçons de Vie](https://clesdesnombres.com/blog-numerologique/numerologie-karmique/): version markdown: https://clesdesnombres.com/blog-numerologique/numerologie-karmique/index.md
+- [Qu'est-ce que la Numérologie ? Guide Complet pour Débutants](https://clesdesnombres.com/blog-numerologique/quest-ce-que-la-numerologie/): version markdown: https://clesdesnombres.com/blog-numerologique/quest-ce-que-la-numerologie/index.md
+
+## Pages légales
+
+- [Contact, Clés Des Nombres](https://clesdesnombres.com/contact/): version markdown: https://clesdesnombres.com/contact/index.md
+- [Mentions Légales, Clés Des Nombres](https://clesdesnombres.com/mentions-legales/): version markdown: https://clesdesnombres.com/mentions-legales/index.md
+- [Conditions Générales de Vente (CGV), Clés Des Nombres](https://clesdesnombres.com/cgv/): version markdown: https://clesdesnombres.com/cgv/index.md
+- [Politique de Confidentialité, Clés Des Nombres](https://clesdesnombres.com/politique-confidentialite/): version markdown: https://clesdesnombres.com/politique-confidentialite/index.md

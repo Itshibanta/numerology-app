@@ -1,0 +1,10 @@
+{
+  "name": "clesdesnombres-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Site statique Clés des Nombres — pages SEO/marketing",
+  "scripts": {
+    "serve": "node serve.js",
+    "dev": "node serve.js"
+  }
+}

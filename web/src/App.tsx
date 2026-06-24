@@ -1,22 +1,19 @@
 import { Link, Routes, Route } from "react-router-dom";
 import "./App.css";
 
-import HomePage from "./pages/HomePage";
-import PricingPage from "./pages/PricingPage";
 import ThemeGeneratorPage from "./pages/ThemeGeneratorPage";
-import AboutPage from "./pages/AboutPage";
-import LegalPage from "./pages/LegalPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import ContactPage from "./pages/ContactPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import AuthCallbackPage from "./pages/AuthCallbackPage";
 
 import logo from "./assets/logo.png";
 
-import AuthCallbackPage from "./pages/AuthCallbackPage";
-
+// Les pages de contenu/SEO (accueil, silos, blog, légales) sont servies par le
+// site statique à la racine. L'app React ne gère que les routes transactionnelles.
+// -> Les liens vers le site statique sont des <a href> (navigation pleine page),
+//    les liens internes à l'app restent des <Link> (navigation SPA).
 
 function isLoggedIn(): boolean {
   const token = localStorage.getItem("auth_token");
@@ -31,15 +28,16 @@ export default function App() {
       <header className="site-header">
         <div className="header-inner">
           <div className="logo">
-            <Link to="/" aria-label="Accueil">
-              <img src={logo} alt="Numerology App" />
-            </Link>
+            <a href="/" aria-label="Accueil">
+              <img src={logo} alt="Clés Des Nombres" />
+            </a>
           </div>
 
           <nav className="nav-links">
-            <Link to="/">Accueil</Link>
-            <Link to="/pricing">Tarifs</Link>
-            <Link to="/theme">Générateur</Link>
+            <a href="/">Accueil</a>
+            <a href="/signification-chemin-de-vie/">Chemin de Vie</a>
+            <a href="/blog-numerologique/">Blog</a>
+            <Link to="/theme-numerologique">Mon thème</Link>
             {!logged ? (
               <Link to="/signin">Connexion</Link>
             ) : (
@@ -51,13 +49,7 @@ export default function App() {
 
       <main className="app-container">
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/theme" element={<ThemeGeneratorPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/legal" element={<LegalPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/theme-numerologique" element={<ThemeGeneratorPage />} />
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/profile" element={<ProfilePage />} />
@@ -68,13 +60,13 @@ export default function App() {
 
       <footer className="site-footer app-container">
         <nav className="footer-links">
-          <Link to="/about">À propos</Link>
-          <Link to="/privacy">Politique de confidentialité</Link>
-          <Link to="/legal">Mentions légales</Link>
-          <Link to="/contact">Contact</Link>
+          <a href="/mentions-legales/">Mentions légales</a>
+          <a href="/politique-confidentialite/">Confidentialité</a>
+          <a href="/cgv/">CGV</a>
+          <a href="/contact/">Contact</a>
         </nav>
         <p className="footer-note">
-          © {new Date().getFullYear()} — Tous droits réservés.
+          © {new Date().getFullYear()} Clés Des Nombres — Tous droits réservés.
         </p>
       </footer>
     </div>

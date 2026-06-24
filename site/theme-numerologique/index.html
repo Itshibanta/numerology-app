@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obtenir Mon Thème Numérologique, Formulaire | Clés Des Nombres</title>
+  <meta name="description" content="Remplissez votre état civil et recevez votre thème numérologique personnalisé complet par email sous 24h. Analyse de 20+ composantes par une numératrice certifiée.">
+  <link rel="canonical" href="https://clesdesnombres.com/theme-numerologique/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Obtenir Mon Thème Numérologique, Formulaire | Clés Des Nombres">
+  <meta property="og:description" content="Remplissez votre état civil et recevez votre thème numérologique personnalisé complet par email sous 24h.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://clesdesnombres.com/theme-numerologique/">
+
+  <link rel="stylesheet" href="../styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "name": "Thème Numérologique Personnalisé",
+        "provider": {"@type": "Organization", "name": "Clés Des Nombres", "url": "https://clesdesnombres.com"},
+        "description": "Analyse numérologique complète personnalisée à partir de l'état civil",
+        "offers": {"@type": "Offer", "price": "59.90", "priceCurrency": "EUR"},
+        "serviceType": "Numérologie personnalisée"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://clesdesnombres.com/"},
+          {"@type": "ListItem", "position": 2, "name": "Mon Thème", "item": "https://clesdesnombres.com/theme-numerologique/"}
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    /* Page-specific styles */
+    .theme-page-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2.5rem;
+      align-items: start;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* Stepper */
+    .stepper {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .step-tab {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--brown-muted);
+      text-align: center;
+      position: relative;
+      cursor: default;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .step-tab.active {
+      color: var(--sage-dark);
+      border-bottom-color: var(--sage);
+    }
+    .step-tab .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--brown-muted);
+      font-size: 0.78rem;
+      margin-right: 0.4rem;
+    }
+    .step-tab.active .step-num {
+      background: var(--sage);
+      color: #fff;
+    }
+
+    /* Steps visibility */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    /* Sidebar */
+    .theme-sidebar {
+      position: sticky;
+      top: 90px;
+    }
+    .sidebar-card {
+      background: var(--cream-card);
+      border-radius: var(--radius-md);
+      padding: 1.6rem;
+      border: 1px solid var(--border);
+      margin-bottom: 1.2rem;
+    }
+    .sidebar-card h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--brown-dark);
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.88rem;
+    }
+    .sidebar-feature .icon { color: var(--sage); font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .sidebar-feature p { margin: 0; color: var(--brown-muted); line-height: 1.4; }
+
+    /* Trust badges */
+    .trust-strip {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1.2rem;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--brown-muted);
+    }
+
+    /* Form section */
+    .form-card-large {
+      background: var(--cream-card);
+      border-radius: var(--radius-lg);
+      padding: 2.2rem 2.4rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Payment simulation */
+    .payment-option {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .payment-option:hover.payment-option.selected { border-color: var(--sage); }
+    .payment-option-header { display: flex; justify-content: space-between; align-items: center; }
+    .payment-option-header h4 { margin: 0; font-size: 0.95rem; }
+    .card-icons { display: flex; gap: 0.3rem; }
+    .card-icon { background: var(--border); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem; font-weight: 700; color: var(--brown-muted); }
+    .stripe-form { margin-top: 1rem; }
+    .stripe-input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      font-size: 0.93rem;
+      font-family: inherit;
+      background: var(--cream);
+      color: var(--brown);
+      margin-bottom: 0.8rem;
+    }
+    .stripe-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .stripe-label { font-size: 0.82rem; font-weight: 600; color: var(--brown); margin-bottom: 0.3rem; display: block; }
+    .stripe-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; color: var(--brown-muted); margin-top: 0.5rem; }
+
+    /* Confirmation */
+    .confirmation-box {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+    }
+    .confirmation-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .password-field { max-width: 400px; margin: 1.5rem auto 0; }
+
+    @media (max-width: 900px) {
+      .theme-page-layout { grid-template-columns: 1fr; }
+      .theme-sidebar { position: static; }
+    }
+    @media (max-width: 600px) {
+      .form-card-large { padding: 1.4rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="site-logo">Clés <span>Des Nombres</span></a>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-links" id="navLinks">
+        <li class="has-dropdown">
+          <a href="/signification-chemin-de-vie/">Chemin de Vie</a>
+      <div class="dropdown">
+        <a href="/signification-chemin-de-vie/" class="dropdown-title">Signification du chemin de vie</a>
+        <div class="dropdown-grid">
+          <a href="/chemin-de-vie-1/">Chemin de vie 1</a>
+          <a href="/chemin-de-vie-2/">Chemin de vie 2</a>
+          <a href="/chemin-de-vie-3/">Chemin de vie 3</a>
+          <a href="/chemin-de-vie-4/">Chemin de vie 4</a>
+          <a href="/chemin-de-vie-5/">Chemin de vie 5</a>
+          <a href="/chemin-de-vie-6/">Chemin de vie 6</a>
+          <a href="/chemin-de-vie-7/">Chemin de vie 7</a>
+          <a href="/chemin-de-vie-8/">Chemin de vie 8</a>
+          <a href="/chemin-de-vie-9/">Chemin de vie 9</a>
+        </div>
+        <span class="dropdown-sub">Chemins de vie maîtres</span>
+        <div class="dropdown-grid">
+          <a href="/chemin-de-vie-11/">Chemin de vie 11</a>
+          <a href="/chemin-de-vie-22/">Chemin de vie 22</a>
+          <a href="/chemin-de-vie-33/">Chemin de vie 33</a>
+          <a href="/chemin-de-vie-44/">Chemin de vie 44</a>
+        </div>
+      </div>
+        </li>
+        <li class="has-dropdown">
+          <a href="/signification-annee-personnelle/">Année Personnelle</a>
+      <div class="dropdown">
+        <a href="/signification-annee-personnelle/" class="dropdown-title">Signification de l'année personnelle</a>
+        <div class="dropdown-grid">
+          <a href="/annee-personnelle-1/">Année personnelle 1</a>
+          <a href="/annee-personnelle-2/">Année personnelle 2</a>
+          <a href="/annee-personnelle-3/">Année personnelle 3</a>
+          <a href="/annee-personnelle-4/">Année personnelle 4</a>
+          <a href="/annee-personnelle-5/">Année personnelle 5</a>
+          <a href="/annee-personnelle-6/">Année personnelle 6</a>
+          <a href="/annee-personnelle-7/">Année personnelle 7</a>
+          <a href="/annee-personnelle-8/">Année personnelle 8</a>
+          <a href="/annee-personnelle-9/">Année personnelle 9</a>
+        </div>
+        <span class="dropdown-sub">Années personnelles maîtres</span>
+        <div class="dropdown-grid">
+          <a href="/annee-personnelle-11/">Année personnelle 11</a>
+          <a href="/annee-personnelle-22/">Année personnelle 22</a>
+          <a href="/annee-personnelle-33/">Année personnelle 33</a>
+          <a href="/annee-personnelle-44/">Année personnelle 44</a>
+        </div>
+      </div>
+        </li>
+        <li class="has-dropdown">
+          <a href="/nombres-maitres/">Nombres Maîtres</a>
+      <div class="dropdown">
+        <a href="/nombres-maitres/" class="dropdown-title">Signification des nombres maîtres</a>
+        <div class="dropdown-grid">
+          <a href="/nombre-maitre-11/">Nombre maître 11</a>
+          <a href="/nombre-maitre-22/">Nombre maître 22</a>
+          <a href="/nombre-maitre-33/">Nombre maître 33</a>
+          <a href="/nombre-maitre-44/">Nombre maître 44</a>
+        </div>
+      </div>
+        </li>
+        <li class="has-dropdown">
+          <a href="/nombres-karmiques/">Nombres Karmiques</a>
+      <div class="dropdown">
+        <a href="/nombres-karmiques/" class="dropdown-title">Signification des nombres karmiques</a>
+        <div class="dropdown-grid">
+          <a href="/nombre-karmique-13/">Nombre karmique 13</a>
+          <a href="/nombre-karmique-14/">Nombre karmique 14</a>
+          <a href="/nombre-karmique-16/">Nombre karmique 16</a>
+          <a href="/nombre-karmique-19/">Nombre karmique 19</a>
+        </div>
+      </div>
+        </li>
+        <li><a href="/theme-numerologique/" class="nav-cta">Mon Thème</a></li>
+      </ul>
+      <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div style="background:var(--cream-warm);padding:2rem 0 0;">
+    <div class="container">
+      <h1 style="margin-bottom:0.4rem;">Générez votre thème numérologique</h1>
+      <p style="max-width:600px;margin-bottom:0;padding-bottom:1.5rem;">Remplissez votre état civil complet pour que nous puissions calculer votre analyse personnalisée. Plus les informations sont précises, plus le portrait est juste.</p>
+    </div>
+  </div>
+
+  <div class="theme-page-layout">
+
+    <!-- MAIN FORM AREA -->
+    <div>
+      <!-- STEPPER -->
+      <div class="stepper">
+        <div class="step-tab active" id="tab1">
+          <span class="step-num">1</span> Vos informations
+        </div>
+        <div class="step-tab" id="tab2">
+          <span class="step-num">2</span> Paiement
+        </div>
+        <div class="step-tab" id="tab3">
+          <span class="step-num">3</span> Confirmation
+        </div>
+      </div>
+
+      <!-- STEP 1, FORMULAIRE -->
+      <div class="step-panel active" id="panel1">
+        <div class="form-card-large">
+          <form id="themeForm" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="prenom">Prénom <span style="color:#b04747">*</span></label>
+                <input type="text" id="prenom" name="prenom" placeholder="Votre prénom usuel" required autocomplete="given-name">
+              </div>
+              <div class="form-group">
+                <label for="prenom2">Second(s) prénom(s)</label>
+                <input type="text" id="prenom2" name="prenom2" placeholder="Optionnel" autocomplete="additional-name">
+              </div>
+              <div class="form-group">
+                <label for="nom">Nom de famille (naissance) <span style="color:#b04747">*</span></label>
+                <input type="text" id="nom" name="nom" placeholder="Nom de naissance" required autocomplete="family-name">
+              </div>
+              <div class="form-group">
+                <label for="nom_marital">Nom marital</label>
+                <input type="text" id="nom_marital" name="nom_marital" placeholder="Optionnel" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="ddn">Date de naissance <span style="color:#b04747">*</span></label>
+                <input type="text" id="ddn" name="ddn" inputmode="numeric" placeholder="JJ/MM/AAAA" maxlength="10" pattern="\d{2}/\d{2}/\d{4}" title="Format : JJ/MM/AAAA" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Adresse email <span style="color:#b04747">*</span></label>
+                <input type="email" id="email" name="email" placeholder="votre@email.fr" required autocomplete="email">
+              </div>
+            </div>
+
+            <div style="margin-top:2rem;display:flex;flex-direction:column;gap:0.8rem;align-items:flex-start;">
+              <button type="button" onclick="goToPayment('paid')" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+                Recevoir mon thème complet à 59,90€
+              </button>
+              <button type="button" onclick="goToPayment('free')" class="btn btn-ghost" style="width:100%;justify-content:center;">
+                Recevoir mon aperçu gratuit
+              </button>
+            </div>
+
+            <p style="margin-top:1.2rem;font-size:0.83rem;color:var(--brown-muted);text-align:center;">
+              🔒 Vos données sont utilisées uniquement pour générer votre thème. Aucune revente.
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- STEP 2, PAIEMENT -->
+      <div class="step-panel" id="panel2">
+        <div class="form-card-large">
+
+          <!-- Version payante -->
+          <div id="paymentPaid">
+            <h3 style="margin-bottom:0.3rem;">Finaliser votre commande</h3>
+            <p style="font-size:0.9rem;margin-bottom:1.5rem;">Thème Numérologique Complet, <strong>59,90 €</strong></p>
+
+            <div class="payment-option selected" id="cardOption">
+              <div class="payment-option-header">
+                <h4>Carte bancaire</h4>
+                <div class="card-icons">
+                  <span class="card-icon">VISA</span>
+                  <span class="card-icon">MC</span>
+                  <span class="card-icon">CB</span>
+                </div>
+              </div>
+              <div class="stripe-form">
+                <label class="stripe-label">Numéro de carte</label>
+                <input class="stripe-input" type="text" placeholder="1234 5678 9012 3456" inputmode="numeric">
+                <div class="stripe-row">
+                  <div>
+                    <label class="stripe-label">Date d'expiration</label>
+                    <input class="stripe-input" id="cardExpiry" type="text" inputmode="numeric" maxlength="7" placeholder="MM / AA" style="margin:0;">
+                  </div>
+                  <div>
+                    <label class="stripe-label">CVC</label>
+                    <input class="stripe-input" type="text" placeholder="123" style="margin:0;">
+                  </div>
+                </div>
+                <label class="stripe-label" style="margin-top:0.8rem;">Nom sur la carte</label>
+                <input class="stripe-input" type="text" placeholder="Prénom NOM" style="margin-bottom:0;">
+              </div>
+            </div>
+
+            <button type="button" onclick="goToConfirmation()" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:1rem;">
+              Payer 59,90 € et recevoir mon thème
+            </button>
+            <div class="stripe-badge" style="justify-content:center;margin-top:0.8rem;">
+              🔒 Paiement sécurisé par Stripe, vos données bancaires ne nous sont jamais transmises
+            </div>
+          </div>
+
+          <!-- Version gratuite -->
+          <div id="paymentFree" style="display:none;">
+            <div style="text-align:center;padding:2rem 1rem;">
+              <div style="font-size:2.5rem;margin-bottom:1rem;">⏳</div>
+              <h3>Votre aperçu est en cours de génération...</h3>
+              <p>Nous préparons votre résumé numérologique. Vous le recevrez par email dans quelques minutes.</p>
+              <button type="button" onclick="goToConfirmation()" class="btn btn-primary" style="margin-top:1rem;">Continuer</button>
+            </div>
+          </div>
+
+          <button type="button" onclick="goToStep(1)" class="btn btn-ghost btn-sm" style="margin-top:1rem;">← Retour</button>
+        </div>
+      </div>
+
+      <!-- STEP 3, CONFIRMATION -->
+      <div class="step-panel" id="panel3">
+        <div class="form-card-large">
+          <div class="confirmation-box">
+            <div class="confirmation-icon">✨</div>
+            <h2>Votre thème numérologique est en cours de préparation</h2>
+            <p>Merci pour votre commande. Notre numératrice certifiée va maintenant calculer et rédiger votre analyse personnalisée. Vous recevrez votre thème complet par email <strong>dans les 24 prochaines heures</strong>.</p>
+            <p>Pour accéder à votre thème en ligne à tout moment, créez votre espace personnel :</p>
+            <div class="password-field">
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="password">Choisissez un mot de passe</label>
+                <input type="password" id="password" placeholder="Minimum 8 caractères">
+              </div>
+              <button type="button" class="btn btn-primary" style="width:100%;justify-content:center;">
+                Créer mon compte
+              </button>
+              <p style="font-size:0.82rem;color:var(--brown-muted);margin-top:0.8rem;text-align:center;">
+                Étape optionnelle, vous pouvez aussi consulter directement votre thème via le lien reçu par email.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="theme-sidebar">
+      <div class="sidebar-card">
+        <h4>Ce que vous allez recevoir</h4>
+        <div class="sidebar-feature">
+          <span class="icon">✓</span>
+          <p><strong>Portrait psychologique complet</strong>, votre caractère profond, vos forces, vos zones d'ombre</p>
+        </div>
+        <div class="sidebar-feature">
+          <span class="icon">✓</span>
+          <p><strong>Mission de vie</strong>, ce que votre chemin de vie révèle sur votre direction profonde</p>
+        </div>
+        <div class="sidebar-feature">
+          <span class="icon">✓</span>
+          <p><strong>Vos nombres essentiels</strong>, Expression, Actif, Héréditaire, de l'Âme</p>
+        </div>
+        <div class="sidebar-feature">
+          <span class="icon">✓</span>
+          <p><strong>Cycles & Pinnacles</strong>, les grandes phases de votre vie</p>
+        </div>
+        <div class="sidebar-feature">
+          <span class="icon">✓</span>
+          <p><strong>Année personnelle 2026</strong>, l'énergie de votre cycle actuel</p>
+        </div>
+        <div class="sidebar-feature">
+          <span class="icon">✓</span>
+          <p><strong>Nombres karmiques</strong>, les défis récurrents à comprendre</p>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item">🔒 Données 100% confidentielles</div>
+          <div class="trust-item">✉️ Livraison par email sous 24h</div>
+          <div class="trust-item">↩️ Garantie satisfaction 14 jours</div>
+          <div class="trust-item">⭐ 500+ analyses réalisées</div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h4>Ils ont franchi le pas</h4>
+        <div class="testimonial-card" style="box-shadow:none;border:none;padding:0;border-left:none;margin-bottom:1rem;">
+          <div class="stars" style="font-size:0.8rem;">★★★★★</div>
+          <blockquote style="font-size:0.85rem;">"J'ai reconnu des patterns que je ne m'expliquais pas autrement."</blockquote>
+          <div class="testimonial-author" style="font-size:0.82rem;">Sophie M., 34 ans</div>
+        </div>
+        <div class="testimonial-card" style="box-shadow:none;border:none;padding:0;border-left:none;">
+          <div class="stars" style="font-size:0.8rem;">★★★★★</div>
+          <blockquote style="font-size:0.85rem;">"L'analyse de mon année personnelle a été d'une justesse déconcertante."</blockquote>
+          <div class="testimonial-author" style="font-size:0.82rem;">Céline R., 31 ans</div>
+        </div>
+      </div>
+
+      <a href="/exemple-theme-numerologique/" class="btn btn-ghost" style="width:100%;justify-content:center;font-size:0.88rem;">
+        Voir un exemple de thème
+      </a>
+    </aside>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="site-logo">Clés <span>Des Nombres</span></a>
+      <p>L'analyse numérologique personnalisée la plus précise en France.</p>
+    </div>
+    <div class="footer-col"><h4>Explorer</h4><ul>
+      <li><a href="/signification-chemin-de-vie/">Chemin de Vie</a></li>
+      <li><a href="/signification-annee-personnelle/">Année Personnelle</a></li>
+      <li><a href="/nombres-maitres/">Nombres Maîtres</a></li>
+      <li><a href="/nombres-karmiques/">Nombres Karmiques</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Blog</h4><ul>
+      <li><a href="/blog-numerologique/">Tous les articles</a></li>
+      <li><a href="/exemple-theme-numerologique/">Exemple de thème</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Légal</h4><ul>
+      <li><a href="/contact/">Contact</a></li>
+      <li><a href="/mentions-legales/">Mentions légales</a></li>
+      <li><a href="/cgv/">CGV</a></li>
+      <li><a href="/politique-confidentialite/">Confidentialité</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Clés Des Nombres</span>
+    <a href="/theme-numerologique/">Obtenir mon thème numérologique →</a>
+  </div>
+</footer>
+
+<script>
+// FAQ Accordion
+document.querySelectorAll('.faq-question').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const answer = item.querySelector('.faq-answer');
+    const icon = item.querySelector('.faq-icon');
+    const isOpen = answer.classList.contains('open');
+    document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+    document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('open'));
+    if (!isOpen) { answer.classList.add('open'); icon.classList.add('open'); }
+  });
+});
+
+// Nav toggle
+var navToggle = document.querySelector('.nav-toggle');
+
+// Multi-step form
+var currentStep = 1;
+var chosenOption = 'paid';
+
+function goToStep(n) {
+  currentStep = n;
+  document.querySelectorAll('.step-panel').forEach((p, i) => {
+    p.classList.toggle('active', i + 1 === n);
+  });
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.toggle('active', i + 1 === n);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToPayment(option) {
+  chosenOption = option;
+  var paidDiv = document.getElementById('paymentPaid');
+  var freeDiv = document.getElementById('paymentFree');
+  if (option === 'paid') {
+    paidDiv.style.display = '';
+    freeDiv.style.display = 'none';
+  } else {
+    paidDiv.style.display = 'none';
+    freeDiv.style.display = '';
+  }
+  goToStep(2);
+}
+
+function goToConfirmation() {
+  goToStep(3);
+}
+
+// Auto-insert "/" in date fields as the user types
+function autoSlashDate(el) {
+  el.addEventListener('input', function () {
+    var v = el.value.replace(/\D/g, '').slice(0, 8);
+    var out = v;
+    if (v.length > 4) out = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+    else if (v.length > 2) out = v.slice(0, 2) + '/' + v.slice(2);
+    el.value = out;
+  });
+}
+function autoSlashExpiry(el) {
+  el.addEventListener('input', function () {
+    var v = el.value.replace(/\D/g, '').slice(0, 4);
+    el.value = v.length > 2 ? v.slice(0, 2) + '/' + v.slice(2) : v;
+  });
+}
+var ddnEl = document.getElementById('ddn');
+if (ddnEl) autoSlashDate(ddnEl);
+var expEl = document.getElementById('cardExpiry');
+if (expEl) autoSlashExpiry(expEl);
+</script>
+
+</body>
+</html>

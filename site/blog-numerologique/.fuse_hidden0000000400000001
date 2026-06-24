@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Numérologie — Articles & Guides Pratiques | Clés Des Nombres</title>
+  <meta name="description" content="Découvrez nos articles de numérologie : chemin de vie, année personnelle, nombres maîtres, karmiques et développement personnel. Guides pratiques et approfondis.">
+  <link rel="canonical" href="https://clesdesnombres.com/blog-numerologique/">
+  <meta property="og:title" content="Blog Numérologie — Articles & Guides Pratiques | Clés Des Nombres">
+  <meta property="og:description" content="Découvrez nos articles de numérologie : chemin de vie, année personnelle, nombres maîtres, karmiques et développement personnel. Guides pratiques et approfondis.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="../styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "name": "Blog Numérologie — Articles & Guides Pratiques",
+        "description": "Découvrez nos articles de numérologie : chemin de vie, année personnelle, nombres maîtres, karmiques et développement personnel.",
+        "url": "https://clesdesnombres.com/blog-numerologique/",
+        "publisher": {"@type": "Organization", "name": "Clés Des Nombres", "url": "https://clesdesnombres.com"}
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://clesdesnombres.com"},
+          {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://clesdesnombres.com/blog-numerologique/"}
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="site-logo">Clés <span>Des Nombres</span></a>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-links" id="navLinks">
+        <li class="has-dropdown">
+          <a href="/signification-chemin-de-vie/">Chemin de Vie</a>
+      <div class="dropdown">
+        <a href="/signification-chemin-de-vie/" class="dropdown-title">Signification du chemin de vie</a>
+        <div class="dropdown-grid">
+          <a href="/chemin-de-vie-1/">Chemin de vie 1</a>
+          <a href="/chemin-de-vie-2/">Chemin de vie 2</a>
+          <a href="/chemin-de-vie-3/">Chemin de vie 3</a>
+          <a href="/chemin-de-vie-4/">Chemin de vie 4</a>
+          <a href="/chemin-de-vie-5/">Chemin de vie 5</a>
+          <a href="/chemin-de-vie-6/">Chemin de vie 6</a>
+          <a href="/chemin-de-vie-7/">Chemin de vie 7</a>
+          <a href="/chemin-de-vie-8/">Chemin de vie 8</a>
+          <a href="/chemin-de-vie-9/">Chemin de vie 9</a>
+        </div>
+        <span class="dropdown-sub">Chemins de vie maîtres</span>
+        <div class="dropdown-grid">
+          <a href="/chemin-de-vie-11/">Chemin de vie 11</a>
+          <a href="/chemin-de-vie-22/">Chemin de vie 22</a>
+          <a href="/chemin-de-vie-33/">Chemin de vie 33</a>
+          <a href="/chemin-de-vie-44/">Chemin de vie 44</a>
+        </div>
+      </div>
+        </li>
+        <li class="has-dropdown">
+          <a href="/signification-annee-personnelle/">Année Personnelle</a>
+      <div class="dropdown">
+        <a href="/signification-annee-personnelle/" class="dropdown-title">Signification de l'année personnelle</a>
+        <div class="dropdown-grid">
+          <a href="/annee-personnelle-1/">Année personnelle 1</a>
+          <a href="/annee-personnelle-2/">Année personnelle 2</a>
+          <a href="/annee-personnelle-3/">Année personnelle 3</a>
+          <a href="/annee-personnelle-4/">Année personnelle 4</a>
+          <a href="/annee-personnelle-5/">Année personnelle 5</a>
+          <a href="/annee-personnelle-6/">Année personnelle 6</a>
+          <a href="/annee-personnelle-7/">Année personnelle 7</a>
+          <a href="/annee-personnelle-8/">Année personnelle 8</a>
+          <a href="/annee-personnelle-9/">Année personnelle 9</a>
+        </div>
+        <span class="dropdown-sub">Années personnelles maîtres</span>
+        <div class="dropdown-grid">
+          <a href="/annee-personnelle-11/">Année personnelle 11</a>
+          <a href="/annee-personnelle-22/">Année personnelle 22</a>
+          <a href="/annee-personnelle-33/">Année personnelle 33</a>
+          <a href="/annee-personnelle-44/">Année personnelle 44</a>
+        </div>
+      </div>
+        </li>
+        <li class="has-dropdown">
+          <a href="/nombres-maitres/">Nombres Maîtres</a>
+      <div class="dropdown">
+        <a href="/nombres-maitres/" class="dropdown-title">Signification des nombres maîtres</a>
+        <div class="dropdown-grid">
+          <a href="/nombre-maitre-11/">Nombre maître 11</a>
+          <a href="/nombre-maitre-22/">Nombre maître 22</a>
+          <a href="/nombre-maitre-33/">Nombre maître 33</a>
+          <a href="/nombre-maitre-44/">Nombre maître 44</a>
+        </div>
+      </div>
+        </li>
+        <li class="has-dropdown">
+          <a href="/nombres-karmiques/">Nombres Karmiques</a>
+      <div class="dropdown">
+        <a href="/nombres-karmiques/" class="dropdown-title">Signification des nombres karmiques</a>
+        <div class="dropdown-grid">
+          <a href="/nombre-karmique-13/">Nombre karmique 13</a>
+          <a href="/nombre-karmique-14/">Nombre karmique 14</a>
+          <a href="/nombre-karmique-16/">Nombre karmique 16</a>
+          <a href="/nombre-karmique-19/">Nombre karmique 19</a>
+        </div>
+      </div>
+        </li>
+        <li><a href="/theme-numerologique/" class="nav-cta">Mon Thème</a></li>
+      </ul>
+      <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+  <main>
+    <div class="container">
+
+      <section class="page-hero">
+        <h1>Blog Numérologie : Guides Pratiques et Analyses Approfondies</h1>
+        <p class="hero-sub">Des articles clairs, rigoureux et sans jargon ésotérique pour comprendre la numérologie et l'utiliser dans votre vie quotidienne.</p>
+      </section>
+
+      <section class="blog-intro">
+        <div class="prose">
+          <h2>Notre approche éditoriale</h2>
+          <p>La numérologie est souvent présentée sous deux angles opposés : soit comme une science occulte réservée aux initiés, soit comme une simple distraction sans profondeur. Chez Clés Des Nombres, nous défendons une troisième voie — celle d'un système symbolique structuré, accessible à tous, ancré dans une tradition millénaire et utilisable comme véritable outil de connaissance de soi.</p>
+          <p>Nos articles ne vous promettons pas de prédire votre avenir. Ils vous donnent des grilles de lecture pour mieux comprendre qui vous êtes, quels sont vos cycles naturels, quels défis et quelles forces vous accompagnent. Nous privilégions les explications concrètes, les exemples de calcul détaillés et les réponses aux vraies questions que se posent les débutants comme les praticiens confirmés.</p>
+          <p>Que vous découvriez la numérologie pour la première fois ou que vous souhaitiez approfondir un aspect précis — les nombres maîtres, les dettes karmiques, l'interprétation d'un thème complet — vous trouverez ici des ressources solides pour avancer dans votre exploration.</p>
+          <p>Chaque article est rédigé avec soin, relu pour sa précision et mis à jour régulièrement. La numérologie mérite mieux que les contenus superficiels qui circulent en ligne. C'est l'ambition de ce blog.</p>
+        </div>
+      </section>
+
+      <section class="blog-grid-section">
+        <h2>Tous nos articles</h2>
+        <div class="blog-grid">
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Fondamentaux</span>
+              <h3><a href="/blog-numerologique/quest-ce-que-la-numerologie/">Qu'est-ce que la Numérologie ? Guide Complet pour Débutants</a></h3>
+              <p>La numérologie n'est pas de la magie — c'est un système symbolique millénaire. Découvrez son histoire, ses principes fondamentaux et comment elle peut vous aider à mieux vous connaître.</p>
+              <a href="/blog-numerologique/quest-ce-que-la-numerologie/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Calculs</span>
+              <h3><a href="/blog-numerologique/comment-calculer-son-chemin-de-vie/">Comment Calculer son Chemin de Vie — Méthode Complète</a></h3>
+              <p>Le chemin de vie est le nombre le plus important de votre thème. Apprenez à le calculer étape par étape, avec des exemples concrets et la gestion des nombres maîtres 11, 22 et 33.</p>
+              <a href="/blog-numerologique/comment-calculer-son-chemin-de-vie/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Calculs</span>
+              <h3><a href="/blog-numerologique/comment-calculer-son-annee-personnelle/">Comment Calculer son Année Personnelle — Guide 2026</a></h3>
+              <p>Votre année personnelle change chaque année et détermine votre cycle énergétique dominant. Méthode de calcul, exemples et tableau des 9 cycles pour mieux planifier votre année.</p>
+              <a href="/blog-numerologique/comment-calculer-son-annee-personnelle/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Comparatif</span>
+              <h3><a href="/blog-numerologique/difference-astrologie-numerologie/">Numérologie vs Astrologie — Quelles Différences ?</a></h3>
+              <p>Deux systèmes symboliques, deux approches complémentaires. Comprendre leurs différences vous aide à savoir lequel choisir selon ce que vous cherchez à explorer.</p>
+              <a href="/blog-numerologique/difference-astrologie-numerologie/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Développement</span>
+              <h3><a href="/blog-numerologique/numerologie-et-developpement-personnel/">Numérologie et Développement Personnel</a></h3>
+              <p>Comment utiliser la numérologie comme outil de développement personnel au même titre que le MBTI ou l'Ennéagramme ? 5 applications concrètes pour intégrer votre thème à votre quotidien.</p>
+              <a href="/blog-numerologique/numerologie-et-developpement-personnel/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Karmique</span>
+              <h3><a href="/blog-numerologique/numerologie-karmique/">Numérologie Karmique — Dettes et Leçons de Vie</a></h3>
+              <p>Les nombres karmiques 13, 14, 16 et 19 indiquent des apprentissages profonds à traverser dans cette vie. Découvrez leur signification et comment les transcender.</p>
+              <a href="/blog-numerologique/numerologie-karmique/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Nombres Maîtres</span>
+              <h3><a href="/blog-numerologique/nombres-maitres-numerologie/">Les Nombres Maîtres 11, 22, 33 — Guide Complet</a></h3>
+              <p>Les nombres maîtres fascinent — et sont souvent mal compris. Ce guide explique comment les identifier, ce qu'ils signifient vraiment et pourquoi ils représentent un défi autant qu'un don.</p>
+              <a href="/blog-numerologique/nombres-maitres-numerologie/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Thème</span>
+              <h3><a href="/blog-numerologique/comment-lire-un-theme-numerologique/">Comment Lire son Thème Numérologique — Guide Pratique</a></h3>
+              <p>Vous venez de recevoir votre thème numérologique complet ? Voici comment l'aborder méthodiquement : par où commencer, comment interpréter les tensions entre nombres, et comment intégrer ces insights.</p>
+              <a href="/blog-numerologique/comment-lire-un-theme-numerologique/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-body">
+              <span class="blog-card-tag">Thème</span>
+              <h3><a href="/blog-numerologique/comprendre-un-theme-numerologique/">Comprendre son Thème Numérologique en Profondeur</a></h3>
+              <p>Au-delà de la lecture de base, comment appréhender les vibrations, les polarités et les cycles de votre thème ? Les clés pour passer d'une lecture superficielle à une compréhension transformatrice.</p>
+              <a href="/blog-numerologique/comprendre-un-theme-numerologique/" class="blog-card-link">Lire l'article →</a>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <div class="cta-section mt-lg">
+        <h2>Prêt à découvrir votre thème complet ?</h2>
+        <p>Les articles du blog donnent des clés générales. Votre thème numérologique personnalisé vous offre une analyse unique, basée sur votre date de naissance et votre état civil exact — bien plus précis qu'un horoscope.</p>
+        <a href="/theme-numerologique/" class="btn btn-primary btn-lg">Obtenir mon thème numérologique</a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="site-logo">Clés <span>Des Nombres</span></a>
+      <p>L'analyse numérologique personnalisée la plus précise en France.</p>
+    </div>
+    <div class="footer-col"><h4>Explorer</h4><ul>
+      <li><a href="/signification-chemin-de-vie/">Chemin de Vie</a></li>
+      <li><a href="/signification-annee-personnelle/">Année Personnelle</a></li>
+      <li><a href="/nombres-maitres/">Nombres Maîtres</a></li>
+      <li><a href="/nombres-karmiques/">Nombres Karmiques</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Blog</h4><ul>
+      <li><a href="/blog-numerologique/">Tous les articles</a></li>
+      <li><a href="/exemple-theme-numerologique/">Exemple de thème</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Légal</h4><ul>
+      <li><a href="/contact/">Contact</a></li>
+      <li><a href="/mentions-legales/">Mentions légales</a></li>
+      <li><a href="/cgv/">CGV</a></li>
+      <li><a href="/politique-confidentialite/">Confidentialité</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Clés Des Nombres</span>
+    <a href="/theme-numerologique/">Obtenir mon thème numérologique →</a>
+  </div>
+</footer>
+  <script>
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const answer = item.querySelector('.faq-answer');
+      const icon = item.querySelector('.faq-icon');
+      const isOpen = answer.classList.contains('open');
+      document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+      document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('open'));
+      if (!isOpen) { answer.classList.add('open'); icon.classList.add('open'); }
+    });
+  });
+  </script>
+</body>
+</html>
