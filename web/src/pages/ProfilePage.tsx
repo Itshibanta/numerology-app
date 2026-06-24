@@ -230,12 +230,8 @@ export default function ProfilePage() {
           </div>
 
           <div className="profile-row">
-            <span className="profile-label">Générations / mois</span>
-            <span className="profile-value">
-              {typeof planInfo.limit === "string"
-                ? planInfo.limit
-                : planInfo.limit}
-            </span>
+            <span className="profile-label">Thèmes</span>
+            <span className="profile-value">{planInfo.limit}</span>
           </div>
 
           <div className="profile-row">
