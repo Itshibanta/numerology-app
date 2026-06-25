@@ -227,41 +227,6 @@ export default function ProfilePage() {
       );
     }
 
-    if (tab === "plan") {
-      return (
-        <div className="profile-panel">
-          <div className="profile-row">
-            <span className="profile-label">Plan actif</span>
-            <span className="profile-value">{planInfo.name}</span>
-          </div>
-
-          <div className="profile-row">
-            <span className="profile-label">Thèmes</span>
-            <span className="profile-value">{planInfo.limit}</span>
-          </div>
-
-          <div className="profile-row">
-            <span className="profile-label">Prix</span>
-            <span className="profile-value">{planInfo.price}</span>
-          </div>
-
-          {/* Bouton gestion d'abonnement : uniquement pour les anciens plans récurrents
-              (le modèle one-shot n'a pas d'abonnement à gérer). */}
-          {["essentiel", "praticien", "pro_illimite", "pro"].includes(user.plan) && (
-            <div className="profile-subscription-actions">
-              <button
-                type="button"
-                className="profile-portal-button"
-                onClick={handleManageSubscription}
-              >
-                Gérer mon abonnement
-              </button>
-            </div>
-          )}
-        </div>
-      );
-    }
-
     // history
     return (
       <div className="profile-panel">
@@ -377,15 +342,6 @@ export default function ProfilePage() {
             onClick={() => setTab("profile")}
           >
             Profil Utilisateur
-          </button>
-          <button
-            type="button"
-            className={`profile-tab ${
-              tab === "plan" ? "active" : ""
-            }`}
-            onClick={() => setTab("plan")}
-          >
-            Plan en cours
           </button>
           <button
             type="button"

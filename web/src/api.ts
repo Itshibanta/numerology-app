@@ -222,6 +222,28 @@ export async function createOneShotCheckout(payload: OneShotPayload): Promise<st
   return json.clientSecret as string;
 }
 
+// Définit le mot de passe du compte créé après un paiement, à partir de
+// l'id de session Stripe (le backend vérifie que la session est bien payée).
+export async function setPasswordFromSession(
+  sessionId: string,
+  password: string
+): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/account/set-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_id: sessionId, password }),
+  });
+
+  const json = await res.json().catch(() => ({} as any));
+
+  if (!res.ok || !json?.ok) {
+    throw new ApiError(
+      json?.error || "Impossible de créer le mot de passe.",
+      "SET_PASSWORD_FAILED"
+    );
+  }
+}
+
 export async function createPortalSession(): Promise<string> {
   // On utilise le helper "request" qui gère déjà:
   // - API_BASE_URL

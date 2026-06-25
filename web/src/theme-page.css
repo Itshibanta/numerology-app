@@ -9,11 +9,12 @@
   padding: 2rem 1.5rem 4rem;
 }
 
-/* Stepper */
+/* Stepper : occupe toute la largeur (le trait passe au-dessus de la sidebar) */
 .stepper {
+  grid-column: 1 / -1;
   display: flex;
   gap: 0;
-  margin-bottom: 2rem;
+  margin-bottom: 0;
   border-bottom: 2px solid var(--border);
 }
 .step-tab {
@@ -55,7 +56,7 @@
 
 /* Sidebar : fixe (ne suit pas le scroll) et centrée verticalement vis-à-vis
    des encadrés "Vos informations" / "Paiement". */
-.theme-sidebar { position: static; align-self: center; }
+.theme-sidebar { position: static; align-self: start; }
 .sidebar-card {
   background: var(--cream-card);
   border-radius: var(--radius-md);

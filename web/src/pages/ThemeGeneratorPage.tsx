@@ -6,7 +6,7 @@ import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
-import { createOneShotCheckout } from "../api";
+import { createOneShotCheckout, setPasswordFromSession } from "../api";
 import "../theme-page.css";
 
 type FormData = {
@@ -39,11 +39,19 @@ export default function ThemeGeneratorPage() {
   const [purchased, setPurchased] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
+  // Création du mot de passe sur la page de confirmation
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwError, setPwError] = useState<string | null>(null);
+  const [pwDone, setPwDone] = useState(false);
+
   // Retour depuis le paiement Stripe (return_url)
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
     if (p.get("purchase") === "success") {
       setPurchased(true);
+      setSessionId(p.get("session_id"));
       window.scrollTo({ top: 0 });
     }
   }, []);
@@ -102,6 +110,29 @@ export default function ThemeGeneratorPage() {
     }
   }
 
+  async function handleCreatePassword() {
+    setPwError(null);
+    if (!password || password.length < 8) {
+      setPwError("Votre mot de passe doit contenir au moins 8 caractères.");
+      return;
+    }
+    if (!sessionId) {
+      setPwError(
+        "Session de paiement introuvable. Utilisez le lien reçu par email pour créer votre mot de passe."
+      );
+      return;
+    }
+    setPwLoading(true);
+    try {
+      await setPasswordFromSession(sessionId, password);
+      setPwDone(true);
+    } catch (err: any) {
+      setPwError(err?.message || "Impossible de créer le mot de passe.");
+    } finally {
+      setPwLoading(false);
+    }
+  }
+
   const checkoutOptions = useMemo(
     () => (clientSecret ? { clientSecret } : undefined),
     [clientSecret]
@@ -123,37 +154,71 @@ export default function ThemeGeneratorPage() {
         </div>
 
         <div className="theme-page-layout">
-          <div>
-            <div className="stepper">
-              <div className="step-tab"><span className="step-num">1</span> Vos informations</div>
-              <div className="step-tab"><span className="step-num">2</span> Paiement</div>
-              <div className="step-tab active"><span className="step-num">3</span> Confirmation</div>
-            </div>
+          <div className="stepper">
+            <div className="step-tab"><span className="step-num">1</span> Vos informations</div>
+            <div className="step-tab"><span className="step-num">2</span> Paiement</div>
+            <div className="step-tab active"><span className="step-num">3</span> Confirmation</div>
+          </div>
 
+          <div>
             <div className="form-card-large">
               <div className="confirmation-box">
                 <div className="confirmation-icon">✨</div>
                 <h2>Votre thème numérologique est en cours de préparation</h2>
                 <p>
                   Notre numérologue calcule et rédige votre analyse personnalisée.
-                  Vous recevrez votre thème complet <strong>dans les 24 heures</strong>.
+                  Vous recevrez votre thème complet <strong>dans les 24 heures</strong>,
+                  par email et sur votre compte.
                 </p>
-                <p>
-                  Un email vient de vous être envoyé pour <strong>créer votre mot de passe</strong>{" "}
-                  et accéder à votre espace personnel, où votre thème et son PDF seront
-                  disponibles.
-                </p>
-                <p style={{ fontSize: "0.85rem", color: "var(--brown-muted)", marginTop: "1rem" }}>
-                  Pensez à vérifier vos spams si vous ne voyez pas l'email d'ici quelques minutes.
-                </p>
-                <div style={{ marginTop: "1.5rem" }}>
-                  <a href="/signin" className="btn btn-primary">Accéder à mon espace</a>
-                </div>
+
+                {pwDone ? (
+                  <div className="password-field">
+                    <p style={{ color: "var(--sage-dark)", fontWeight: 600 }}>
+                      ✓ Votre mot de passe a été créé.
+                    </p>
+                    <a href="/signin" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: "0.6rem" }}>
+                      Accéder à mon espace
+                    </a>
+                  </div>
+                ) : (
+                  <div className="password-field">
+                    <p style={{ marginBottom: "0.8rem" }}>
+                      Créez le mot de passe de votre compte pour accéder à votre thème :
+                    </p>
+                    <div className="form-group" style={{ marginBottom: "1rem", textAlign: "left" }}>
+                      <label htmlFor="newPassword">Mot de passe</label>
+                      <input
+                        id="newPassword"
+                        type="password"
+                        value={password}
+                        minLength={8}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Minimum 8 caractères"
+                        autoComplete="new-password"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCreatePassword}
+                      disabled={pwLoading}
+                      className="btn btn-primary"
+                      style={{ width: "100%", justifyContent: "center" }}
+                    >
+                      {pwLoading ? "Création..." : "Créer mon compte"}
+                    </button>
+                    {pwError && (
+                      <p style={{ color: "#b04747", marginTop: "0.8rem" }}>{pwError}</p>
+                    )}
+                    <p style={{ fontSize: "0.82rem", color: "var(--brown-muted)", marginTop: "0.8rem" }}>
+                      Un email vous permet aussi de créer votre mot de passe si vous préférez le faire plus tard.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          <ThemeSidebar />
+          <ThemeSidebar showExample={false} />
         </div>
       </>
     );
@@ -174,13 +239,13 @@ export default function ThemeGeneratorPage() {
       </div>
 
       <div className="theme-page-layout">
-        <div>
-          <div className="stepper">
-            <div className={"step-tab" + (!stepPaying ? " active" : "")}><span className="step-num">1</span> Vos informations</div>
-            <div className={"step-tab" + (stepPaying ? " active" : "")}><span className="step-num">2</span> Paiement</div>
-            <div className="step-tab"><span className="step-num">3</span> Confirmation</div>
-          </div>
+        <div className="stepper">
+          <div className={"step-tab" + (!stepPaying ? " active" : "")}><span className="step-num">1</span> Vos informations</div>
+          <div className={"step-tab" + (stepPaying ? " active" : "")}><span className="step-num">2</span> Paiement</div>
+          <div className="step-tab"><span className="step-num">3</span> Confirmation</div>
+        </div>
 
+        <div>
           {!stepPaying ? (
             <div className="form-card-large">
               <div className="form-grid">

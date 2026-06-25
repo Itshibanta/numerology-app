@@ -358,6 +358,79 @@ app.post("/stripe/create-oneshot-session", async (req, res) => {
   }
 });
 
+/* ===== Création du mot de passe après paiement (depuis la page confirmation) =====
+   Le client n'est pas encore authentifié : on identifie son compte via la
+   session Stripe (vérifiée payée), puis on définit son mot de passe. */
+app.post("/account/set-password", async (req, res) => {
+  try {
+    if (!stripe) return res.status(500).json({ error: "STRIPE_DISABLED" });
+
+    const { session_id, password } = req.body || {};
+    if (!session_id || !password || String(password).length < 8) {
+      return res.status(400).json({ error: "INVALID_INPUT" });
+    }
+
+    // 1) Vérifie que la session existe et est payée
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (!session || session.payment_status !== "paid") {
+      return res.status(402).json({ error: "PAYMENT_NOT_CONFIRMED" });
+    }
+
+    const sessionEmail =
+      session.customer_details?.email ||
+      session.customer_email ||
+      session.metadata?.email ||
+      null;
+    if (!sessionEmail) return res.status(400).json({ error: "NO_EMAIL" });
+
+    // 2) Crée le compte avec ce mot de passe, ou le met à jour s'il existe déjà
+    const { data: created, error: createErr } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: sessionEmail,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          firstName: session.metadata?.prenom || "",
+          lastName: session.metadata?.nomFamille || "",
+        },
+      });
+
+    if (!createErr && created?.user) {
+      return res.json({ ok: true });
+    }
+
+    // L'utilisateur existe déjà -> on le retrouve et on met à jour le mot de passe
+    const emailLc = sessionEmail.toLowerCase();
+    let userId = null;
+    for (let page = 1; page <= 10 && !userId; page++) {
+      const { data: list, error: listErr } =
+        await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 });
+      if (listErr) break;
+      const found = (list?.users || []).find(
+        (u) => (u.email || "").toLowerCase() === emailLc
+      );
+      if (found) userId = found.id;
+      if (!list?.users || list.users.length < 200) break;
+    }
+
+    if (!userId) return res.status(404).json({ error: "ACCOUNT_NOT_FOUND" });
+
+    const { error: updErr } = await supabaseAdmin.auth.admin.updateUserById(
+      userId,
+      { password }
+    );
+    if (updErr) {
+      console.error("SET_PASSWORD_UPDATE_FAILED", updErr);
+      return res.status(500).json({ error: "SET_PASSWORD_FAILED" });
+    }
+
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error("SET_PASSWORD_FAILED", e);
+    return res.status(500).json({ error: "SET_PASSWORD_FAILED" });
+  }
+});
+
 /* ===== Stripe Billing Portal (annulation / gestion abonnement) ===== */
 app.post(
   "/stripe/create-portal-session",
