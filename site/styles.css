@@ -156,6 +156,50 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 }
 .nav-cta:hover { filter: brightness(0.96); box-shadow: 0 8px 22px rgba(143,169,144,0.4); transform: translateY(-1px); }
 
+/* Bouton "Mon compte" révélé au survol de "Mon Thème" (glisse vers le bas) */
+.nav-account-wrap { position: relative; }
+.nav-account-wrap > .nav-account {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  text-align: center;
+  white-space: nowrap;
+  /* style identique au CTA "Mon Thème" */
+  background: var(--gradient-brand);
+  color: #fff !important;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600 !important;
+  box-shadow: 0 6px 18px rgba(143,169,144,0.3);
+  /* animation d'apparition */
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), filter 0.15s, box-shadow 0.15s;
+  z-index: 60;
+}
+.nav-account-wrap > .nav-account::after { display: none; }
+/* pont invisible pour ne pas perdre le survol dans l'espace entre les 2 boutons */
+.nav-account-wrap > .nav-account::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -12px;
+  height: 14px;
+}
+.nav-account-wrap:hover > .nav-account,
+.nav-account-wrap:focus-within > .nav-account {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.nav-account-wrap > .nav-account:hover {
+  filter: brightness(0.96);
+  box-shadow: 0 8px 22px rgba(143,169,144,0.4);
+}
+
 /* Hamburger mobile */
 .nav-toggle {
   display: none;

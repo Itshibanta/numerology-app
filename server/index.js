@@ -315,11 +315,11 @@ app.post("/stripe/create-oneshot-session", async (req, res) => {
     }
 
     const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded", // paiement intégré dans la page (pas de redirection)
       mode: "payment",
       customer_email: email,
       line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
-      success_url: `${FRONTEND_URL}/theme-numerologique?purchase=success`,
-      cancel_url: `${FRONTEND_URL}/theme-numerologique?purchase=cancel`,
+      return_url: `${FRONTEND_URL}/theme-numerologique?purchase=success&session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         kind: "oneshot_theme",
         email: String(email).slice(0, 200),
@@ -332,7 +332,7 @@ app.post("/stripe/create-oneshot-session", async (req, res) => {
       },
     });
 
-    return res.json({ url: session.url });
+    return res.json({ clientSecret: session.client_secret });
   } catch (e) {
     console.error("ONESHOT_CHECKOUT_FAILED", e);
     return res.status(500).json({ error: "CHECKOUT_FAILED" });

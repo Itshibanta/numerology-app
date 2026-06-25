@@ -8,48 +8,47 @@ url: https://clesdesnombres.com/mentions-legales/
 
 Informations légales relatives à l'éditeur et à l'hébergeur du site Clés Des Nombres.
 
-Conformément aux dispositions des articles 6-III et 19 de la loi n°2004-575 du 21 juin 2004 pour la Confiance dans l'économie numérique (LCEN), voici les informations légales du site **clesdesnombres.com** .
+Vous trouverez ci-dessous les informations légales relatives à l'éditeur et à l'exploitation du site clesdesnombres.com.
 
 ## Éditeur du site
 
 Le site Clés Des Nombres est édité par :
 
-- **Dénomination / Nom :** [Nom / raison sociale]
-
-- **Statut juridique :** [Auto-entrepreneur / SARL / SAS...]
-
-- **Adresse :** [Adresse postale complète]
-
+- **Dénomination :** LVL AGENCY LLC, société de droit américain (LLC)
+- **Siège social :** 8206 Louisiana Blvd NE, Ste A, Albuquerque NM 87113, États-Unis
+- **Représentant légal / Directeur de la publication :** Louis Lavie
 - **Email :** contact@clesdesnombres.com
-
-- **SIRET :** [Numéro SIRET]
-
-- **Numéro de TVA intracommunautaire :** [N° TVA ou « TVA non applicable, art. 293 B du CGI » si franchise]
-
-- **Directeur de la publication :** [Nom du directeur de la publication]
+- **TVA :** TVA non applicable
 
 ## Hébergement
 
-Le site est hébergé par :
+Le site et les services associés sont hébergés par :
 
-- **Hébergeur :** [Nom de l'hébergeur, ex. Netlify, OVH...]
-
-- **Adresse :** [Adresse de l'hébergeur]
+- **Netlify**, hébergement du site web
+- **Render**, hébergement du serveur applicatif
+- **Supabase**, hébergement des données (région UE)
+- **Stripe**, traitement sécurisé des paiements
 
 ## Propriété intellectuelle
 
-L'ensemble des contenus présents sur le site Clés Des Nombres (textes, analyses, images, logo, charte graphique) est protégé par le droit d'auteur. Toute reproduction, représentation, modification ou exploitation, totale ou partielle, sans autorisation écrite préalable est interdite et constituerait une contrefaçon sanctionnée par le Code de la propriété intellectuelle.
+L'ensemble des éléments du site (textes, analyses, visuels, marques, identité graphique, interface) est protégé par le droit de la propriété intellectuelle. Toute reproduction, représentation, modification ou diffusion, totale ou partielle, sans autorisation écrite préalable est interdite.
 
-## Responsabilité
+## Nature des informations fournies
 
-Les analyses numérologiques proposées sur ce site constituent un outil de connaissance de soi à visée de développement personnel. Elles n'ont aucune valeur médicale, psychologique, juridique ou financière et ne sauraient se substituer à l'avis d'un professionnel qualifié. L'éditeur ne saurait être tenu responsable des décisions prises sur la base de ces contenus.
+Les analyses numérologiques proposées relèvent du domaine du bien-être et du développement personnel. Elles ne constituent ni un conseil médical, ni psychologique, ni juridique, ni financier. Aucun résultat n'est garanti et l'utilisateur demeure seul responsable de ses décisions.
 
-## Liens hypertextes
+## Liens externes
 
-Le site peut contenir des liens vers d'autres sites. Clés Des Nombres n'exerce aucun contrôle sur ces sites et décline toute responsabilité quant à leur contenu.
+Le site peut contenir des liens vers des sites tiers. Clés Des Nombres n'exerce aucun contrôle sur ces sites et décline toute responsabilité quant à leur contenu.
+
+## Données personnelles
+
+Le traitement des données personnelles est décrit dans notre politique de confidentialité.
 
 ## Droit applicable
 
-Les présentes mentions légales sont régies par le droit français. En cas de litige, et après échec de toute tentative de résolution amiable, les tribunaux français seront seuls compétents.
+Les présentes mentions légales sont soumises au droit applicable dans le pays d'établissement de la société éditrice, sous réserve des dispositions d'ordre public applicables aux utilisateurs résidant dans l'Union européenne.
 
-*Dernière mise à jour : [date] . Les champs surlignés sont à compléter avec vos informations légales réelles.*
+## Limitation de responsabilité
+
+Malgré le soin apporté au contenu, l'absence totale d'erreurs ou d'interruptions ne peut être garantie. L'accès au service est proposé « en l'état », sans garantie de performance ou de résultat.

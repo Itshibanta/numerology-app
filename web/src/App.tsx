@@ -13,13 +13,7 @@ import AuthCallbackPage from "./pages/AuthCallbackPage";
 // cohérence visuelle totale. Liens vers le site SEO = <a href> (pleine page),
 // liens internes app = <Link> (SPA). Aucune logique de génération touchée.
 
-function isLoggedIn(): boolean {
-  const token = localStorage.getItem("auth_token");
-  return !!token;
-}
-
 export default function App() {
-  const logged = isLoggedIn();
   const [navOpen, setNavOpen] = useState(false);
 
   return (
@@ -101,9 +95,10 @@ export default function App() {
                   </div>
                 </div>
               </li>
-              <li><a href="/blog-numerologique/">Blog</a></li>
-              <li><Link to="/theme-numerologique" className="nav-cta">Mon Thème</Link></li>
-              <li>{logged ? <Link to="/profile">Mon profil</Link> : <Link to="/signin">Connexion</Link>}</li>
+              <li className="nav-account-wrap">
+                <Link to="/theme-numerologique" className="nav-cta">Mon Thème</Link>
+                <Link to="/signin" className="nav-account">Mon compte</Link>
+              </li>
             </ul>
             <button className="nav-toggle" onClick={() => setNavOpen((o) => !o)} aria-label="Menu">
               <span></span><span></span><span></span>

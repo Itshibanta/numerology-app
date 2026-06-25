@@ -8,7 +8,7 @@ url: https://clesdesnombres.com/
 
 Vous n'êtes pas une date de naissance parmi d'autres. Votre prénom, votre nom, vos chiffres racontent une histoire unique, celle de qui vous êtes en profondeur, de ce que vous êtes venu accomplir, et de pourquoi certains patterns se répètent dans votre vie.
 
-✓ Plus de 500 analyses réalisées · ✓ Satisfaction garantie 14 jours · ✓ Livraison par email sous 24h
+✓ Plus de 500 analyses réalisées · ✓ Paiement unique, sans abonnement · ✓ Livraison par email sous 24h
 
 ## Vous cherchez des réponses. Pas des calculs.
 
@@ -150,7 +150,7 @@ L'analyse numérologique la plus complète disponible en ligne
 
 - Accès en ligne permanent
 
-- Garantie satisfaction 14 jours
+- Paiement unique, sans abonnement
 
 ## Questions fréquentes
 
@@ -158,4 +158,4 @@ L'analyse numérologique la plus complète disponible en ligne
 
 Votre thème numérologique attend d'être écrit. Il suffit de votre prénom, votre nom et votre date de naissance. Le reste, c'est nous qui nous en chargeons.
 
-✓ Garantie 14 jours · Livraison sous 24h · Données 100% confidentielles
+✓ Paiement unique · Livraison sous 24h · Données 100% confidentielles

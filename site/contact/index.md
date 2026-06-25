@@ -12,12 +12,8 @@ Une question sur votre thème numérologique, votre commande ou notre démarche 
 
 ## Nous écrire
 
-Par email : **[contact@clesdesnombres.com](mailto:contact@clesdesnombres.com)** [À compléter / adapter : votre adresse email réelle]
-
-## Formulaire de contact
-
-Vous pouvez aussi utiliser le formulaire ci-dessous. [À connecter à votre service d'envoi : Formspree, Netlify Forms, ou votre back-office]
+Par email, à l'adresse suivante : contact@clesdesnombres.com
 
 ## Avant de nous écrire
 
-De nombreuses réponses se trouvent déjà dans nos pages dédiées : consultez la [page de commande](https://clesdesnombres.com/theme-numerologique/), nos [conditions générales de vente](https://clesdesnombres.com/cgv/) ou notre [politique de confidentialité](https://clesdesnombres.com/politique-confidentialite/) . Vous pouvez aussi explorer un [exemple de thème complet](https://clesdesnombres.com/exemple-theme-numerologique/) pour découvrir ce que vous recevrez.
+De nombreuses réponses se trouvent déjà dans nos pages dédiées : la page de commande, nos conditions générales de vente ou notre politique de confidentialité. Vous pouvez aussi explorer un exemple de thème complet pour découvrir ce que vous recevrez.

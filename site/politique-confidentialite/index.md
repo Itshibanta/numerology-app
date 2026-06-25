@@ -8,42 +8,73 @@ url: https://clesdesnombres.com/politique-confidentialite/
 
 Comment nous protégeons vos données personnelles, dans le respect du RGPD.
 
-Clés Des Nombres accorde une grande importance à la protection de vos données personnelles. La présente politique explique quelles données nous collectons, pourquoi, et quels sont vos droits, conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés.
+La présente politique explique comment nous collectons, utilisons et protégeons vos données personnelles lorsque vous utilisez notre site et nos services, conformément au Règlement Général sur la Protection des Données (RGPD).
 
-## Responsable du traitement
+## Éditeur et responsable du traitement
 
-Le responsable du traitement des données est l'éditeur du site, dont les coordonnées figurent dans les [mentions légales](https://clesdesnombres.com/mentions-legales/) . Pour toute question relative à vos données : **contact@clesdesnombres.com** .
+Le site est édité par **LVL AGENCY LLC**, société de droit américain (LLC), dont le siège social est situé 8206 Louisiana Blvd NE, Ste A, Albuquerque NM 87113, États-Unis. Responsable légal : Louis Lavie. Pour toute question relative à vos données : contact@clesdesnombres.com.
 
-## Données collectées
+## Champ d'application
 
-Dans le cadre de nos services, nous collectons :
+Cette politique s'applique aux utilisateurs résidant en France et, plus généralement, dans l'Union européenne. Elle est conforme au RGPD.
 
-- Les données d'état civil nécessaires à la réalisation du thème : prénom(s), nom(s), date de naissance ;
+## Données personnelles collectées
 
-- Votre adresse email, pour la livraison et le suivi de votre commande ;
+Nous collectons uniquement les données nécessaires à la fourniture de nos services :
 
-- Les données de commande et de paiement (traitées par notre prestataire de paiement, sans conservation des coordonnées bancaires par nos soins) ;
+- Nom et prénom ;
+- Données d'état civil nécessaires au thème : prénom(s), nom(s), date de naissance ;
+- Adresse email ;
+- Informations de compte (gérées et sécurisées par Supabase, mot de passe hashé) ;
+- Adresse IP (sécurité et prévention de la fraude) ;
+- Identifiant technique Stripe (Customer ID) ;
+- Historique des thèmes générés, afin de vous permettre d'y accéder.
 
-- Le cas échéant, les données techniques de navigation (cookies, voir ci-dessous).
+Nous ne stockons jamais vos données bancaires : les paiements sont traités exclusivement par **Stripe**.
 
-## Finalités et base légale
+## Finalités du traitement
 
-Vos données sont utilisées pour : exécuter votre commande (base légale : exécution du contrat), vous contacter à propos de votre thème (intérêt légitime), respecter nos obligations légales et comptables, et, avec votre consentement, vous adresser d'éventuelles communications.
+- Création et gestion de votre compte utilisateur ;
+- Accès à vos thèmes numérologiques ;
+- Facturation et gestion de votre commande ;
+- Envoi d'emails transactionnels (livraison du thème, suivi de commande) ;
+- Sécurisation du service et amélioration de l'expérience.
+
+## Base légale du traitement
+
+- Exécution du contrat (création de compte et accès au service) ;
+- Respect d'obligations légales (facturation) ;
+- Intérêt légitime (sécurisation du service).
+
+## Sous-traitants
+
+Nous travaillons uniquement avec des prestataires reconnus :
+
+- Supabase, hébergement des données (UE) ;
+- Stripe, paiement sécurisé ;
+- Render, hébergement back-end ;
+- Netlify, hébergement front-end.
 
 ## Durée de conservation
 
-Vos données sont conservées le temps nécessaire à la fourniture du service et au respect de nos obligations légales (notamment comptables). [Préciser vos durées, ex. 3 ans après le dernier contact pour les prospects, 10 ans pour les pièces comptables] . Au-delà, elles sont supprimées ou anonymisées.
-
-## Partage des données
-
-Vos données ne sont jamais vendues. Elles peuvent être partagées avec nos prestataires techniques strictement nécessaires (paiement, hébergement, envoi d'emails), tenus à la confidentialité.
+Les données de compte et d'historique sont conservées tant que votre compte reste actif. Vous pouvez demander leur suppression à tout moment.
 
 ## Cookies
 
-Le site peut utiliser des cookies techniques nécessaires à son fonctionnement et, le cas échéant, des cookies de mesure d'audience. [Préciser si vous utilisez un outil de mesure d'audience, ex. Google Analytics, Matomo, ou aucun] . Vous pouvez configurer votre navigateur pour les refuser.
+Le site utilise uniquement les cookies techniques nécessaires à son fonctionnement. Aucun outil de mesure d'audience tiers n'est utilisé à ce jour. Vous pouvez configurer votre navigateur pour refuser les cookies.
 
 ## Vos droits
 
-Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité de vos données. Pour les exercer, écrivez à **contact@clesdesnombres.com** . Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr).
+Conformément au RGPD, vous disposez des droits d'accès, de rectification, d'effacement, d'opposition et de portabilité. Pour les exercer : contact@clesdesnombres.com. Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr).
 
-*Dernière mise à jour : [date] . Les champs surlignés sont à compléter selon vos outils et durées réels.*
+## Sécurité et protection
+
+Nous mettons en œuvre des mesures techniques et organisationnelles adaptées pour protéger vos données. Les mots de passe sont gérés et hashés par Supabase.
+
+## Transferts hors UE
+
+Certains prestataires peuvent être situés hors de l'Union européenne. Ils appliquent des garanties conformes au RGPD (clauses contractuelles types).
+
+## Modifications de la politique
+
+Cette politique pourra être mise à jour. La version en ligne fait foi.

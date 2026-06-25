@@ -62,4 +62,4 @@ Les mois de septembre à novembre 2026 correspondent à une fenêtre de manifest
 
 Ce que vous venez de lire a été calculé et rédigé à partir d'un état civil fictif. Imaginez la précision lorsque c'est *le vôtre* qui est analysé. Votre thème complet vous attend, il suffit de votre prénom, votre nom et votre date de naissance.
 
-✓ Garantie 14 jours · Livraison sous 24h · 500+ analyses réalisées
+✓ Paiement unique · Livraison sous 24h · 500+ analyses réalisées

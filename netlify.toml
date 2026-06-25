@@ -9,7 +9,7 @@
   # 1) build de l'app React (assets sous /app/ grâce à vite base)
   # 2) on assemble : site/ à la racine de dist, app React sous dist/app/
   # 3) on retire la page statique /theme-numerologique (servie par React)
-  command = "npm --prefix web ci && npm --prefix web run build && rm -rf dist && mkdir -p dist && cp -R site/. dist/ && rm -rf dist/theme-numerologique && mkdir -p dist/app && cp -R web/dist/. dist/app/"
+  command = "npm --prefix web install --no-audit --no-fund && npm --prefix web run build && rm -rf dist && mkdir -p dist && cp -R site/. dist/ && rm -rf dist/theme-numerologique && mkdir -p dist/app && cp -R web/dist/. dist/app/"
 
 [build.environment]
   NODE_VERSION = "22"
