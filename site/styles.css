@@ -97,6 +97,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   position: sticky;
   top: 0;
   z-index: 100;
+  margin: 0; /* annule toute marge héritée (évite l'espace header/section) */
 }
 .header-inner {
   max-width: var(--max-w);
@@ -151,43 +152,43 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   padding: 0.5rem 1.2rem;
   border-radius: 999px;
   font-weight: 600 !important;
-  box-shadow: 0 6px 18px rgba(143,169,144,0.3);
-  transition: filter 0.15s !important, box-shadow 0.15s !important, transform 0.15s !important;
+  box-shadow: none; /* pas d'ombre sous le bouton */
+  transition: filter 0.15s !important, transform 0.15s !important;
 }
-.nav-cta:hover { filter: brightness(0.96); box-shadow: 0 8px 22px rgba(143,169,144,0.4); transform: translateY(-1px); }
+.nav-cta:hover { filter: brightness(0.96); transform: translateY(-1px); text-decoration: none; }
 
 /* Bouton "Mon compte" révélé au survol de "Mon Thème" (glisse vers le bas) */
 .nav-account-wrap { position: relative; }
 .nav-account-wrap > .nav-account {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 30px); /* plus bas que "Mon Thème", après le chemin de boules */
   left: 0;
   right: 0;
   text-align: center;
   white-space: nowrap;
-  /* style identique au CTA "Mon Thème" */
+  /* même style que le CTA "Mon Thème", sans ombre */
   background: var(--gradient-brand);
   color: #fff !important;
   padding: 0.5rem 1.2rem;
   border-radius: 999px;
   font-weight: 600 !important;
-  box-shadow: 0 6px 18px rgba(143,169,144,0.3);
+  box-shadow: none;
   /* animation d'apparition */
   opacity: 0;
   transform: translateY(-8px);
   pointer-events: none;
-  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), filter 0.15s, box-shadow 0.15s;
+  transition: opacity 0.22s var(--ease), transform 0.22s var(--ease), filter 0.15s;
   z-index: 60;
 }
-.nav-account-wrap > .nav-account::after { display: none; }
+.nav-account-wrap > .nav-account::after { display: none; } /* pas de soulignement */
 /* pont invisible pour ne pas perdre le survol dans l'espace entre les 2 boutons */
 .nav-account-wrap > .nav-account::before {
   content: '';
   position: absolute;
   left: 0;
   right: 0;
-  top: -12px;
-  height: 14px;
+  top: -34px;
+  height: 36px;
 }
 .nav-account-wrap:hover > .nav-account,
 .nav-account-wrap:focus-within > .nav-account {
@@ -195,10 +196,49 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   transform: translateY(0);
   pointer-events: auto;
 }
-.nav-account-wrap > .nav-account:hover {
-  filter: brightness(0.96);
-  box-shadow: 0 8px 22px rgba(143,169,144,0.4);
+.nav-account-wrap > .nav-account:hover { filter: brightness(0.96); }
+
+/* Chemin de 2 boules (même couleur) entre les 2 boutons, synchronisé avec l'animation */
+.nav-account-wrap::before,
+.nav-account-wrap::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s var(--ease), transform 0.22s var(--ease);
+  z-index: 59;
 }
+.nav-account-wrap::before { /* petite boule (proche de "Mon Thème") */
+  width: 5px;
+  height: 5px;
+  top: calc(100% + 9px);
+  transform: translate(-50%, -5px);
+}
+.nav-account-wrap::after { /* boule un peu plus grosse (vers "Mon compte") */
+  width: 8px;
+  height: 8px;
+  top: calc(100% + 17px);
+  transform: translate(-50%, -5px);
+}
+.nav-account-wrap:hover::before,
+.nav-account-wrap:focus-within::before {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 0.04s;
+}
+.nav-account-wrap:hover::after,
+.nav-account-wrap:focus-within::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 0.10s;
+}
+
+/* Aucun soulignement au survol sur les deux boutons */
+.nav-links a.nav-cta:hover,
+.nav-account-wrap a.nav-account:hover { text-decoration: none; }
 
 /* Hamburger mobile */
 .nav-toggle {

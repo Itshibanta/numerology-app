@@ -332,6 +332,25 @@ app.post("/stripe/create-oneshot-session", async (req, res) => {
       },
     });
 
+    // Stocke le prospect dès la saisie (même s'il ne paie pas).
+    // client = "No" tant que le paiement n'est pas confirmé ; passe à "Yes"
+    // dans le webhook. Non bloquant pour le paiement.
+    try {
+      await supabaseAdmin.from("leads").insert({
+        email,
+        prenom: prenom || null,
+        second_prenom: secondPrenom || null,
+        nom_famille: nomFamille || null,
+        nom_marital: nomMarital || null,
+        date_naissance: dateNaissance || null,
+        lieu_naissance: lieuNaissance || null,
+        client: "No",
+        stripe_session_id: session.id,
+      });
+    } catch (leadErr) {
+      console.error("LEAD_INSERT_FAILED", leadErr);
+    }
+
     return res.json({ clientSecret: session.client_secret });
   } catch (e) {
     console.error("ONESHOT_CHECKOUT_FAILED", e);

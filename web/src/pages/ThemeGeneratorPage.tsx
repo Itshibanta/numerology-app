@@ -224,7 +224,7 @@ export default function ThemeGeneratorPage() {
                 </button>
               </div>
 
-              <div className="stripe-badge" style={{ justifyContent: "center", marginTop: "1rem" }}>
+              <div className="stripe-badge" style={{ display: "flex", justifyContent: "center", textAlign: "center", marginTop: "1rem" }}>
                 🔒 Paiement sécurisé par Stripe — vos données bancaires ne nous sont jamais transmises
               </div>
 
@@ -236,31 +236,22 @@ export default function ThemeGeneratorPage() {
             </div>
           ) : (
             <div className="form-card-large">
-              <h3 style={{ marginBottom: "1rem" }}>Finaliser votre paiement</h3>
               {checkoutOptions && stripePromise && (
                 <EmbeddedCheckoutProvider stripe={stripePromise} options={checkoutOptions}>
                   <EmbeddedCheckout />
                 </EmbeddedCheckoutProvider>
               )}
-              <button
-                type="button"
-                onClick={() => { setClientSecret(null); setError(null); }}
-                className="btn btn-ghost btn-sm"
-                style={{ marginTop: "1.2rem" }}
-              >
-                ← Modifier mes informations
-              </button>
             </div>
           )}
         </div>
 
-        <ThemeSidebar />
+        <ThemeSidebar showExample={!stepPaying} />
       </div>
     </>
   );
 }
 
-function ThemeSidebar() {
+function ThemeSidebar({ showExample = true }: { showExample?: boolean }) {
   return (
     <aside className="theme-sidebar">
       <div className="sidebar-card">
@@ -278,9 +269,11 @@ function ThemeSidebar() {
         </div>
       </div>
 
-      <a href="/exemple-theme-numerologique/" className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", fontSize: "0.88rem" }}>
-        Voir un exemple de thème
-      </a>
+      {showExample && (
+        <a href="/exemple-theme-numerologique/" className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", fontSize: "0.88rem" }}>
+          Voir un exemple de thème
+        </a>
+      )}
     </aside>
   );
 }

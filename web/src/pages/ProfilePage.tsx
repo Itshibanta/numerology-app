@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getMe, getGeneration, createPortalSession, type MeResponse } from "../api";
+import { supabase } from "../supabaseClient";
 import { jsPDF } from "jspdf";
 
 type TabKey = "profile" | "plan" | "history";
@@ -26,7 +27,12 @@ function formatPlan(plan: string) {
   return { name: plan || "Inconnu", limit: "?" as const, price: "—" };
 }
 
-function logoutAndRedirect() {
+async function logoutAndRedirect() {
+  try {
+    await supabase.auth.signOut();
+  } catch {
+    /* ignore */
+  }
   localStorage.removeItem("auth_token");
   localStorage.removeItem("user");
   window.location.href = "/signin";

@@ -16,7 +16,7 @@ export default function ResetPasswordPage() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://classy-sfogliatella-0aecf9.netlify.app/reset-password",
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
       // ✅ Message “anti-enumération”: on dit la même chose quoi qu’il arrive

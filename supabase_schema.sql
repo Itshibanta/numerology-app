@@ -171,5 +171,34 @@ create policy "themes_read_own" on storage.objects
   );
 
 -- ============================================================================
+-- 7) TABLE leads
+--    Prospects : on stocke l'état civil saisi DÈS la création de la session de
+--    paiement, même si la personne ne paie pas. La colonne "client" passe de
+--    'No' à 'Yes' une fois le paiement confirmé (webhook).
+-- ============================================================================
+create table if not exists public.leads (
+  id                 uuid primary key default gen_random_uuid(),
+  email              text,
+  prenom             text,
+  second_prenom      text,
+  nom_famille        text,
+  nom_marital        text,
+  date_naissance     text,
+  lieu_naissance     text,
+  client             text not null default 'No',   -- 'No' | 'Yes'
+  stripe_session_id  text,
+  created_at         timestamptz not null default now()
+);
+
+create index if not exists leads_email_idx   on public.leads (email);
+create index if not exists leads_session_idx on public.leads (stripe_session_id);
+
+-- Accès réservé au backend (service role). RLS activé sans policy publique.
+alter table public.leads enable row level security;
+
+-- Si la table existait déjà sans la colonne client, on l'ajoute :
+alter table public.leads add column if not exists client text not null default 'No';
+
+-- ============================================================================
 -- FIN
 -- ============================================================================

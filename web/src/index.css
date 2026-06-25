@@ -5,7 +5,7 @@
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  background-color: #faf8f3; /* blanc crème */
+  background-color: #F8F9FB; /* blanc crème */
   color: #3a2f2a; /* texte principal */
 }
 
@@ -18,7 +18,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #faf8f3;
+  background-color: #F8F9FB;
 }
 
 #root {

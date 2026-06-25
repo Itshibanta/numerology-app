@@ -165,6 +165,16 @@ async function handleOneShotPayment(session) {
 
   const targetName = `${payload.prenom} ${payload.nomFamille}`.trim();
 
+  // Le prospect est devenu client : on bascule le lead à "Yes" (best-effort).
+  try {
+    await supabaseAdmin
+      .from("leads")
+      .update({ client: "Yes" })
+      .eq("stripe_session_id", session.id);
+  } catch (leadErr) {
+    console.error("LEAD_UPDATE_FAILED", leadErr);
+  }
+
   // 1) Compte (créé sans mot de passe si nouveau)
   const { user, isNew } = await findOrCreateUserByEmail(email, {
     firstName: payload.prenom,

@@ -13,9 +13,15 @@ export default function SignInPage() {
   const confirmed = params.get("confirmed") === "1";
 
   useEffect(() => {
-    // Nettoie un éventuel token legacy pour éviter les effets bizarres
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("user");
+    // Si une session Supabase existe déjà (ex: après confirmation d'email,
+    // ou clic sur "Mon compte" en étant connecté) -> on va directement au profil.
+    supabase.auth.getSession().then(({ data }) => {
+      const token = data.session?.access_token;
+      if (token) {
+        localStorage.setItem("auth_token", token);
+        window.location.href = "/profile";
+      }
+    });
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -42,7 +48,7 @@ export default function SignInPage() {
       // Garde ton système existant: token en localStorage pour appeler ton backend
       localStorage.setItem("auth_token", data.session.access_token);
 
-      window.location.href = "/";
+      window.location.href = "/profile";
     } catch (err: any) {
       setError(err?.message || "Connexion impossible.");
     } finally {

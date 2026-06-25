@@ -26,8 +26,7 @@ export default function SignUpPage() {
         password,
         options: {
           data: { firstName, lastName },
-          emailRedirectTo:
-            "https://classy-sfogliatella-0aecf9.netlify.app/signin?confirmed=1",
+          emailRedirectTo: `${window.location.origin}/signin?confirmed=1`,
         },
       });
 
@@ -39,7 +38,7 @@ export default function SignUpPage() {
       // Option A (anti-énumération) : message neutre, même si l'email existe déjà
       setSubmitted(true);
       setInfo(
-        "Si un compte existe déjà, connectez-vous. Sinon, vérifiez vos emails pour confirmer l’inscription."
+        "Vérifiez vos emails pour confirmer l’inscription. Si un compte existe déjà, connectez-vous."
       );
     } catch (err: any) {
       setError(err?.message || "Impossible de créer le compte.");
@@ -58,9 +57,24 @@ export default function SignUpPage() {
       <div className="form-card">
         {error && <p style={{ color: "#b04747", marginBottom: "1rem" }}>{error}</p>}
         {info && (
-          <p style={{ background: "rgba(166,187,167,0.15)", border: "1px solid var(--sage)", borderRadius: "var(--radius-sm)", padding: "0.7rem 0.9rem", marginBottom: "1rem", color: "var(--brown-mid)" }}>
-            {info}
-          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "0.6rem",
+              alignItems: "flex-start",
+              background: "var(--cream-warm)",
+              borderLeft: "3px solid var(--sage)",
+              borderRadius: "var(--radius-md)",
+              padding: "0.9rem 1.1rem",
+              marginBottom: "1.2rem",
+              color: "var(--brown-mid)",
+              fontSize: "0.92rem",
+              lineHeight: 1.5,
+            }}
+          >
+            <span style={{ color: "var(--sage-dark)", fontWeight: 700 }}>✓</span>
+            <span>{info}</span>
+          </div>
         )}
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -86,7 +100,7 @@ export default function SignUpPage() {
 
           <div className="form-actions">
             <button type="submit" className="btn btn-primary btn-lg" disabled={loading || submitted} style={{ width: "100%", justifyContent: "center" }}>
-              {submitted ? "Email envoyé ✅" : loading ? "Création..." : "S’inscrire"}
+              {submitted ? "Email envoyé" : loading ? "Création..." : "S’inscrire"}
             </button>
           </div>
         </form>

@@ -53,8 +53,9 @@
 .step-panel { display: none; }
 .step-panel.active { display: block; }
 
-/* Sidebar */
-.theme-sidebar { position: sticky; top: 90px; }
+/* Sidebar : fixe (ne suit pas le scroll) et centrée verticalement vis-à-vis
+   des encadrés "Vos informations" / "Paiement". */
+.theme-sidebar { position: static; align-self: center; }
 .sidebar-card {
   background: var(--cream-card);
   border-radius: var(--radius-md);

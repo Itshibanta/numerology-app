@@ -15,14 +15,14 @@ body {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Helvetica Neue", Arial, sans-serif;
-  background-color: #faf8f3; /* blanc crème */
+  background-color: #F8F9FB; /* blanc crème */
   color: #3e332d; /* brun doux */
 }
 
 /* ========= APP CONTAINER ========= */
 
 .app-root {
-  background-color: #faf8f3;
+  background-color: #F8F9FB;
   min-height: 100vh;
   flex-direction: column;
 }
@@ -68,7 +68,7 @@ body {
 }
 
 .nav-links a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 
@@ -1293,7 +1293,7 @@ main.app-container + footer.site-footer {
 }
 
 .nav-links a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .modal-overlay{
@@ -1379,9 +1379,9 @@ main.app-container + footer.site-footer {
 
 .btn-primary{
   border: none;
-  background: #111827;
+  background: #a6bba7;
   color: #fff;
-  box-shadow: 0 10px 22px rgba(17,24,39,0.22);
+  box-shadow: none;
 }
 
 .btn-secondary{
