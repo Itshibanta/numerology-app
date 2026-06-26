@@ -30,6 +30,8 @@ const {
   generateNumerologyTheme,
   generateNumerologySummary,
 } = require("./numerologyLogic");
+const { buildThemePdfBuffer } = require("./themePdf");
+const { sendEmail, emailLayout } = require("./email");
 
 /* ===========================================
    ENV / APP INIT
@@ -318,6 +320,7 @@ app.post("/stripe/create-oneshot-session", async (req, res) => {
       ui_mode: "embedded", // paiement intégré dans la page (pas de redirection)
       mode: "payment",
       customer_email: email,
+      allow_promotion_codes: true, // champ "code promo" dans le checkout
       line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
       return_url: `${FRONTEND_URL}/theme-numerologique?purchase=success&session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
@@ -735,7 +738,7 @@ app.get("/me", async (req, res) => {
 
     const { data: history, error: hErr } = await supabaseAdmin
       .from("generations")
-      .select("id, created_at, type, label")
+      .select("id, created_at, type, label, delivered, deliver_at")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -755,6 +758,8 @@ app.get("/me", async (req, res) => {
         date: x.created_at,
         type: x.type,
         label: x.label,
+        delivered: x.delivered !== false, // true si livré (ou ancien thème sans colonne)
+        deliverAt: x.deliver_at || null,
       })),
     });
   } catch (e) {
@@ -831,6 +836,100 @@ app.get("/generations/:id/pdf", async (req, res) => {
   }
 });
 
+
+/* ===========================================
+   CRON DE LIVRAISON (déclenché par cron-job.org)
+   Génère le thème, fabrique + publie le PDF, marque livré, envoie l'email.
+=========================================== */
+async function deliverOneGeneration(gen) {
+  const payload = gen.payload || {};
+  const targetName = `${payload.prenom || ""} ${payload.nomFamille || ""}`.trim();
+
+  // 1) Génère le texte si absent (logique de génération inchangée, réutilisée)
+  let text = gen.result_text;
+  if (!text) {
+    text = await generateNumerologyTheme({
+      prenom: payload.prenom,
+      secondPrenom: payload.secondPrenom,
+      nomFamille: payload.nomFamille,
+      nomMarital: payload.nomMarital,
+      dateNaissance: payload.dateNaissance,
+      lieuNaissance: payload.lieuNaissance,
+    });
+    await supabaseAdmin.from("generations").update({ result_text: text }).eq("id", gen.id);
+  }
+
+  // 2) PDF -> Storage
+  const pdfBuffer = await buildThemePdfBuffer(
+    targetName ? `Thème numérologique — ${targetName}` : "Thème numérologique",
+    text
+  );
+  const pdfPath = `${gen.user_id}/${gen.id}.pdf`;
+  const { error: upErr } = await supabaseAdmin.storage
+    .from("themes")
+    .upload(pdfPath, pdfBuffer, { contentType: "application/pdf", upsert: true });
+  if (upErr) throw new Error("PDF_UPLOAD_FAILED: " + upErr.message);
+
+  // 3) Marque comme livré
+  await supabaseAdmin
+    .from("generations")
+    .update({ pdf_path: pdfPath, delivered: true })
+    .eq("id", gen.id);
+
+  // 4) Email "thème prêt"
+  try {
+    const { data: u } = await supabaseAdmin.auth.admin.getUserById(gen.user_id);
+    const email = u?.user?.email;
+    if (email) {
+      const html = emailLayout(
+        "Votre thème numérologique est prêt",
+        `<p style="line-height:1.6;">Votre analyse personnalisée est disponible dans votre espace personnel.</p>
+         <p style="line-height:1.6;"><a href="${FRONTEND_URL}/signin" style="color:#6f8f72;">Accéder à mon thème</a></p>`
+      );
+      await sendEmail({
+        to: email,
+        subject: "Votre thème numérologique est prêt — Clés Des Nombres",
+        html,
+      });
+    }
+  } catch (mailErr) {
+    console.error("DELIVERY_EMAIL_FAILED", gen.id, mailErr?.message);
+  }
+}
+
+app.all("/cron/deliver", async (req, res) => {
+  const secret = req.query.secret || req.headers["x-cron-secret"];
+  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+    return res.status(401).json({ error: "UNAUTHORIZED" });
+  }
+  try {
+    const nowIso = new Date().toISOString();
+    const { data: due, error } = await supabaseAdmin
+      .from("generations")
+      .select("id, user_id, payload, result_text")
+      .eq("delivered", false)
+      .not("deliver_at", "is", null)
+      .lte("deliver_at", nowIso)
+      .order("deliver_at", { ascending: true })
+      .limit(5);
+
+    if (error) return res.status(500).json({ error: "QUERY_FAILED", detail: error.message });
+
+    let delivered = 0;
+    for (const gen of due || []) {
+      try {
+        await deliverOneGeneration(gen);
+        delivered++;
+      } catch (e) {
+        console.error("DELIVER_ITEM_FAILED", gen.id, e?.message);
+      }
+    }
+    return res.json({ ok: true, due: (due || []).length, delivered });
+  } catch (e) {
+    console.error("CRON_DELIVER_FAILED", e);
+    return res.status(500).json({ error: "INTERNAL" });
+  }
+});
 
 /* ===========================================
    START SERVER

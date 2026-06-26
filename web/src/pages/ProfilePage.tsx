@@ -259,7 +259,16 @@ export default function ProfilePage() {
                     {h.type === "summary" ? "Gratuit" : "Complet"}
                   </div>
 
-                  {h.type === "theme" && (
+                  {h.type === "theme" && !h.delivered && (
+                    <div style={{ fontSize: 13, color: "#8a7d73", textAlign: "right" }}>
+                      En préparation
+                      {h.deliverAt
+                        ? ` — disponible le ${new Date(h.deliverAt).toLocaleString()}`
+                        : ""}
+                    </div>
+                  )}
+
+                  {h.type === "theme" && h.delivered && (
                     <button
                       type="button"
                       className="auth-btn"

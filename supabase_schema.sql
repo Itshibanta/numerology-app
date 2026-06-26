@@ -200,5 +200,16 @@ alter table public.leads enable row level security;
 alter table public.leads add column if not exists client text not null default 'No';
 
 -- ============================================================================
+-- 8) LIVRAISON DIFFÉRÉE des thèmes
+--    deliver_at = quand le thème doit être livré (achat + 7h).
+--    delivered  = false tant que le PDF n'est pas publié / l'email envoyé.
+-- ============================================================================
+alter table public.generations add column if not exists deliver_at timestamptz;
+alter table public.generations add column if not exists delivered boolean not null default false;
+
+create index if not exists generations_delivery_idx
+  on public.generations (delivered, deliver_at);
+
+-- ============================================================================
 -- FIN
 -- ============================================================================

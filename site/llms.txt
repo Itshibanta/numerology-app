@@ -8,6 +8,8 @@ Paiement unique de 59,90 €, sans abonnement. Livraison par email et sur le com
 ## Pages principales
 
 - [Thème Numérologique Personnalisé en Ligne](https://clesdesnombres.com/): version markdown: https://clesdesnombres.com/index.md
+- [Qu'est-ce que la Numérologie ? Introduction Complète](https://clesdesnombres.com/decouvrir-la-numerologie/): version markdown: https://clesdesnombres.com/decouvrir-la-numerologie/index.md
+- [Nombre d'Expression (ou de Destinée), Signification & Calcul](https://clesdesnombres.com/signification-nombre-expression/): version markdown: https://clesdesnombres.com/signification-nombre-expression/index.md
 - [Obtenir Mon Thème Numérologique, Formulaire](https://clesdesnombres.com/theme-numerologique/): version markdown: https://clesdesnombres.com/theme-numerologique/index.md
 - [Exemple de Thème Numérologique Complet](https://clesdesnombres.com/exemple-theme-numerologique/): version markdown: https://clesdesnombres.com/exemple-theme-numerologique/index.md
 
@@ -60,6 +62,141 @@ Paiement unique de 59,90 €, sans abonnement. Livraison par email et sur le com
 - [Nombre Karmique 14, La Dette de la Liberté](https://clesdesnombres.com/nombre-karmique-14/): version markdown: https://clesdesnombres.com/nombre-karmique-14/index.md
 - [Nombre Karmique 16, La Dette de l'Ego](https://clesdesnombres.com/nombre-karmique-16/): version markdown: https://clesdesnombres.com/nombre-karmique-16/index.md
 - [Nombre Karmique 19, La Dette de l'Indépendance](https://clesdesnombres.com/nombre-karmique-19/): version markdown: https://clesdesnombres.com/nombre-karmique-19/index.md
+
+## Guides, Nombre d'expression
+
+- [Nombre d'Expression 1, L'Indépendant](https://clesdesnombres.com/nombre-expression-1/): version markdown: https://clesdesnombres.com/nombre-expression-1/index.md
+- [Nombre d'Expression 2, Le Coopérateur](https://clesdesnombres.com/nombre-expression-2/): version markdown: https://clesdesnombres.com/nombre-expression-2/index.md
+- [Nombre d'Expression 3, Le Communicant](https://clesdesnombres.com/nombre-expression-3/): version markdown: https://clesdesnombres.com/nombre-expression-3/index.md
+- [Nombre d'Expression 4, L'Organisateur](https://clesdesnombres.com/nombre-expression-4/): version markdown: https://clesdesnombres.com/nombre-expression-4/index.md
+- [Nombre d'Expression 5, Le Polyvalent](https://clesdesnombres.com/nombre-expression-5/): version markdown: https://clesdesnombres.com/nombre-expression-5/index.md
+- [Nombre d'Expression 6, Le Responsable](https://clesdesnombres.com/nombre-expression-6/): version markdown: https://clesdesnombres.com/nombre-expression-6/index.md
+- [Nombre d'Expression 7, Le Penseur](https://clesdesnombres.com/nombre-expression-7/): version markdown: https://clesdesnombres.com/nombre-expression-7/index.md
+- [Nombre d'Expression 8, Le Réalisateur](https://clesdesnombres.com/nombre-expression-8/): version markdown: https://clesdesnombres.com/nombre-expression-8/index.md
+- [Nombre d'Expression 9, L'Humaniste](https://clesdesnombres.com/nombre-expression-9/): version markdown: https://clesdesnombres.com/nombre-expression-9/index.md
+- [Nombre d'Expression 11, L'Inspiré](https://clesdesnombres.com/nombre-expression-11/): version markdown: https://clesdesnombres.com/nombre-expression-11/index.md
+- [Nombre d'Expression 22, Le Grand Bâtisseur](https://clesdesnombres.com/nombre-expression-22/): version markdown: https://clesdesnombres.com/nombre-expression-22/index.md
+- [Nombre d'Expression 33, Le Guide](https://clesdesnombres.com/nombre-expression-33/): version markdown: https://clesdesnombres.com/nombre-expression-33/index.md
+- [Nombre d'Expression 44, Le Maître d'Œuvre](https://clesdesnombres.com/nombre-expression-44/): version markdown: https://clesdesnombres.com/nombre-expression-44/index.md
+
+## Guides, Nombre ressource
+
+- [Nombre Ressource, Signification & Calcul](https://clesdesnombres.com/signification-nombre-ressource/): version markdown: https://clesdesnombres.com/signification-nombre-ressource/index.md
+- [Nombre Ressource 1, L'Autonomie](https://clesdesnombres.com/nombre-ressource-1/): version markdown: https://clesdesnombres.com/nombre-ressource-1/index.md
+- [Nombre Ressource 2, La Coopération](https://clesdesnombres.com/nombre-ressource-2/): version markdown: https://clesdesnombres.com/nombre-ressource-2/index.md
+- [Nombre Ressource 3, La Créativité](https://clesdesnombres.com/nombre-ressource-3/): version markdown: https://clesdesnombres.com/nombre-ressource-3/index.md
+- [Nombre Ressource 4, La Rigueur](https://clesdesnombres.com/nombre-ressource-4/): version markdown: https://clesdesnombres.com/nombre-ressource-4/index.md
+- [Nombre Ressource 5, L'Adaptabilité](https://clesdesnombres.com/nombre-ressource-5/): version markdown: https://clesdesnombres.com/nombre-ressource-5/index.md
+- [Nombre Ressource 6, Le Soutien](https://clesdesnombres.com/nombre-ressource-6/): version markdown: https://clesdesnombres.com/nombre-ressource-6/index.md
+- [Nombre Ressource 7, La Lucidité](https://clesdesnombres.com/nombre-ressource-7/): version markdown: https://clesdesnombres.com/nombre-ressource-7/index.md
+- [Nombre Ressource 8, La Détermination](https://clesdesnombres.com/nombre-ressource-8/): version markdown: https://clesdesnombres.com/nombre-ressource-8/index.md
+- [Nombre Ressource 9, La Générosité](https://clesdesnombres.com/nombre-ressource-9/): version markdown: https://clesdesnombres.com/nombre-ressource-9/index.md
+- [Nombre Ressource 11, L'Inspiration](https://clesdesnombres.com/nombre-ressource-11/): version markdown: https://clesdesnombres.com/nombre-ressource-11/index.md
+- [Nombre Ressource 22, La Force de Construction](https://clesdesnombres.com/nombre-ressource-22/): version markdown: https://clesdesnombres.com/nombre-ressource-22/index.md
+- [Nombre Ressource 33, L'Amour](https://clesdesnombres.com/nombre-ressource-33/): version markdown: https://clesdesnombres.com/nombre-ressource-33/index.md
+- [Nombre Ressource 44, La Maîtrise](https://clesdesnombres.com/nombre-ressource-44/): version markdown: https://clesdesnombres.com/nombre-ressource-44/index.md
+
+## Guides, Nombre actif
+
+- [Nombre Actif, Signification & Calcul](https://clesdesnombres.com/signification-nombre-actif/): version markdown: https://clesdesnombres.com/signification-nombre-actif/index.md
+- [Nombre Actif 1, L'Initiateur](https://clesdesnombres.com/nombre-actif-1/): version markdown: https://clesdesnombres.com/nombre-actif-1/index.md
+- [Nombre Actif 2, Le Diplomate](https://clesdesnombres.com/nombre-actif-2/): version markdown: https://clesdesnombres.com/nombre-actif-2/index.md
+- [Nombre Actif 3, L'Expressif](https://clesdesnombres.com/nombre-actif-3/): version markdown: https://clesdesnombres.com/nombre-actif-3/index.md
+- [Nombre Actif 4, L'Organisé](https://clesdesnombres.com/nombre-actif-4/): version markdown: https://clesdesnombres.com/nombre-actif-4/index.md
+- [Nombre Actif 5, Le Réactif](https://clesdesnombres.com/nombre-actif-5/): version markdown: https://clesdesnombres.com/nombre-actif-5/index.md
+- [Nombre Actif 6, Le Protecteur](https://clesdesnombres.com/nombre-actif-6/): version markdown: https://clesdesnombres.com/nombre-actif-6/index.md
+- [Nombre Actif 7, Le Réfléchi](https://clesdesnombres.com/nombre-actif-7/): version markdown: https://clesdesnombres.com/nombre-actif-7/index.md
+- [Nombre Actif 8, L'Entreprenant](https://clesdesnombres.com/nombre-actif-8/): version markdown: https://clesdesnombres.com/nombre-actif-8/index.md
+- [Nombre Actif 9, L'Altruiste](https://clesdesnombres.com/nombre-actif-9/): version markdown: https://clesdesnombres.com/nombre-actif-9/index.md
+- [Nombre Actif 11, L'Intuitif](https://clesdesnombres.com/nombre-actif-11/): version markdown: https://clesdesnombres.com/nombre-actif-11/index.md
+- [Nombre Actif 22, Le Bâtisseur](https://clesdesnombres.com/nombre-actif-22/): version markdown: https://clesdesnombres.com/nombre-actif-22/index.md
+- [Nombre Actif 33, Le Dévoué](https://clesdesnombres.com/nombre-actif-33/): version markdown: https://clesdesnombres.com/nombre-actif-33/index.md
+- [Nombre Actif 44, Le Maître d'Action](https://clesdesnombres.com/nombre-actif-44/): version markdown: https://clesdesnombres.com/nombre-actif-44/index.md
+
+## Guides, Nombre d'élan spirituel
+
+- [Nombre d'Élan Spirituel, Signification & Calcul](https://clesdesnombres.com/signification-nombre-elan-spirituel/): version markdown: https://clesdesnombres.com/signification-nombre-elan-spirituel/index.md
+- [Nombre d'Élan Spirituel 1, L'Indépendance](https://clesdesnombres.com/nombre-elan-spirituel-1/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-1/index.md
+- [Nombre d'Élan Spirituel 2, L'Union](https://clesdesnombres.com/nombre-elan-spirituel-2/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-2/index.md
+- [Nombre d'Élan Spirituel 3, L'Expression Joyeuse](https://clesdesnombres.com/nombre-elan-spirituel-3/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-3/index.md
+- [Nombre d'Élan Spirituel 4, La Stabilité](https://clesdesnombres.com/nombre-elan-spirituel-4/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-4/index.md
+- [Nombre d'Élan Spirituel 5, La Liberté](https://clesdesnombres.com/nombre-elan-spirituel-5/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-5/index.md
+- [Nombre d'Élan Spirituel 6, L'Amour et le Foyer](https://clesdesnombres.com/nombre-elan-spirituel-6/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-6/index.md
+- [Nombre d'Élan Spirituel 7, La Vérité](https://clesdesnombres.com/nombre-elan-spirituel-7/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-7/index.md
+- [Nombre d'Élan Spirituel 8, La Réussite](https://clesdesnombres.com/nombre-elan-spirituel-8/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-8/index.md
+- [Nombre d'Élan Spirituel 9, L'Idéal Universel](https://clesdesnombres.com/nombre-elan-spirituel-9/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-9/index.md
+- [Nombre d'Élan Spirituel 11, L'Élévation Spirituelle](https://clesdesnombres.com/nombre-elan-spirituel-11/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-11/index.md
+- [Nombre d'Élan Spirituel 22, La Grande Œuvre](https://clesdesnombres.com/nombre-elan-spirituel-22/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-22/index.md
+- [Nombre d'Élan Spirituel 33, L'Amour Universel](https://clesdesnombres.com/nombre-elan-spirituel-33/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-33/index.md
+- [Nombre d'Élan Spirituel 44, La Maîtrise](https://clesdesnombres.com/nombre-elan-spirituel-44/): version markdown: https://clesdesnombres.com/nombre-elan-spirituel-44/index.md
+
+## Guides, Nombre héréditaire
+
+- [Nombre Héréditaire, Signification & Calcul](https://clesdesnombres.com/signification-nombre-hereditaire/): version markdown: https://clesdesnombres.com/signification-nombre-hereditaire/index.md
+- [Nombre Héréditaire 1, L'Autonomie](https://clesdesnombres.com/nombre-hereditaire-1/): version markdown: https://clesdesnombres.com/nombre-hereditaire-1/index.md
+- [Nombre Héréditaire 2, La Sensibilité](https://clesdesnombres.com/nombre-hereditaire-2/): version markdown: https://clesdesnombres.com/nombre-hereditaire-2/index.md
+- [Nombre Héréditaire 3, La Créativité](https://clesdesnombres.com/nombre-hereditaire-3/): version markdown: https://clesdesnombres.com/nombre-hereditaire-3/index.md
+- [Nombre Héréditaire 4, Le Sens du Travail](https://clesdesnombres.com/nombre-hereditaire-4/): version markdown: https://clesdesnombres.com/nombre-hereditaire-4/index.md
+- [Nombre Héréditaire 5, La Liberté](https://clesdesnombres.com/nombre-hereditaire-5/): version markdown: https://clesdesnombres.com/nombre-hereditaire-5/index.md
+- [Nombre Héréditaire 6, Le Sens de la Famille](https://clesdesnombres.com/nombre-hereditaire-6/): version markdown: https://clesdesnombres.com/nombre-hereditaire-6/index.md
+- [Nombre Héréditaire 7, La Réflexion](https://clesdesnombres.com/nombre-hereditaire-7/): version markdown: https://clesdesnombres.com/nombre-hereditaire-7/index.md
+- [Nombre Héréditaire 8, L'Ambition](https://clesdesnombres.com/nombre-hereditaire-8/): version markdown: https://clesdesnombres.com/nombre-hereditaire-8/index.md
+- [Nombre Héréditaire 9, La Générosité](https://clesdesnombres.com/nombre-hereditaire-9/): version markdown: https://clesdesnombres.com/nombre-hereditaire-9/index.md
+- [Nombre Héréditaire 11, L'Inspiration](https://clesdesnombres.com/nombre-hereditaire-11/): version markdown: https://clesdesnombres.com/nombre-hereditaire-11/index.md
+- [Nombre Héréditaire 22, Le Sens de la Construction](https://clesdesnombres.com/nombre-hereditaire-22/): version markdown: https://clesdesnombres.com/nombre-hereditaire-22/index.md
+- [Nombre Héréditaire 33, Le Don de Soi](https://clesdesnombres.com/nombre-hereditaire-33/): version markdown: https://clesdesnombres.com/nombre-hereditaire-33/index.md
+- [Nombre Héréditaire 44, La Maîtrise](https://clesdesnombres.com/nombre-hereditaire-44/): version markdown: https://clesdesnombres.com/nombre-hereditaire-44/index.md
+
+## Guides, Nombre d'équilibre
+
+- [Nombre d'équilibre, signification & calcul](https://clesdesnombres.com/signification-nombre-equilibre/) : posture saine pour revenir au centre, calculée sur les initiales.
+- [Nombre d'équilibre 1](https://clesdesnombres.com/nombre-equilibre-1/)
+- [Nombre d'équilibre 2](https://clesdesnombres.com/nombre-equilibre-2/)
+- [Nombre d'équilibre 3](https://clesdesnombres.com/nombre-equilibre-3/)
+- [Nombre d'équilibre 4](https://clesdesnombres.com/nombre-equilibre-4/)
+- [Nombre d'équilibre 5](https://clesdesnombres.com/nombre-equilibre-5/)
+- [Nombre d'équilibre 6](https://clesdesnombres.com/nombre-equilibre-6/)
+- [Nombre d'équilibre 7](https://clesdesnombres.com/nombre-equilibre-7/)
+- [Nombre d'équilibre 8](https://clesdesnombres.com/nombre-equilibre-8/)
+- [Nombre d'équilibre 9](https://clesdesnombres.com/nombre-equilibre-9/)
+- [Nombre d'équilibre 11](https://clesdesnombres.com/nombre-equilibre-11/)
+- [Nombre d'équilibre 22](https://clesdesnombres.com/nombre-equilibre-22/)
+- [Nombre d'équilibre 33](https://clesdesnombres.com/nombre-equilibre-33/)
+- [Nombre d'équilibre 44](https://clesdesnombres.com/nombre-equilibre-44/)
+
+## Guides, Nombre de réalisation
+
+- [Nombre de réalisation, signification & calcul](https://clesdesnombres.com/signification-nombre-realisation/) : ce que vous bâtissez en maturité, calculé sur le jour et le mois de naissance.
+- [Nombre de réalisation 1](https://clesdesnombres.com/nombre-realisation-1/)
+- [Nombre de réalisation 2](https://clesdesnombres.com/nombre-realisation-2/)
+- [Nombre de réalisation 3](https://clesdesnombres.com/nombre-realisation-3/)
+- [Nombre de réalisation 4](https://clesdesnombres.com/nombre-realisation-4/)
+- [Nombre de réalisation 5](https://clesdesnombres.com/nombre-realisation-5/)
+- [Nombre de réalisation 6](https://clesdesnombres.com/nombre-realisation-6/)
+- [Nombre de réalisation 7](https://clesdesnombres.com/nombre-realisation-7/)
+- [Nombre de réalisation 8](https://clesdesnombres.com/nombre-realisation-8/)
+- [Nombre de réalisation 9](https://clesdesnombres.com/nombre-realisation-9/)
+- [Nombre de réalisation 11](https://clesdesnombres.com/nombre-realisation-11/)
+- [Nombre de réalisation 22](https://clesdesnombres.com/nombre-realisation-22/)
+- [Nombre de réalisation 33](https://clesdesnombres.com/nombre-realisation-33/)
+- [Nombre de réalisation 44](https://clesdesnombres.com/nombre-realisation-44/)
+
+## Guides, Nombre Moi Intime
+
+- [Nombre Moi Intime, signification & calcul](https://clesdesnombres.com/signification-nombre-moi-intime/) : vos besoins affectifs profonds, calculés sur les consonnes du nom de naissance.
+- [Nombre Moi Intime 1](https://clesdesnombres.com/nombre-moi-intime-1/)
+- [Nombre Moi Intime 2](https://clesdesnombres.com/nombre-moi-intime-2/)
+- [Nombre Moi Intime 3](https://clesdesnombres.com/nombre-moi-intime-3/)
+- [Nombre Moi Intime 4](https://clesdesnombres.com/nombre-moi-intime-4/)
+- [Nombre Moi Intime 5](https://clesdesnombres.com/nombre-moi-intime-5/)
+- [Nombre Moi Intime 6](https://clesdesnombres.com/nombre-moi-intime-6/)
+- [Nombre Moi Intime 7](https://clesdesnombres.com/nombre-moi-intime-7/)
+- [Nombre Moi Intime 8](https://clesdesnombres.com/nombre-moi-intime-8/)
+- [Nombre Moi Intime 9](https://clesdesnombres.com/nombre-moi-intime-9/)
+- [Nombre Moi Intime 11](https://clesdesnombres.com/nombre-moi-intime-11/)
+- [Nombre Moi Intime 22](https://clesdesnombres.com/nombre-moi-intime-22/)
+- [Nombre Moi Intime 33](https://clesdesnombres.com/nombre-moi-intime-33/)
+- [Nombre Moi Intime 44](https://clesdesnombres.com/nombre-moi-intime-44/)
 
 ## Blog
 

@@ -7,6 +7,7 @@ import {
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
 import { createOneShotCheckout, setPasswordFromSession } from "../api";
+import { supabase } from "../supabaseClient";
 import "../theme-page.css";
 
 type FormData = {
@@ -45,6 +46,7 @@ export default function ThemeGeneratorPage() {
   const [pwLoading, setPwLoading] = useState(false);
   const [pwError, setPwError] = useState<string | null>(null);
   const [pwDone, setPwDone] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Retour depuis le paiement Stripe (return_url)
   useEffect(() => {
@@ -54,6 +56,10 @@ export default function ThemeGeneratorPage() {
       setSessionId(p.get("session_id"));
       window.scrollTo({ top: 0 });
     }
+    // Si l'acheteur est déjà connecté, on n'affiche pas la création de mot de passe.
+    supabase.auth.getSession().then(({ data }) => {
+      setIsLoggedIn(!!data.session);
+    });
   }, []);
 
   function formatDateNaissance(raw: string): string {
@@ -167,11 +173,18 @@ export default function ThemeGeneratorPage() {
                 <h2>Votre thème numérologique est en cours de préparation</h2>
                 <p>
                   Notre numérologue calcule et rédige votre analyse personnalisée.
-                  Vous recevrez votre thème complet <strong>dans les 24 heures</strong>,
+                  Vous recevrez votre thème complet <strong>dans les prochaines heures</strong>,
                   par email et sur votre compte.
                 </p>
 
-                {pwDone ? (
+                {isLoggedIn ? (
+                  <div className="password-field">
+                    <p>Votre thème sera disponible dans votre espace personnel.</p>
+                    <a href="/profile" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: "0.6rem" }}>
+                      Accéder à mon espace
+                    </a>
+                  </div>
+                ) : pwDone ? (
                   <div className="password-field">
                     <p style={{ color: "var(--sage-dark)", fontWeight: 600 }}>
                       ✓ Votre mot de passe a été créé.

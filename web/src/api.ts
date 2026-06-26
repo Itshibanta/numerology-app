@@ -149,7 +149,14 @@ export async function loginUser(payload: LoginPayload) {
 export type MeResponse = {
   success: true;
   user: { firstName: string; lastName: string; email: string; plan: string };
-  history: { id: string; date: string; type: "summary" | "theme"; label: string }[];
+  history: {
+    id: string;
+    date: string;
+    type: "summary" | "theme";
+    label: string;
+    delivered: boolean;
+    deliverAt: string | null;
+  }[];
 };
 
 export async function getMe(): Promise<MeResponse> {

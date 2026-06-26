@@ -3,9 +3,18 @@ import { supabase } from "../supabaseClient";
 import "../App.css";
 
 export default function ResetPasswordPage() {
+  // Détection SYNCHRONE dès le 1er rendu (évite le flash "saisir email") :
+  // le lien reçu par email arrive avec un token dans le hash de l'URL.
+  function initialMode(): "request" | "update" {
+    if (typeof window === "undefined") return "request";
+    const h = window.location.hash || "";
+    if (/access_token|type=recovery/.test(h)) return "update";
+    return "request";
+  }
+
   // "request" = saisir son email pour recevoir un lien.
   // "update"  = on arrive depuis le lien email -> on choisit directement le mot de passe.
-  const [mode, setMode] = useState<"request" | "update">("request");
+  const [mode, setMode] = useState<"request" | "update">(initialMode);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,8 +24,13 @@ export default function ResetPasswordPage() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    // Si on arrive via le lien reçu par email, Supabase crée une session :
-    // on passe alors en mode "choisir un mot de passe".
+    // Lien expiré/invalide : Supabase met l'erreur dans le hash.
+    if (/error=/.test(window.location.hash)) {
+      setError(
+        "Ce lien a expiré ou est invalide. Saisissez votre email pour en recevoir un nouveau."
+      );
+    }
+    // Confirme le mode "update" si une session de récupération est bien créée.
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) setMode("update");
     });

@@ -1,13 +1,15 @@
 // server/stripeWebhook.js
 const Stripe = require("stripe");
-const { supabase, supabaseAdmin } = require("./supabase");
+const { supabaseAdmin } = require("./supabase");
 const { getPlanKeyByStripePriceId } = require("./plansCatalog");
-const { generateNumerologyTheme } = require("./numerologyLogic");
-const { buildThemePdfBuffer } = require("./themePdf");
+const { sendEmail, emailLayout } = require("./email");
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const FRONTEND_URL = (process.env.FRONTEND_URL || "").trim();
+
+// Délai entre l'achat et la livraison du thème (effet "rédigé par une numérologue").
+const DELIVERY_DELAY_MS = 7 * 60 * 60 * 1000; // 7 heures
 
 function getSubPriceId(subscription) {
   const item = subscription?.items?.data?.[0];
@@ -73,71 +75,15 @@ async function findOrCreateUserByEmail(email, meta) {
   throw new Error(`USER_LOOKUP_FAILED for ${email}`);
 }
 
-// Travail lourd lancé en arrière-plan (génération + PDF + email).
-// Ne JAMAIS bloquer la réponse au webhook là-dessus.
-async function processThemeAsync({ userId, genId, email, isNew, payload, targetName }) {
-  try {
-    // 1) Génération du thème (logique inchangée, simplement réutilisée)
-    const themeTexte = await generateNumerologyTheme({
-      prenom: payload.prenom,
-      secondPrenom: payload.secondPrenom,
-      nomFamille: payload.nomFamille,
-      nomMarital: payload.nomMarital,
-      dateNaissance: payload.dateNaissance,
-      lieuNaissance: payload.lieuNaissance,
-    });
-
-    // 2) Sauvegarde du texte
-    await supabaseAdmin
-      .from("generations")
-      .update({ result_text: themeTexte })
-      .eq("id", genId);
-
-    // 3) PDF serveur -> Storage (non bloquant si échec)
-    try {
-      const pdfBuffer = await buildThemePdfBuffer(
-        targetName ? `Thème numérologique — ${targetName}` : "Thème numérologique",
-        themeTexte
-      );
-      const pdfPath = `${userId}/${genId}.pdf`;
-
-      const { error: upErr } = await supabaseAdmin.storage
-        .from("themes")
-        .upload(pdfPath, pdfBuffer, {
-          contentType: "application/pdf",
-          upsert: true,
-        });
-
-      if (upErr) {
-        console.error("PDF_UPLOAD_FAILED", upErr);
-      } else {
-        await supabaseAdmin
-          .from("generations")
-          .update({ pdf_path: pdfPath })
-          .eq("id", genId);
-      }
-    } catch (pdfErr) {
-      console.error("PDF_BUILD_FAILED", pdfErr);
-    }
-
-    // 4) Email d'accès au compte (uniquement pour un nouveau compte)
-    //    Supabase envoie le lien via le SMTP configuré (Resend).
-    if (isNew) {
-      try {
-        const { error: mailErr } = await supabase.auth.resetPasswordForEmail(
-          email,
-          { redirectTo: `${FRONTEND_URL}/reset-password` }
-        );
-        if (mailErr) console.error("ACCESS_EMAIL_FAILED", mailErr);
-      } catch (mailErr) {
-        console.error("ACCESS_EMAIL_FAILED", mailErr);
-      }
-    }
-
-    console.log("ONESHOT_THEME_DONE", { userId, genId });
-  } catch (e) {
-    console.error("ONESHOT_THEME_ASYNC_FAILED", { userId, genId, error: e?.message });
-  }
+// Email de confirmation d'achat (immédiat).
+async function sendPurchaseConfirmation(email) {
+  const html = emailLayout(
+    "Merci pour votre commande",
+    `<p style="line-height:1.6;">Votre <strong>thème numérologique personnalisé</strong> est en cours de préparation. Vous le recevrez par email et dans votre espace personnel <strong>d'ici quelques heures</strong>.</p>
+     <p style="line-height:1.6;">Pensez à créer le mot de passe de votre compte (sur la page de confirmation après paiement) pour accéder à votre espace. Si besoin, vous pourrez aussi le faire via « Mot de passe oublié » sur la page de connexion.</p>
+     <p style="line-height:1.6;"><a href="${FRONTEND_URL}/signin" style="color:#6f8f72;">Accéder à mon espace</a></p>`
+  );
+  await sendEmail({ to: email, subject: "Votre commande est confirmée — Clés Des Nombres", html });
 }
 
 async function handleOneShotPayment(session) {
@@ -210,8 +156,11 @@ async function handleOneShotPayment(session) {
     return;
   }
 
-  // 3) Ligne de génération "claim" (remplie ensuite en async)
-  const { data: inserted, error: insErr } = await supabaseAdmin
+  // 3) Ligne de génération programmée pour livraison dans ~7h.
+  //    Le texte et le PDF seront générés au moment de la livraison (cron).
+  const deliverAt = new Date(Date.now() + DELIVERY_DELAY_MS).toISOString();
+
+  const { error: insErr } = await supabaseAdmin
     .from("generations")
     .insert({
       user_id: userId,
@@ -219,24 +168,19 @@ async function handleOneShotPayment(session) {
       label: targetName ? `Thème numérologique ${targetName}` : "Thème numérologique",
       payload,
       result_text: null,
-    })
-    .select("id")
-    .single();
+      deliver_at: deliverAt,
+      delivered: false,
+    });
 
-  if (insErr || !inserted) {
+  if (insErr) {
     console.error("ONESHOT_GEN_INSERT_FAILED", insErr);
     return;
   }
 
-  // 4) Lancement du travail lourd SANS bloquer la réponse au webhook
-  processThemeAsync({
-    userId,
-    genId: inserted.id,
-    email,
-    isNew,
-    payload,
-    targetName,
-  });
+  // 4) Email de confirmation immédiat (Resend). isNew non utilisé : la création
+  //    du mot de passe se fait sur la page de confirmation ou via reset.
+  void isNew;
+  await sendPurchaseConfirmation(email);
 }
 
 /* ============================================================

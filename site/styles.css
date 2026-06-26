@@ -1308,6 +1308,56 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   transition: background 0.12s, color 0.12s;
 }
 .dropdown-grid a:hover { background: rgba(166,187,167,0.15); color: var(--sage-dark); }
+.dropdown-grid + .dropdown-title { margin-top: 0.9rem; }
+.dropdown--compact { min-width: 210px; }
+.dropdown-grid--col { grid-template-columns: 1fr; }
+
+/* ===== Menu "Découvrir la numérologie" : sous-menu vertical + flyout latéral ===== */
+.dropdown--discover { min-width: 240px; padding: 0.5rem; }
+.discover-item { position: relative; }
+.discover-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--brown-dark);
+  text-decoration: none;
+}
+.discover-link::after { display: none; }
+.discover-caret { color: var(--brown-muted); font-weight: 700; }
+.discover-item:hover > .discover-link,
+.discover-item:focus-within > .discover-link {
+  background: rgba(166,187,167,0.15);
+  color: var(--sage-dark);
+}
+.flyout {
+  position: absolute;
+  top: -0.6rem;
+  left: 100%;
+  margin-left: 0.45rem;
+  min-width: 340px;
+  background: var(--cream-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 1.1rem 1.2rem 1.2rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 210;
+}
+.discover-item:hover > .flyout,
+.discover-item:focus-within > .flyout {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+.flyout .dropdown-sub:first-child { margin-top: 0; }
 
 /* ===== MODERN CONTENT SECTIONS (chemin / guides) ===== */
 /* Clean headings (no numbered badges) with a light accent + lead paragraph */
@@ -1521,6 +1571,22 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   }
   .dropdown-grid { grid-template-columns: 1fr 1fr; }
   .dropdown-grid a { white-space: normal; }
+
+  /* Menu "Découvrir" en mobile : flyout déplié en statique (pas de survol) */
+  .dropdown--discover { min-width: 0; padding: 0; }
+  .discover-caret { display: none; }
+  .flyout {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    min-width: 0;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    margin-left: 0;
+    padding: 0.2rem 0 0.4rem 0.8rem;
+  }
 
   .hero { padding: 3rem 0 2.5rem; }
   .section { padding: 2.8rem 0; }
