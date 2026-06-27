@@ -806,7 +806,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   gap: 2.5rem;
 }
 /* Colonne "Explorer" étalée sur deux colonnes */
-.footer-col--explore ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1.5rem; }
+.footer-col.footer-col--explore ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1.5rem; }
 
 /* ===== Section "À propos" (accueil) ===== */
 .about-home { display: flex; align-items: center; gap: 2.5rem; max-width: 880px; margin: 0 auto; }
@@ -1345,16 +1345,19 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 .dropdown--axes .dropdown-grid a { white-space: normal; }
 .dropdown-title + .dropdown-title { margin-top: 0.9rem; }
 
-/* Bouton "Mon Thème" : encadré très fin, sans fond, pour lui donner de l'importance */
-.nav-links > li.has-dropdown > a[href^="/theme-numerologique"] {
+/* Bouton "Mon Thème" : encadré fin (sur un span interne) — le lien <a> garde la pleine
+   hauteur du header pour que son menu déroulant s'aligne avec les autres. */
+.nav-links > li.has-dropdown > a[href^="/theme-numerologique"]::after { display: none; }
+.nav-theme-frame {
+  display: inline-block;
   border: 1px solid var(--brown-dark);
-  border-radius: 8px;
-  padding: 0.42rem 0.95rem;
+  border-radius: 7px;
+  padding: 0.22rem 0.6rem;
+  line-height: 1.1;
   background: transparent;
   transition: background 0.15s ease, color 0.15s ease;
 }
-.nav-links > li.has-dropdown > a[href^="/theme-numerologique"]::after { display: none; }
-.nav-links > li.has-dropdown > a[href^="/theme-numerologique"]:hover {
+.nav-links > li.has-dropdown > a[href^="/theme-numerologique"]:hover .nav-theme-frame {
   background: var(--brown-dark);
   color: var(--cream-card);
 }
@@ -1386,13 +1389,10 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 }
 .flyout {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: 0; /* position verticale ajustée par JS (aligné au titre survolé, sans dépasser le bas) */
   left: 100%;
   margin-left: 0.45rem;
   min-width: 340px;
-  max-height: 100%;
-  overflow-y: auto;
   background: var(--cream-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);

@@ -18,7 +18,7 @@
       {"@type":"ListItem","position":1,"name":"Accueil","item":"https://clesdesnombres.com/"},
       {"@type":"ListItem","position":2,"name":"Blog","item":"https://clesdesnombres.com/blog-numerologique/"},
       {"@type":"ListItem","position":3,"name":"Numérologie ou Voyance","item":"https://clesdesnombres.com/blog-numerologique/difference-voyance-numerologie/"}]},
-    {"@context":"https://schema.org","@type":"Article","headline":"Numérologie ou Voyance : Quelles Différences ?","description":"Numérologie ou voyance : quelle différence ? L'une calcule, l'autre perçoit. Comparatif clair de la méthode, de la reproductibilité et de l'objectif de chacune.","url":"https://clesdesnombres.com/blog-numerologique/difference-voyance-numerologie/","publisher":{"@type":"Organization","name":"Clés Des Nombres","url":"https://clesdesnombres.com"}},
+    {"@context":"https://schema.org","@type":"Article", "datePublished": "2023-02-18", "dateModified": "2026-06-27", "author": {"@type": "Person", "name": "Caroline Lavie"}, "headline":"Numérologie ou Voyance : Quelles Différences ?","description":"Numérologie ou voyance : quelle différence ? L'une calcule, l'autre perçoit. Comparatif clair de la méthode, de la reproductibilité et de l'objectif de chacune.","url":"https://clesdesnombres.com/blog-numerologique/difference-voyance-numerologie/","publisher":{"@type":"Organization","name":"Clés Des Nombres","url":"https://clesdesnombres.com"}},
     {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
         {"@type": "Question", "name": "La numérologie prédit-elle l'avenir comme la voyance ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. La numérologie ne prédit pas les événements : elle décrit des tendances, des forces et des cycles à partir de calculs. C'est un outil de connaissance de soi, pas de prédiction."}},
         {"@type": "Question", "name": "Faut-il un don pour pratiquer la numérologie ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Contrairement à la voyance, la numérologie repose sur des calculs accessibles à tous, sans don particulier. Les résultats sont reproductibles."}},
@@ -296,13 +296,13 @@
               <a href="/theatre-de-vie/#acte-3">Acte 3 — La Deuxième Chance</a>
               <a href="/theatre-de-vie/#acte-4">Acte 4 — Préparation à la future incarnation</a>
             </div>
-            <a href="/lecon-d-ame/" class="dropdown-title">Leçon d'Âme</a>
             <a href="/les-defis/" class="dropdown-title">Les Défis</a>
             <div class="dropdown-grid dropdown-grid--col">
               <a href="/les-defis/#defi-mineur-1">1er Défi Mineur</a>
               <a href="/les-defis/#defi-mineur-2">2e Défi Mineur</a>
               <a href="/les-defis/#defi-majeur">Défi Majeur</a>
             </div>
+            <a href="/lecon-d-ame/" class="dropdown-title">Leçon d'Âme</a>
           </div>
         </li>
         <li class="has-dropdown">
@@ -325,7 +325,7 @@
           </div>
         </li>
         <li class="has-dropdown">
-          <a href="/theme-numerologique/">Mon Thème</a>
+          <a href="/theme-numerologique/"><span class="nav-theme-frame">Mon Thème</span></a>
           <div class="dropdown dropdown--compact">
             <div class="dropdown-grid dropdown-grid--col">
               <a href="/theme-numerologique/">Découvrir mon thème</a>
@@ -449,6 +449,27 @@ document.querySelectorAll('.faq-question').forEach(btn => {
     if (!isOpen) { answer.classList.add('open'); icon.classList.add('open'); }
   });
 });
+</script>
+<script data-flyout-pos>
+(function(){
+  function pos(item){
+    var fly=item.querySelector('.flyout'); if(!fly) return;
+    var menu=item.closest('.dropdown--discover'); if(!menu) return;
+    var menuH=menu.clientHeight;
+    fly.style.maxHeight=menuH+'px';
+    fly.style.overflowY='auto';
+    var flyH=Math.min(fly.scrollHeight, menuH);
+    var top=item.offsetTop - menu.clientTop;
+    var maxTop=menuH - flyH;
+    if(top>maxTop) top=maxTop;
+    if(top<0) top=0;
+    fly.style.top=top+'px';
+  }
+  document.querySelectorAll('.dropdown--discover .discover-item').forEach(function(it){
+    it.addEventListener('mouseenter', function(){ pos(it); });
+    it.addEventListener('focusin', function(){ pos(it); });
+  });
+})();
 </script>
 </body>
 </html>

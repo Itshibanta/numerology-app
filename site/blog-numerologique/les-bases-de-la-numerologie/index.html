@@ -18,7 +18,7 @@
       {"@type":"ListItem","position":1,"name":"Accueil","item":"https://clesdesnombres.com/"},
       {"@type":"ListItem","position":2,"name":"Blog","item":"https://clesdesnombres.com/blog-numerologique/"},
       {"@type":"ListItem","position":3,"name":"Les bases de la numérologie","item":"https://clesdesnombres.com/blog-numerologique/les-bases-de-la-numerologie/"}]},
-    {"@context":"https://schema.org","@type":"Article","headline":"Les Bases de la Numérologie : Guide pour Bien Débuter","description":"Les bases de la numérologie expliquées simplement : principe de réduction, table des lettres, grands nombres d'un thème et nombres maîtres. Pour bien débuter.","url":"https://clesdesnombres.com/blog-numerologique/les-bases-de-la-numerologie/","publisher":{"@type":"Organization","name":"Clés Des Nombres","url":"https://clesdesnombres.com"}},
+    {"@context":"https://schema.org","@type":"Article", "datePublished": "2017-09-22", "dateModified": "2026-06-27", "author": {"@type": "Person", "name": "Caroline Lavie"}, "headline":"Les Bases de la Numérologie : Guide pour Bien Débuter","description":"Les bases de la numérologie expliquées simplement : principe de réduction, table des lettres, grands nombres d'un thème et nombres maîtres. Pour bien débuter.","url":"https://clesdesnombres.com/blog-numerologique/les-bases-de-la-numerologie/","publisher":{"@type":"Organization","name":"Clés Des Nombres","url":"https://clesdesnombres.com"}},
     {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
         {"@type": "Question", "name": "Faut-il être bon en mathématiques pour faire de la numérologie ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. La numérologie ne demande que des additions simples et la réduction à un chiffre. N'importe qui peut calculer ses nombres de base en quelques minutes."}},
         {"@type": "Question", "name": "Quel nombre calculer en premier ?", "acceptedAnswer": {"@type": "Answer", "text": "Le chemin de vie, car il ne nécessite que votre date de naissance et offre la lecture la plus parlante pour débuter."}},
@@ -296,13 +296,13 @@
               <a href="/theatre-de-vie/#acte-3">Acte 3 — La Deuxième Chance</a>
               <a href="/theatre-de-vie/#acte-4">Acte 4 — Préparation à la future incarnation</a>
             </div>
-            <a href="/lecon-d-ame/" class="dropdown-title">Leçon d'Âme</a>
             <a href="/les-defis/" class="dropdown-title">Les Défis</a>
             <div class="dropdown-grid dropdown-grid--col">
               <a href="/les-defis/#defi-mineur-1">1er Défi Mineur</a>
               <a href="/les-defis/#defi-mineur-2">2e Défi Mineur</a>
               <a href="/les-defis/#defi-majeur">Défi Majeur</a>
             </div>
+            <a href="/lecon-d-ame/" class="dropdown-title">Leçon d'Âme</a>
           </div>
         </li>
         <li class="has-dropdown">
@@ -325,7 +325,7 @@
           </div>
         </li>
         <li class="has-dropdown">
-          <a href="/theme-numerologique/">Mon Thème</a>
+          <a href="/theme-numerologique/"><span class="nav-theme-frame">Mon Thème</span></a>
           <div class="dropdown dropdown--compact">
             <div class="dropdown-grid dropdown-grid--col">
               <a href="/theme-numerologique/">Découvrir mon thème</a>
@@ -451,6 +451,27 @@ document.querySelectorAll('.faq-question').forEach(btn => {
     if (!isOpen) { answer.classList.add('open'); icon.classList.add('open'); }
   });
 });
+</script>
+<script data-flyout-pos>
+(function(){
+  function pos(item){
+    var fly=item.querySelector('.flyout'); if(!fly) return;
+    var menu=item.closest('.dropdown--discover'); if(!menu) return;
+    var menuH=menu.clientHeight;
+    fly.style.maxHeight=menuH+'px';
+    fly.style.overflowY='auto';
+    var flyH=Math.min(fly.scrollHeight, menuH);
+    var top=item.offsetTop - menu.clientTop;
+    var maxTop=menuH - flyH;
+    if(top>maxTop) top=maxTop;
+    if(top<0) top=0;
+    fly.style.top=top+'px';
+  }
+  document.querySelectorAll('.dropdown--discover .discover-item').forEach(function(it){
+    it.addEventListener('mouseenter', function(){ pos(it); });
+    it.addEventListener('focusin', function(){ pos(it); });
+  });
+})();
 </script>
 </body>
 </html>

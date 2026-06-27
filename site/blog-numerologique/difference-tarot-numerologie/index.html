@@ -18,7 +18,7 @@
       {"@type":"ListItem","position":1,"name":"Accueil","item":"https://clesdesnombres.com/"},
       {"@type":"ListItem","position":2,"name":"Blog","item":"https://clesdesnombres.com/blog-numerologique/"},
       {"@type":"ListItem","position":3,"name":"Numérologie ou Tarot","item":"https://clesdesnombres.com/blog-numerologique/difference-tarot-numerologie/"}]},
-    {"@context":"https://schema.org","@type":"Article","headline":"Numérologie ou Tarot : Quelles Différences ?","description":"Numérologie ou tarot : quelle différence ? Calcul stable contre tirage intuitif. Comparatif clair, et le lien que les deux partagent à travers les nombres.","url":"https://clesdesnombres.com/blog-numerologique/difference-tarot-numerologie/","publisher":{"@type":"Organization","name":"Clés Des Nombres","url":"https://clesdesnombres.com"}},
+    {"@context":"https://schema.org","@type":"Article", "datePublished": "2024-01-20", "dateModified": "2026-06-27", "author": {"@type": "Person", "name": "Caroline Lavie"}, "headline":"Numérologie ou Tarot : Quelles Différences ?","description":"Numérologie ou tarot : quelle différence ? Calcul stable contre tirage intuitif. Comparatif clair, et le lien que les deux partagent à travers les nombres.","url":"https://clesdesnombres.com/blog-numerologique/difference-tarot-numerologie/","publisher":{"@type":"Organization","name":"Clés Des Nombres","url":"https://clesdesnombres.com"}},
     {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
         {"@type": "Question", "name": "Le tarot et la numérologie sont-ils liés ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, par les nombres. Les 22 arcanes majeurs du tarot sont numérotés et souvent associés à des significations numériques. Les deux disciplines partagent ce socle symbolique."}},
         {"@type": "Question", "name": "Lequel est le plus reproductible, le tarot ou la numérologie ?", "acceptedAnswer": {"@type": "Answer", "text": "La numérologie : vos nombres se recalculent toujours à l'identique. Un tirage de tarot, lui, est unique et dépend du moment et de l'interprétation."}},
@@ -296,13 +296,13 @@
               <a href="/theatre-de-vie/#acte-3">Acte 3 — La Deuxième Chance</a>
               <a href="/theatre-de-vie/#acte-4">Acte 4 — Préparation à la future incarnation</a>
             </div>
-            <a href="/lecon-d-ame/" class="dropdown-title">Leçon d'Âme</a>
             <a href="/les-defis/" class="dropdown-title">Les Défis</a>
             <div class="dropdown-grid dropdown-grid--col">
               <a href="/les-defis/#defi-mineur-1">1er Défi Mineur</a>
               <a href="/les-defis/#defi-mineur-2">2e Défi Mineur</a>
               <a href="/les-defis/#defi-majeur">Défi Majeur</a>
             </div>
+            <a href="/lecon-d-ame/" class="dropdown-title">Leçon d'Âme</a>
           </div>
         </li>
         <li class="has-dropdown">
@@ -325,7 +325,7 @@
           </div>
         </li>
         <li class="has-dropdown">
-          <a href="/theme-numerologique/">Mon Thème</a>
+          <a href="/theme-numerologique/"><span class="nav-theme-frame">Mon Thème</span></a>
           <div class="dropdown dropdown--compact">
             <div class="dropdown-grid dropdown-grid--col">
               <a href="/theme-numerologique/">Découvrir mon thème</a>
@@ -449,6 +449,27 @@ document.querySelectorAll('.faq-question').forEach(btn => {
     if (!isOpen) { answer.classList.add('open'); icon.classList.add('open'); }
   });
 });
+</script>
+<script data-flyout-pos>
+(function(){
+  function pos(item){
+    var fly=item.querySelector('.flyout'); if(!fly) return;
+    var menu=item.closest('.dropdown--discover'); if(!menu) return;
+    var menuH=menu.clientHeight;
+    fly.style.maxHeight=menuH+'px';
+    fly.style.overflowY='auto';
+    var flyH=Math.min(fly.scrollHeight, menuH);
+    var top=item.offsetTop - menu.clientTop;
+    var maxTop=menuH - flyH;
+    if(top>maxTop) top=maxTop;
+    if(top<0) top=0;
+    fly.style.top=top+'px';
+  }
+  document.querySelectorAll('.dropdown--discover .discover-item').forEach(function(it){
+    it.addEventListener('mouseenter', function(){ pos(it); });
+    it.addEventListener('focusin', function(){ pos(it); });
+  });
+})();
 </script>
 </body>
 </html>

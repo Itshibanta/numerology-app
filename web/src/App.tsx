@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Routes, Route } from "react-router-dom";
 import "./App.css";
 
@@ -15,6 +15,36 @@ import AuthCallbackPage from "./pages/AuthCallbackPage";
 
 export default function App() {
   const [navOpen, setNavOpen] = useState(false);
+
+  useEffect(() => {
+    function pos(item: Element) {
+      const fly = item.querySelector<HTMLElement>(".flyout");
+      const menu = item.closest<HTMLElement>(".dropdown--discover");
+      if (!fly || !menu) return;
+      const menuH = menu.clientHeight;
+      fly.style.maxHeight = menuH + "px";
+      fly.style.overflowY = "auto";
+      const flyH = Math.min(fly.scrollHeight, menuH);
+      let top = (item as HTMLElement).offsetTop - menu.clientTop;
+      const maxTop = menuH - flyH;
+      if (top > maxTop) top = maxTop;
+      if (top < 0) top = 0;
+      fly.style.top = top + "px";
+    }
+    const items = Array.from(document.querySelectorAll(".dropdown--discover .discover-item"));
+    const handlers = items.map((it) => {
+      const h = () => pos(it);
+      it.addEventListener("mouseenter", h);
+      it.addEventListener("focusin", h);
+      return h;
+    });
+    return () => {
+      items.forEach((it, i) => {
+        it.removeEventListener("mouseenter", handlers[i]);
+        it.removeEventListener("focusin", handlers[i]);
+      });
+    };
+  }, []);
 
   return (
     <div className="app-root">
@@ -285,13 +315,13 @@ export default function App() {
                     <a href="/theatre-de-vie/#acte-3">Acte 3 — La Deuxième Chance</a>
                     <a href="/theatre-de-vie/#acte-4">Acte 4 — Préparation à la future incarnation</a>
                   </div>
-                  <a href="/lecon-d-ame/" className="dropdown-title">Leçon d'Âme</a>
                   <a href="/les-defis/" className="dropdown-title">Les Défis</a>
                   <div className="dropdown-grid dropdown-grid--col">
                     <a href="/les-defis/#defi-mineur-1">1er Défi Mineur</a>
                     <a href="/les-defis/#defi-mineur-2">2e Défi Mineur</a>
                     <a href="/les-defis/#defi-majeur">Défi Majeur</a>
                   </div>
+                  <a href="/lecon-d-ame/" className="dropdown-title">Leçon d'Âme</a>
                 </div>
               </li>
               <li className="has-dropdown">
@@ -314,7 +344,7 @@ export default function App() {
                 </div>
               </li>
               <li className="has-dropdown">
-                <Link to="/theme-numerologique">Mon Thème</Link>
+                <Link to="/theme-numerologique"><span className="nav-theme-frame">Mon Thème</span></Link>
                 <div className="dropdown dropdown--compact">
                   <div className="dropdown-grid dropdown-grid--col">
                     <Link to="/theme-numerologique">Découvrir mon thème</Link>
