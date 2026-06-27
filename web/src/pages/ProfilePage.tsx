@@ -259,7 +259,7 @@ export default function ProfilePage() {
                     {h.type === "summary" ? "Gratuit" : "Complet"}
                   </div>
 
-                  {h.type === "theme" && !h.delivered && (
+                  {!h.delivered && (
                     <div style={{ fontSize: 13, color: "#8a7d73", textAlign: "right" }}>
                       En préparation
                       {h.deliverAt
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                     </div>
                   )}
 
-                  {h.type === "theme" && h.delivered && (
+                  {h.delivered && (
                     <button
                       type="button"
                       className="auth-btn"

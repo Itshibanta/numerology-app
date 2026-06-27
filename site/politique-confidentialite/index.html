@@ -536,16 +536,26 @@ document.querySelectorAll('.faq-question').forEach(btn => {
     var fly=item.querySelector('.flyout'); if(!fly) return;
     var menu=item.closest('.dropdown--discover'); if(!menu) return;
     fly.style.maxHeight=''; fly.style.overflowY='';
-    var vh=window.innerHeight, margin=12;
-    var menuTop=menu.getBoundingClientRect().top;
-    var itemTop=item.getBoundingClientRect().top;
+    var menuRect=menu.getBoundingClientRect();
+    var itemRect=item.getBoundingClientRect();
+    var OFFSET=12;
     var natural=fly.scrollHeight;
-    var maxH=vh-2*margin;
-    var flyH=Math.min(natural,maxH);
-    if(natural>maxH){ fly.style.maxHeight=maxH+'px'; fly.style.overflowY='auto'; }
-    var topVp=Math.min(itemTop, vh-margin-flyH);
-    if(topVp<margin) topVp=margin;
-    fly.style.top=(topVp-menuTop)+'px';
+    var menuH=menu.clientHeight;
+    if(natural<=menuH){
+      var maxTop=menuH-natural;
+      var top=(itemRect.top-menuRect.top)-OFFSET;
+      if(top>maxTop) top=maxTop;
+      if(top<0) top=0;
+      fly.style.top=top+'px';
+    } else {
+      var vh=window.innerHeight, margin=12;
+      var maxH=vh-2*margin;
+      fly.style.maxHeight=maxH+'px'; fly.style.overflowY='auto';
+      var flyH=Math.min(natural,maxH);
+      var topVp=Math.min(itemRect.top-OFFSET, vh-margin-flyH);
+      if(topVp<margin) topVp=margin;
+      fly.style.top=(topVp-menuRect.top)+'px';
+    }
   }
   document.querySelectorAll('.dropdown--discover .discover-item').forEach(function(it){
     it.addEventListener('mouseenter', function(){ pos(it); });

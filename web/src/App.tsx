@@ -24,20 +24,31 @@ export default function App() {
       if (!fly || !menu) return;
       fly.style.maxHeight = "";
       fly.style.overflowY = "";
-      const vh = window.innerHeight;
-      const margin = 12;
-      const menuTop = menu.getBoundingClientRect().top;
-      const itemTop = item.getBoundingClientRect().top;
+      const menuRect = menu.getBoundingClientRect();
+      const itemRect = (item as HTMLElement).getBoundingClientRect();
+      const OFFSET = 12;
       const natural = fly.scrollHeight;
-      const maxH = vh - 2 * margin;
-      const flyH = Math.min(natural, maxH);
-      if (natural > maxH) {
+      const menuH = menu.clientHeight;
+      if (natural <= menuH) {
+        // le flyout tient dans le menu mère -> ne dépasse pas son bas,
+        // et est placé un peu plus haut que la carte (tolérance de survol)
+        const maxTop = menuH - natural;
+        let top = itemRect.top - menuRect.top - OFFSET;
+        if (top > maxTop) top = maxTop;
+        if (top < 0) top = 0;
+        fly.style.top = top + "px";
+      } else {
+        // flyout plus grand que le menu mère (ex. Guides) -> borné à l'écran
+        const vh = window.innerHeight;
+        const margin = 12;
+        const maxH = vh - 2 * margin;
         fly.style.maxHeight = maxH + "px";
         fly.style.overflowY = "auto";
+        const flyH = Math.min(natural, maxH);
+        let topVp = Math.min(itemRect.top - OFFSET, vh - margin - flyH);
+        if (topVp < margin) topVp = margin;
+        fly.style.top = topVp - menuRect.top + "px";
       }
-      let topVp = Math.min(itemTop, vh - margin - flyH);
-      if (topVp < margin) topVp = margin;
-      fly.style.top = topVp - menuTop + "px";
     }
     const items = Array.from(document.querySelectorAll(".dropdown--discover .discover-item"));
     const handlers = items.map((it) => {

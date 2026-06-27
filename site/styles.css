@@ -1367,7 +1367,8 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 
 /* ===== Menu "Découvrir la numérologie" : sous-menu vertical + flyout latéral ===== */
 .dropdown--discover { min-width: 240px; padding: 0.5rem; }
-.dropdown-title--arbre { margin: 0.25rem 0.45rem 0.65rem; }
+.dropdown-title--arbre { margin: 0.25rem 0.45rem 0.65rem; cursor: default; user-select: none; }
+.dropdown-title--arbre:hover { color: var(--brown-dark); }
 /* .discover-item statique => le flyout s'ancre sur le menu mère (.dropdown--discover, absolu),
    donc il ne peut pas descendre plus bas que le bas du menu mère. */
 .discover-item { position: static; }
