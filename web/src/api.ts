@@ -251,6 +251,75 @@ export async function setPasswordFromSession(
   }
 }
 
+// ===== Thème GRATUIT (anonyme) =====
+export type FreeThemePayload = {
+  prenom: string;
+  secondPrenom: string;
+  nomFamille: string;
+  nomMarital: string;
+  dateNaissance: string;
+  lieuNaissance: string;
+  email: string;
+};
+
+// Génère le résumé gratuit : crée le compte si besoin, génère et stocke le
+// résumé sur le compte. Renvoie si le compte existait déjà + un jeton (claim)
+// permettant de définir le mot de passe d'un compte tout juste créé.
+export async function generateFreeTheme(
+  payload: FreeThemePayload
+): Promise<{ ok: boolean; accountExists: boolean; claimToken: string | null }> {
+  const res = await fetch(`${API_BASE_URL}/free-theme`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const json = await res.json().catch(() => ({} as any));
+  if (!res.ok || !json?.ok) {
+    throw new ApiError(
+      json?.error || "Impossible de générer votre thème gratuit.",
+      "FREE_THEME_FAILED"
+    );
+  }
+  return {
+    ok: true,
+    accountExists: !!json.accountExists,
+    claimToken: json.claimToken ?? null,
+  };
+}
+
+// Définit le mot de passe d'un compte gratuit neuf (jeton claim requis).
+export async function setFreePassword(
+  email: string,
+  claimToken: string,
+  password: string
+): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/account/set-password-free`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, claimToken, password }),
+  });
+  const json = await res.json().catch(() => ({} as any));
+  if (!res.ok || !json?.ok) {
+    throw new ApiError(
+      json?.error || "Impossible de créer le mot de passe.",
+      "SET_PASSWORD_FAILED"
+    );
+  }
+}
+
+// Indique si un email possède déjà un compte.
+export async function accountExists(email: string): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/account/exists?email=${encodeURIComponent(email)}`
+    );
+    const json = await res.json().catch(() => ({} as any));
+    return !!json?.exists;
+  } catch {
+    return false;
+  }
+}
+
 export async function createPortalSession(): Promise<string> {
   // On utilise le helper "request" qui gère déjà:
   // - API_BASE_URL

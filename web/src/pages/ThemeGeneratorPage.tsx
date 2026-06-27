@@ -6,7 +6,7 @@ import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
-import { createOneShotCheckout, setPasswordFromSession } from "../api";
+import { createOneShotCheckout, setPasswordFromSession, accountExists } from "../api";
 import { supabase } from "../supabaseClient";
 import "../theme-page.css";
 
@@ -47,6 +47,9 @@ export default function ThemeGeneratorPage() {
   const [pwError, setPwError] = useState<string | null>(null);
   const [pwDone, setPwDone] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // L'email de l'acheteur possédait déjà un compte (mémorisé avant la redirection
+  // Stripe) -> on ne lui repropose pas la création d'un mot de passe.
+  const [emailExisted, setEmailExisted] = useState(false);
 
   // Retour depuis le paiement Stripe (return_url)
   useEffect(() => {
@@ -54,6 +57,7 @@ export default function ThemeGeneratorPage() {
     if (p.get("purchase") === "success") {
       setPurchased(true);
       setSessionId(p.get("session_id"));
+      setEmailExisted(localStorage.getItem("cdn_acct_existed") === "1");
       window.scrollTo({ top: 0 });
     }
     // Si l'acheteur est déjà connecté, on n'affiche pas la création de mot de passe.
@@ -93,6 +97,15 @@ export default function ThemeGeneratorPage() {
 
     setLoading(true);
     try {
+      // Mémorise si l'email possède déjà un compte (pour la page de confirmation,
+      // après le retour de Stripe qui recharge la page).
+      try {
+        const exists = await accountExists(email);
+        localStorage.setItem("cdn_acct_existed", exists ? "1" : "0");
+      } catch {
+        localStorage.setItem("cdn_acct_existed", "0");
+      }
+
       const lieuNaissance = [form.villeNaissance, form.paysNaissance]
         .filter(Boolean)
         .join(", ");
@@ -177,7 +190,7 @@ export default function ThemeGeneratorPage() {
                   par email et sur votre compte.
                 </p>
 
-                {isLoggedIn ? (
+                {isLoggedIn || emailExisted ? (
                   <div className="password-field">
                     <p>Votre thème sera disponible dans votre espace personnel.</p>
                     <a href="/profile" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: "0.6rem" }}>
@@ -246,7 +259,8 @@ export default function ThemeGeneratorPage() {
           <p style={{ maxWidth: 600, marginBottom: 0, paddingBottom: "1.5rem" }}>
             Remplissez votre état civil complet pour que nous puissions calculer votre
             analyse personnalisée. Plus les informations sont précises, plus le portrait
-            est juste.
+            est juste. Le thème sera rédigé par une numérologue certifiée, en activité
+            depuis 2013. L'interprétation et la rédaction d'un thème prennent en moyenne 3 h.
           </p>
         </div>
       </div>

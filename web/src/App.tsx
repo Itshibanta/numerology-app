@@ -3,6 +3,7 @@ import { Link, Routes, Route } from "react-router-dom";
 import "./App.css";
 
 import ThemeGeneratorPage from "./pages/ThemeGeneratorPage";
+import FreeThemeGeneratorPage from "./pages/FreeThemeGeneratorPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -21,15 +22,22 @@ export default function App() {
       const fly = item.querySelector<HTMLElement>(".flyout");
       const menu = item.closest<HTMLElement>(".dropdown--discover");
       if (!fly || !menu) return;
-      const menuH = menu.clientHeight;
-      fly.style.maxHeight = menuH + "px";
-      fly.style.overflowY = "auto";
-      const flyH = Math.min(fly.scrollHeight, menuH);
-      let top = (item as HTMLElement).offsetTop - menu.clientTop;
-      const maxTop = menuH - flyH;
-      if (top > maxTop) top = maxTop;
-      if (top < 0) top = 0;
-      fly.style.top = top + "px";
+      fly.style.maxHeight = "";
+      fly.style.overflowY = "";
+      const vh = window.innerHeight;
+      const margin = 12;
+      const menuTop = menu.getBoundingClientRect().top;
+      const itemTop = item.getBoundingClientRect().top;
+      const natural = fly.scrollHeight;
+      const maxH = vh - 2 * margin;
+      const flyH = Math.min(natural, maxH);
+      if (natural > maxH) {
+        fly.style.maxHeight = maxH + "px";
+        fly.style.overflowY = "auto";
+      }
+      let topVp = Math.min(itemTop, vh - margin - flyH);
+      if (topVp < margin) topVp = margin;
+      fly.style.top = topVp - menuTop + "px";
     }
     const items = Array.from(document.querySelectorAll(".dropdown--discover .discover-item"));
     const handlers = items.map((it) => {
@@ -325,21 +333,81 @@ export default function App() {
                 </div>
               </li>
               <li className="has-dropdown">
-                <a href="/nombres-maitres/">Nombres Spéciaux</a>
-                <div className="dropdown">
-                  <a href="/nombres-maitres/" className="dropdown-title">Nombres Maître</a>
-                  <div className="dropdown-grid">
-                    <a href="/nombre-maitre-11/">Nombre maître 11</a>
-                    <a href="/nombre-maitre-22/">Nombre maître 22</a>
-                    <a href="/nombre-maitre-33/">Nombre maître 33</a>
-                    <a href="/nombre-maitre-44/">Nombre maître 44</a>
+                <a href="/tous-les-nombres/">Guides des Nombres</a>
+                <div className="dropdown dropdown--discover">
+                  <div className="discover-item">
+                    <a href="/nombres-maitres/" className="discover-link">Nombres Maîtres<span className="discover-caret" aria-hidden="true">›</span></a>
+                    <div className="flyout">
+                      <span className="dropdown-sub">Nombres maîtres</span>
+                      <div className="dropdown-grid">
+                        <a href="/nombre-maitre-11/">Nombre maître 11</a>
+                        <a href="/nombre-maitre-22/">Nombre maître 22</a>
+                        <a href="/nombre-maitre-33/">Nombre maître 33</a>
+                        <a href="/nombre-maitre-44/">Nombre maître 44</a>
+                      </div>
+                    </div>
                   </div>
-                  <a href="/nombres-karmiques/" className="dropdown-title">Nombres Karmiques</a>
-                  <div className="dropdown-grid">
-                    <a href="/nombre-karmique-13/">Nombre karmique 13</a>
-                    <a href="/nombre-karmique-14/">Nombre karmique 14</a>
-                    <a href="/nombre-karmique-16/">Nombre karmique 16</a>
-                    <a href="/nombre-karmique-19/">Nombre karmique 19</a>
+                  <div className="discover-item">
+                    <a href="/nombres-karmiques/" className="discover-link">Nombres Karmiques<span className="discover-caret" aria-hidden="true">›</span></a>
+                    <div className="flyout">
+                      <span className="dropdown-sub">Nombres karmiques</span>
+                      <div className="dropdown-grid">
+                        <a href="/nombre-karmique-13/">Nombre karmique 13</a>
+                        <a href="/nombre-karmique-14/">Nombre karmique 14</a>
+                        <a href="/nombre-karmique-16/">Nombre karmique 16</a>
+                        <a href="/nombre-karmique-19/">Nombre karmique 19</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="discover-item">
+                    <a href="/tous-les-nombres/" className="discover-link">Tous les nombres<span className="discover-caret" aria-hidden="true">›</span></a>
+                    <div className="flyout">
+                      <span className="dropdown-sub">Les nombres 1 à 9</span>
+                      <div className="dropdown-grid">
+                        <a href="/nombre-1/">Nombre 1</a>
+                        <a href="/nombre-2/">Nombre 2</a>
+                        <a href="/nombre-3/">Nombre 3</a>
+                        <a href="/nombre-4/">Nombre 4</a>
+                        <a href="/nombre-5/">Nombre 5</a>
+                        <a href="/nombre-6/">Nombre 6</a>
+                        <a href="/nombre-7/">Nombre 7</a>
+                        <a href="/nombre-8/">Nombre 8</a>
+                        <a href="/nombre-9/">Nombre 9</a>
+                      </div>
+                      <span className="dropdown-sub">Nombres répétitifs</span>
+                      <div className="dropdown-grid">
+                        <a href="/nombre-111/">Nombre 111</a>
+                        <a href="/nombre-222/">Nombre 222</a>
+                        <a href="/nombre-333/">Nombre 333</a>
+                        <a href="/nombre-444/">Nombre 444</a>
+                        <a href="/nombre-555/">Nombre 555</a>
+                        <a href="/nombre-666/">Nombre 666</a>
+                        <a href="/nombre-777/">Nombre 777</a>
+                        <a href="/nombre-888/">Nombre 888</a>
+                        <a href="/nombre-999/">Nombre 999</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="discover-item">
+                    <a href="/heures-miroirs/" className="discover-link">Toutes les heures<span className="discover-caret" aria-hidden="true">›</span></a>
+                    <div className="flyout">
+                      <span className="dropdown-sub">Heures miroirs</span>
+                      <div className="dropdown-grid">
+                        <a href="/heure-miroir-11h11/">11h11</a>
+                        <a href="/heure-miroir-12h12/">12h12</a>
+                        <a href="/heure-miroir-13h13/">13h13</a>
+                        <a href="/heure-miroir-14h14/">14h14</a>
+                        <a href="/heure-miroir-15h15/">15h15</a>
+                        <a href="/heure-miroir-16h16/">16h16</a>
+                        <a href="/heure-miroir-17h17/">17h17</a>
+                        <a href="/heure-miroir-18h18/">18h18</a>
+                        <a href="/heure-miroir-19h19/">19h19</a>
+                        <a href="/heure-miroir-20h20/">20h20</a>
+                        <a href="/heure-miroir-21h21/">21h21</a>
+                        <a href="/heure-miroir-22h22/">22h22</a>
+                        <a href="/heure-miroir-23h23/">23h23</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </li>
@@ -364,6 +432,7 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/theme-numerologique" element={<ThemeGeneratorPage />} />
+          <Route path="/theme-numerologique-gratuit" element={<FreeThemeGeneratorPage />} />
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/profile" element={<ProfilePage />} />
@@ -378,21 +447,14 @@ export default function App() {
             <a href="/" className="site-logo">Clés <span>Des Nombres</span></a>
             <p>L'analyse numérologique personnalisée la plus précise en France.</p>
           </div>
-          <div className="footer-col footer-col--explore"><h4>Explorer</h4><ul>
+          <div className="footer-col"><h4>Explorer</h4><ul>
             <li><a href="/decouvrir-la-numerologie/">Découvrir la numérologie</a></li>
             <li><a href="/dictionnaire-numerologie/">Dictionnaire de la numérologie</a></li>
             <li><a href="/signification-chemin-de-vie/">Chemin de Vie</a></li>
             <li><a href="/signification-annee-personnelle/">Année Personnelle</a></li>
-            <li><a href="/signification-nombre-expression/">Nombre d'Expression</a></li>
-            <li><a href="/signification-nombre-ressource/">Nombre Ressource</a></li>
-            <li><a href="/signification-nombre-actif/">Nombre Actif</a></li>
-            <li><a href="/signification-nombre-elan-spirituel/">Nombre d'Élan Spirituel</a></li>
-            <li><a href="/signification-nombre-hereditaire/">Nombre Héréditaire</a></li>
-            <li><a href="/signification-nombre-equilibre/">Nombre d'Équilibre</a></li>
-            <li><a href="/signification-nombre-realisation/">Nombre de Réalisation</a></li>
-            <li><a href="/signification-nombre-moi-intime/">Nombre Moi Intime</a></li>
-            <li><a href="/nombres-maitres/">Nombres Maître</a></li>
-            <li><a href="/nombres-karmiques/">Nombres Karmiques</a></li>
+            <li><a href="/decors-de-vie/">Les Cycles</a></li>
+            <li><a href="/theatre-de-vie/">Les 4 Actes</a></li>
+            <li><a href="/les-defis/">Les Défis</a></li>
           </ul></div>
           <div className="footer-col"><h4>Blog</h4><ul>
             <li><a href="/blog-numerologique/">Tous les articles</a></li>

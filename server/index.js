@@ -434,6 +434,185 @@ app.post("/account/set-password", async (req, res) => {
   }
 });
 
+/* =========================================================================
+   THÈME GRATUIT (anonyme) — résumé via l'assistant "free" (summary).
+   NB: la génération elle-même (generateNumerologySummary) n'est PAS modifiée.
+   Flux: saisie email -> compte créé si besoin -> résumé généré -> stocké
+   sur le compte (récupérable en PDF via /generations/:id/pdf).
+========================================================================= */
+const crypto = require("crypto");
+const FREE_CLAIM_SECRET =
+  process.env.FREE_CLAIM_SECRET ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  "dev-secret-change-me";
+
+function makeFreeClaim(emailLc) {
+  const exp = Date.now() + 60 * 60 * 1000; // 1h
+  const payload = `${emailLc}|${exp}`;
+  const sig = crypto.createHmac("sha256", FREE_CLAIM_SECRET).update(payload).digest("hex");
+  return Buffer.from(`${payload}|${sig}`).toString("base64");
+}
+function verifyFreeClaim(token, emailLc) {
+  try {
+    const decoded = Buffer.from(String(token), "base64").toString("utf8");
+    const [em, exp, sig] = decoded.split("|");
+    if (em !== emailLc) return false;
+    if (Date.now() > Number(exp)) return false;
+    const expected = crypto
+      .createHmac("sha256", FREE_CLAIM_SECRET)
+      .update(`${em}|${exp}`)
+      .digest("hex");
+    const a = Buffer.from(sig || "", "hex");
+    const b = Buffer.from(expected, "hex");
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
+}
+async function findUserIdByEmail(emailLc) {
+  for (let page = 1; page <= 10; page++) {
+    const { data: list, error } = await supabaseAdmin.auth.admin.listUsers({
+      page,
+      perPage: 200,
+    });
+    if (error) break;
+    const found = (list?.users || []).find(
+      (u) => (u.email || "").toLowerCase() === emailLc
+    );
+    if (found) return found.id;
+    if (!list?.users || list.users.length < 200) break;
+  }
+  return null;
+}
+
+// Indique si un email possède déjà un compte (sert au flux payant pour ne pas
+// reproposer la création de mot de passe à un compte existant).
+app.get("/account/exists", async (req, res) => {
+  try {
+    const emailLc = String(req.query.email || "").toLowerCase().trim();
+    if (!emailLc) return res.status(400).json({ error: "MISSING_EMAIL" });
+    const userId = await findUserIdByEmail(emailLc);
+    return res.json({ exists: !!userId });
+  } catch (e) {
+    console.error("ACCOUNT_EXISTS_FAILED", e);
+    return res.status(500).json({ error: "CHECK_FAILED" });
+  }
+});
+
+app.post("/free-theme", generateLimiter, async (req, res) => {
+  try {
+    const {
+      prenom,
+      secondPrenom,
+      nomFamille,
+      nomMarital,
+      dateNaissance,
+      lieuNaissance,
+      email,
+    } = req.body || {};
+
+    if (!prenom || !nomFamille || !dateNaissance || !email) {
+      return res.status(400).json({ error: "MISSING_FIELDS" });
+    }
+    const emailLc = String(email).toLowerCase().trim();
+
+    // 1) Le compte existe-t-il déjà ?
+    let userId = await findUserIdByEmail(emailLc);
+    let accountExists = !!userId;
+
+    // 2) Sinon, on le crée (email confirmé, sans mot de passe pour l'instant)
+    if (!userId) {
+      const { data: created, error: createErr } =
+        await supabaseAdmin.auth.admin.createUser({
+          email: emailLc,
+          email_confirm: true,
+          user_metadata: { firstName: prenom || "", lastName: nomFamille || "" },
+        });
+      if (createErr || !created?.user) {
+        // course possible : peut déjà exister
+        userId = await findUserIdByEmail(emailLc);
+        accountExists = true;
+        if (!userId) return res.status(500).json({ error: "ACCOUNT_CREATE_FAILED" });
+      } else {
+        userId = created.user.id;
+        await ensureProfileExists(created.user);
+      }
+    }
+
+    // 3) Génération du résumé (assistant gratuit) — fonction existante inchangée
+    const summaryText = await generateNumerologySummary({
+      prenom,
+      secondPrenom,
+      nomFamille,
+      nomMarital,
+      dateNaissance,
+      lieuNaissance,
+    });
+
+    // 4) Stockage de la génération sur le compte (PDF servi à la demande)
+    const targetName = `${prenom || ""} ${nomFamille || ""}`.trim();
+    await supabaseAdmin.from("generations").insert({
+      user_id: userId,
+      type: "summary",
+      label: targetName ? `Résumé thème ${targetName}` : "Résumé thème gratuit",
+      payload: req.body || {},
+      result_text: summaryText,
+    });
+
+    // 5) Lead (non bloquant)
+    try {
+      await supabaseAdmin.from("leads").insert({
+        email: emailLc,
+        prenom: prenom || null,
+        second_prenom: secondPrenom || null,
+        nom_famille: nomFamille || null,
+        nom_marital: nomMarital || null,
+        date_naissance: dateNaissance || null,
+        lieu_naissance: lieuNaissance || null,
+        client: "Free",
+      });
+    } catch (leadErr) {
+      console.error("LEAD_INSERT_FAILED(free)", leadErr);
+    }
+
+    // 6) Jeton de revendication : permet de définir le mot de passe d'un
+    //    compte NEUF uniquement (pas reproposé si le compte existait déjà).
+    const claimToken = accountExists ? null : makeFreeClaim(emailLc);
+    return res.json({ ok: true, accountExists, claimToken });
+  } catch (e) {
+    console.error("FREE_THEME_FAILED", e);
+    return res.status(500).json({ error: "FREE_THEME_FAILED" });
+  }
+});
+
+// Définit le mot de passe d'un compte gratuit nouvellement créé (jeton requis).
+app.post("/account/set-password-free", async (req, res) => {
+  try {
+    const { email, password, claimToken } = req.body || {};
+    if (!email || !password || String(password).length < 8 || !claimToken) {
+      return res.status(400).json({ error: "INVALID_INPUT" });
+    }
+    const emailLc = String(email).toLowerCase().trim();
+    if (!verifyFreeClaim(claimToken, emailLc)) {
+      return res.status(403).json({ error: "INVALID_CLAIM" });
+    }
+    const userId = await findUserIdByEmail(emailLc);
+    if (!userId) return res.status(404).json({ error: "ACCOUNT_NOT_FOUND" });
+
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+      password,
+    });
+    if (error) {
+      console.error("SET_PASSWORD_FREE_UPDATE_FAILED", error);
+      return res.status(500).json({ error: "SET_PASSWORD_FAILED" });
+    }
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error("SET_PASSWORD_FREE_FAILED", e);
+    return res.status(500).json({ error: "SET_PASSWORD_FAILED" });
+  }
+});
+
 /* ===== Stripe Billing Portal (annulation / gestion abonnement) ===== */
 app.post(
   "/stripe/create-portal-session",
