@@ -85,7 +85,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   padding: 4rem 0;
 }
 .section--sm { padding: 2.5rem 0; }
-.section--lg { padding: 5.5rem 0; }
+.section--lg { padding: 2.75rem 0; }
 
 /* --- HEADER / NAV --- */
 .site-header {
@@ -802,9 +802,37 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   margin: 0 auto;
   padding: 0 1.5rem;
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 1.4fr 2fr 1fr 1fr;
   gap: 2.5rem;
 }
+/* Colonne "Explorer" étalée sur deux colonnes */
+.footer-col--explore ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1.5rem; }
+
+/* ===== Section "À propos" (accueil) ===== */
+.about-home { display: flex; align-items: center; gap: 2.5rem; max-width: 880px; margin: 0 auto; }
+.about-home__photo { flex: 0 0 auto; }
+.about-home__monogram,
+.about-home__photo img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; }
+.about-home__monogram {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sage); color: #fff; font-size: 2.6rem; font-weight: 700;
+  letter-spacing: 0.05em; box-shadow: var(--shadow-md);
+}
+.about-home__text h2 { margin-bottom: 0.8rem; }
+.about-home__text p { margin-bottom: 0.8rem; }
+@media (max-width: 700px) {
+  .about-home { flex-direction: column; text-align: center; gap: 1.3rem; }
+}
+
+/* ===== Dictionnaire de la numérologie (A→Z) ===== */
+.dico-az { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 2rem; position: sticky; top: 66px; background: var(--cream); padding: 0.8rem 0; z-index: 50; }
+.dico-az a { display: inline-flex; align-items: center; justify-content: center; min-width: 2rem; height: 2rem; padding: 0 0.45rem; border: 1px solid var(--border); border-radius: 6px; text-decoration: none; color: var(--brown-dark); font-weight: 700; font-size: 0.9rem; transition: background 0.12s, color 0.12s, border-color 0.12s; }
+.dico-az a::after { display: none; }
+.dico-az a:hover { background: var(--sage); color: #fff; border-color: var(--sage); }
+.dico-letter { color: var(--sage-dark); border-bottom: 2px solid var(--border); padding-bottom: 0.3rem; margin-top: 2.2rem; scroll-margin-top: 130px; }
+.dico-term { margin: 1rem 0 1.1rem; }
+.dico-term h3 { margin-bottom: 0.2rem; font-size: 1.05rem; }
+.dico-term p { margin: 0; }
 .footer-brand .site-logo { margin-bottom: 0.7rem; display: inline-block; }
 .footer-brand p { font-size: 0.88rem; color: var(--brown-muted); max-width: 240px; }
 .footer-col h4 { font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--brown-mid); margin-bottom: 0.9rem; }
@@ -1297,7 +1325,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   color: var(--brown-muted);
   margin: 0.85rem 0 0.5rem;
 }
-.dropdown-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.2rem 0.8rem; }
+.dropdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.2rem 0.8rem; }
 .dropdown-grid a {
   font-size: 0.85rem;
   color: var(--brown-mid);
@@ -1312,9 +1340,31 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 .dropdown--compact { min-width: 210px; }
 .dropdown-grid--col { grid-template-columns: 1fr; }
 
+/* Menu "Les Grands Axes" : titres de section empilés, libellés longs autorisés à passer à la ligne */
+.dropdown--axes { min-width: 340px; }
+.dropdown--axes .dropdown-grid a { white-space: normal; }
+.dropdown-title + .dropdown-title { margin-top: 0.9rem; }
+
+/* Bouton "Mon Thème" : encadré très fin, sans fond, pour lui donner de l'importance */
+.nav-links > li.has-dropdown > a[href^="/theme-numerologique"] {
+  border: 1px solid var(--brown-dark);
+  border-radius: 8px;
+  padding: 0.42rem 0.95rem;
+  background: transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.nav-links > li.has-dropdown > a[href^="/theme-numerologique"]::after { display: none; }
+.nav-links > li.has-dropdown > a[href^="/theme-numerologique"]:hover {
+  background: var(--brown-dark);
+  color: var(--cream-card);
+}
+
 /* ===== Menu "Découvrir la numérologie" : sous-menu vertical + flyout latéral ===== */
 .dropdown--discover { min-width: 240px; padding: 0.5rem; }
-.discover-item { position: relative; }
+.dropdown-title--arbre { margin: 0.25rem 0.45rem 0.65rem; }
+/* .discover-item statique => le flyout s'ancre sur le menu mère (.dropdown--discover, absolu),
+   donc il ne peut pas descendre plus bas que le bas du menu mère. */
+.discover-item { position: static; }
 .discover-link {
   display: flex;
   align-items: center;
@@ -1336,10 +1386,13 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 }
 .flyout {
   position: absolute;
-  top: -0.6rem;
+  top: 0;
+  bottom: 0;
   left: 100%;
   margin-left: 0.45rem;
   min-width: 340px;
+  max-height: 100%;
+  overflow-y: auto;
   background: var(--cream-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);

@@ -26,6 +26,7 @@ export default function App() {
               <li className="has-dropdown">
                 <a href="/decouvrir-la-numerologie/">Découvrir la Numérologie</a>
                 <div className="dropdown dropdown--discover">
+            <span className="dropdown-title dropdown-title--arbre">Arbre de Vie</span>
                   <div className="discover-item">
                     <a href="/signification-chemin-de-vie/" className="discover-link">Chemin de Vie<span className="discover-caret" aria-hidden="true">›</span></a>
                     <div className="flyout">
@@ -269,9 +270,34 @@ export default function App() {
                 </div>
               </li>
               <li className="has-dropdown">
+                <a href="/decors-de-vie/">Les Grands Axes</a>
+                <div className="dropdown dropdown--axes">
+                  <a href="/decors-de-vie/" className="dropdown-title">Décors de Vie — Les Cycles</a>
+                  <div className="dropdown-grid dropdown-grid--col">
+                    <a href="/decors-de-vie/#cycle-formatif">Le Cycle Formatif</a>
+                    <a href="/decors-de-vie/#cycle-productif">Le Cycle Productif</a>
+                    <a href="/decors-de-vie/#cycle-de-moisson">Le Cycle de Moisson</a>
+                  </div>
+                  <a href="/theatre-de-vie/" className="dropdown-title">Théâtre de Vie — Les 4 Actes</a>
+                  <div className="dropdown-grid dropdown-grid--col">
+                    <a href="/theatre-de-vie/#acte-1">Acte 1 — La Clé d'Évolution</a>
+                    <a href="/theatre-de-vie/#acte-2">Acte 2 — L'Axe d'Évolution</a>
+                    <a href="/theatre-de-vie/#acte-3">Acte 3 — La Deuxième Chance</a>
+                    <a href="/theatre-de-vie/#acte-4">Acte 4 — Préparation à la future incarnation</a>
+                  </div>
+                  <a href="/lecon-d-ame/" className="dropdown-title">Leçon d'Âme</a>
+                  <a href="/les-defis/" className="dropdown-title">Les Défis</a>
+                  <div className="dropdown-grid dropdown-grid--col">
+                    <a href="/les-defis/#defi-mineur-1">1er Défi Mineur</a>
+                    <a href="/les-defis/#defi-mineur-2">2e Défi Mineur</a>
+                    <a href="/les-defis/#defi-majeur">Défi Majeur</a>
+                  </div>
+                </div>
+              </li>
+              <li className="has-dropdown">
                 <a href="/nombres-maitres/">Nombres Spéciaux</a>
                 <div className="dropdown">
-                  <a href="/nombres-maitres/" className="dropdown-title">Maître Nombres</a>
+                  <a href="/nombres-maitres/" className="dropdown-title">Nombres Maître</a>
                   <div className="dropdown-grid">
                     <a href="/nombre-maitre-11/">Nombre maître 11</a>
                     <a href="/nombre-maitre-22/">Nombre maître 22</a>
@@ -322,8 +348,9 @@ export default function App() {
             <a href="/" className="site-logo">Clés <span>Des Nombres</span></a>
             <p>L'analyse numérologique personnalisée la plus précise en France.</p>
           </div>
-          <div className="footer-col"><h4>Explorer</h4><ul>
+          <div className="footer-col footer-col--explore"><h4>Explorer</h4><ul>
             <li><a href="/decouvrir-la-numerologie/">Découvrir la numérologie</a></li>
+            <li><a href="/dictionnaire-numerologie/">Dictionnaire de la numérologie</a></li>
             <li><a href="/signification-chemin-de-vie/">Chemin de Vie</a></li>
             <li><a href="/signification-annee-personnelle/">Année Personnelle</a></li>
             <li><a href="/signification-nombre-expression/">Nombre d'Expression</a></li>
@@ -334,12 +361,13 @@ export default function App() {
             <li><a href="/signification-nombre-equilibre/">Nombre d'Équilibre</a></li>
             <li><a href="/signification-nombre-realisation/">Nombre de Réalisation</a></li>
             <li><a href="/signification-nombre-moi-intime/">Nombre Moi Intime</a></li>
-            <li><a href="/nombres-maitres/">Maître Nombres</a></li>
+            <li><a href="/nombres-maitres/">Nombres Maître</a></li>
             <li><a href="/nombres-karmiques/">Nombres Karmiques</a></li>
           </ul></div>
           <div className="footer-col"><h4>Blog</h4><ul>
             <li><a href="/blog-numerologique/">Tous les articles</a></li>
             <li><a href="/exemple-theme-numerologique/">Exemple de thème</a></li>
+            <li><a href="/a-propos/">À propos</a></li>
           </ul></div>
           <div className="footer-col"><h4>Légal</h4><ul>
             <li><a href="/contact/">Contact</a></li>

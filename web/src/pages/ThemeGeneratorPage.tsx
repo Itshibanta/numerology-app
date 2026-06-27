@@ -242,7 +242,7 @@ export default function ThemeGeneratorPage() {
     <>
       <div style={{ background: "var(--cream-warm)", padding: "2rem 0 0" }}>
         <div className="container">
-          <h1 style={{ marginBottom: "0.4rem" }}>Générez votre thème numérologique</h1>
+          <h1 style={{ marginBottom: "0.4rem" }}>Découvrez votre thème numérologique</h1>
           <p style={{ maxWidth: 600, marginBottom: 0, paddingBottom: "1.5rem" }}>
             Remplissez votre état civil complet pour que nous puissions calculer votre
             analyse personnalisée. Plus les informations sont précises, plus le portrait
