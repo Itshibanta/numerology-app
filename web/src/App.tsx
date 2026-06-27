@@ -334,7 +334,7 @@ export default function App() {
               </li>
               <li className="has-dropdown">
                 <a href="/tous-les-nombres/">Guides des Nombres</a>
-                <div className="dropdown dropdown--discover">
+                <div className="dropdown dropdown--discover dropdown--left">
                   <div className="discover-item">
                     <a href="/nombres-maitres/" className="discover-link">Nombres Maîtres<span className="discover-caret" aria-hidden="true">›</span></a>
                     <div className="flyout">

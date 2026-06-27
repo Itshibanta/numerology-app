@@ -144,10 +144,11 @@ export default function FreeThemeGeneratorPage() {
             <div className="form-card-large">
               <div className="confirmation-box">
                 <div className="confirmation-icon">✨</div>
-                <h2>Votre thème gratuit vous attend dans votre espace</h2>
+                <h2>Votre thème gratuit est en cours de préparation</h2>
                 <p>
-                  Vous pourrez le retrouver <strong>d'ici quelques instants</strong> dans
-                  votre espace compte, où vous pourrez le consulter et le télécharger en PDF.
+                  Il sera disponible <strong>d'ici quelques instants</strong> dans votre
+                  espace compte (statut « En préparation » le temps de la finalisation),
+                  où vous pourrez le consulter et le télécharger en PDF.
                 </p>
 
                 {isLoggedIn || accountExists ? (

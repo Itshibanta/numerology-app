@@ -8,6 +8,9 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // true tant que l'on vérifie la session : évite d'afficher le formulaire
+  // (puis de rediriger) à une personne déjà connectée.
+  const [checking, setChecking] = useState(true);
 
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const confirmed = params.get("confirmed") === "1";
@@ -20,9 +23,21 @@ export default function SignInPage() {
       if (token) {
         localStorage.setItem("auth_token", token);
         window.location.href = "/profile";
+      } else {
+        setChecking(false);
       }
     });
   }, []);
+
+  // Pendant la vérification de session, on n'affiche PAS le formulaire
+  // (sinon flash de la page de connexion avant la redirection).
+  if (checking) {
+    return (
+      <div className="content-wrapper" style={{ maxWidth: 560, textAlign: "center", padding: "3rem 1.5rem" }}>
+        <p className="hero-subtitle">Chargement…</p>
+      </div>
+    );
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

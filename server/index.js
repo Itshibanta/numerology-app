@@ -551,12 +551,18 @@ app.post("/free-theme", generateLimiter, async (req, res) => {
 
     // 4) Stockage de la génération sur le compte (PDF servi à la demande)
     const targetName = `${prenom || ""} ${nomFamille || ""}`.trim();
+    // Thème gratuit : pas d'attente -> livraison immédiate par le cron
+    // (deliver_at = maintenant). Le texte est déjà généré ; le cron se charge
+    // du PDF + email et marque "delivered". Tant que ce n'est pas fait, le
+    // profil affiche "En préparation" (comme le thème payant).
     await supabaseAdmin.from("generations").insert({
       user_id: userId,
       type: "summary",
       label: targetName ? `Résumé thème ${targetName}` : "Résumé thème gratuit",
       payload: req.body || {},
       result_text: summaryText,
+      deliver_at: new Date().toISOString(),
+      delivered: false,
     });
 
     // 5) Lead (non bloquant)

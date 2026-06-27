@@ -481,6 +481,11 @@ p {
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
   margin-bottom: 1.6rem;
 }
+/* Carte "Votre compte" : pas d'animation au survol (neutralise .card:hover du CSS partagé) */
+.card.account-card, .card.account-card:hover {
+  transform: none;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+}
 
 .form-grid {
   display: grid;

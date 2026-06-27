@@ -258,9 +258,9 @@ export default function ThemeGeneratorPage() {
           <h1 style={{ marginBottom: "0.4rem" }}>Découvrez votre thème numérologique</h1>
           <p style={{ maxWidth: 600, marginBottom: 0, paddingBottom: "1.5rem" }}>
             Remplissez votre état civil complet pour que nous puissions calculer votre
-            analyse personnalisée. Plus les informations sont précises, plus le portrait
-            est juste. Le thème sera rédigé par une numérologue certifiée, en activité
-            depuis 2013. L'interprétation et la rédaction d'un thème prennent en moyenne 3 h.
+            thème personnalisé. Le thème sera rédigé par une numérologue certifiée, en
+            activité depuis 2013, et vous sera délivré dans un délai de 24 h
+            (~6 heures en moyenne).
           </p>
         </div>
       </div>

@@ -334,7 +334,7 @@ export default function ProfilePage() {
         <h1>Mon profil</h1>
         <p className="hero-subtitle">Vos informations, votre formule et vos thèmes générés.</p>
       </div>
-      <section className="card">
+      <section className="card account-card">
         <div className="theme-header" style={{ marginBottom: "1.1rem" }}>
           <h2 style={{ margin: 0 }}>Votre compte</h2>
           <button type="button" className="btn btn-ghost btn-sm" onClick={logoutAndRedirect}>
