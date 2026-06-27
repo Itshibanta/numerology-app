@@ -805,10 +805,10 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   padding: 0 1.5rem;
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 3.6rem;
+  gap: 2.5rem;
 }
-/* Correspondances des nombres : 4 items sur 2 colonnes (2 en haut, 2 en bas) */
-.traits-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 1.4rem; }
+/* Plus d'espace UNIQUEMENT entre Explorer (2e enfant) et Blog ; Blog↔Légal inchangé */
+.footer-inner > div:nth-child(2) { margin-right: 1.5rem; }
 
 /* ===== Section "À propos" (accueil) ===== */
 .about-home { display: flex; align-items: center; gap: 2.5rem; max-width: 880px; margin: 0 auto; }
@@ -1328,7 +1328,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   color: var(--brown-muted);
   margin: 0.85rem 0 0.5rem;
 }
-.dropdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.2rem 0.8rem; }
+.dropdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem 0.85rem; }
 .dropdown-grid a {
   font-size: 0.85rem;
   color: var(--brown-mid);
@@ -1414,12 +1414,12 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   transform: translateX(0);
 }
 /* Tunnel invisible reliant la carte mère au flyout (évite la disparition au survol) */
-.flyout::before { content: ""; position: absolute; top: 0; left: -0.6rem; width: 0.6rem; height: 100%; }
+.flyout::before { content: ""; position: absolute; top: 0; left: -1.15rem; width: 1.15rem; height: 100%; }
 /* Variante : flyout qui s'ouvre vers la GAUCHE (menu proche du bord droit) */
 .dropdown--left .flyout { left: auto; right: 100%; margin-left: 0; margin-right: 0.45rem; transform: translateX(6px); }
 .dropdown--left .discover-item:hover > .flyout,
 .dropdown--left .discover-item:focus-within > .flyout { transform: translateX(0); }
-.dropdown--left .flyout::before { left: auto; right: -0.6rem; }
+.dropdown--left .flyout::before { left: auto; right: -1.15rem; }
 .flyout .dropdown-sub:first-child { margin-top: 0; }
 
 /* ===== MODERN CONTENT SECTIONS (chemin / guides) ===== */

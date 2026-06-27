@@ -1101,15 +1101,17 @@ app.all("/cron/deliver", async (req, res) => {
     if (error) return res.status(500).json({ error: "QUERY_FAILED", detail: error.message });
 
     let delivered = 0;
+    const errors = [];
     for (const gen of due || []) {
       try {
         await deliverOneGeneration(gen);
         delivered++;
       } catch (e) {
         console.error("DELIVER_ITEM_FAILED", gen.id, e?.message);
+        errors.push({ id: gen.id, error: e?.message || String(e) });
       }
     }
-    return res.json({ ok: true, due: (due || []).length, delivered });
+    return res.json({ ok: true, due: (due || []).length, delivered, errors });
   } catch (e) {
     console.error("CRON_DELIVER_FAILED", e);
     return res.status(500).json({ error: "INTERNAL" });
