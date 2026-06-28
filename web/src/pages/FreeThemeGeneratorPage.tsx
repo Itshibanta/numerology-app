@@ -288,9 +288,6 @@ export default function FreeThemeGeneratorPage() {
               <div className="form-group">
                 <label htmlFor="email">Adresse email <span style={{ color: "#b04747" }}>*</span></label>
                 <input id="email" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="votre@email.fr" autoComplete="email" disabled={isLoggedIn} style={isLoggedIn ? { background: "var(--cream-warm)", color: "var(--brown-muted)", cursor: "not-allowed" } : undefined} />
-                {isLoggedIn && (
-                  <small style={{ color: "var(--brown-muted)" }}>Connecté : votre thème sera ajouté à ce compte.</small>
-                )}
               </div>
             </div>
 

@@ -1328,12 +1328,12 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   color: var(--brown-muted);
   margin: 0.85rem 0 0.5rem;
 }
-.dropdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem 0.85rem; }
+.dropdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.15rem 0.85rem; }
 .dropdown-grid a {
   font-size: 0.85rem;
   color: var(--brown-mid);
   text-decoration: none;
-  padding: 0.32rem 0.45rem;
+  padding: 0.24rem 0.45rem;
   border-radius: 7px;
   white-space: nowrap;
   transition: background 0.12s, color 0.12s;
@@ -1377,7 +1377,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 0.6rem;
-  padding: 0.6rem 0.75rem;
+  padding: 0.4rem 0.75rem;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 600;
@@ -1421,6 +1421,10 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
 .dropdown--left .discover-item:hover > .flyout,
 .dropdown--left .discover-item:focus-within > .flyout { transform: translateX(0); }
 .dropdown--left .flyout::before { left: auto; right: -1.15rem; }
+/* Élément de menu non cliquable (ouvre seulement son sous-menu) */
+.nav-static { cursor: default; }
+/* Flèche d'accordéon : masquée sur desktop, affichée en mobile (cf. media query) */
+.nav-acc-arrow { display: none; }
 .flyout .dropdown-sub:first-child { margin-top: 0; }
 
 /* ===== MODERN CONTENT SECTIONS (chemin / guides) ===== */
@@ -1617,40 +1621,56 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   .nav-toggle { display: flex; }
   .site-header { position: relative; }
 
-  /* mega-menu collapses to inline sub-lists on touch */
+  /* ===== Menu mobile : accordéon (tout replié par défaut) ===== */
   .nav-links { max-height: calc(100vh - 72px); overflow-y: auto; }
   .nav-links > li { display: block; }
-  .has-dropdown > a { padding: 0.2rem 0; display: block; }
-  .dropdown {
-    position: static;
-    transform: none;
-    opacity: 1;
-    visibility: visible;
-    min-width: 0;
-    box-shadow: none;
-    border: none;
-    background: transparent;
-    padding: 0.3rem 0 0.6rem 0.8rem;
-    border-radius: 0;
+  .has-dropdown { position: relative; }
+  .has-dropdown > a { padding: 0.6rem 2.6rem 0.6rem 0; display: block; }
+
+  /* flèche d'accordéon niveau 0 (titres principaux), ajoutée par JS */
+  .nav-acc-arrow {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: 0.15rem; right: 0;
+    width: 2.6rem; height: 2.6rem;
+    background: none; border: none; padding: 0; cursor: pointer;
+    color: var(--brown-mid); font-size: 0.75rem;
+    transition: transform 0.18s ease;
   }
+  .nav-acc-arrow::before { content: "\25BC"; }
+  .nav-acc-arrow.open { transform: rotate(180deg); }
+
+  /* dropdowns repliés par défaut, ouverts via .open */
+  .dropdown {
+    display: none;
+    position: static; transform: none; opacity: 1; visibility: visible;
+    min-width: 0; box-shadow: none; border: none; background: transparent;
+    padding: 0.2rem 0 0.5rem 0.8rem; border-radius: 0;
+  }
+  .dropdown.open { display: block; }
   .dropdown-grid { grid-template-columns: 1fr 1fr; }
   .dropdown-grid a { white-space: normal; }
-
-  /* Menu "Découvrir" en mobile : flyout déplié en statique (pas de survol) */
   .dropdown--discover { min-width: 0; padding: 0; }
-  .discover-caret { display: none; }
-  .flyout {
-    position: static;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    min-width: 0;
-    box-shadow: none;
-    border: none;
-    background: transparent;
-    margin-left: 0;
-    padding: 0.2rem 0 0.4rem 0.8rem;
+
+  /* carte mère : le titre reste cliquable (navigue), le caret = toggle des pages filles */
+  .discover-item { position: relative; }
+  .discover-caret {
+    display: flex; align-items: center; justify-content: flex-end;
+    min-width: 2.6rem; padding: 0.55rem 0 0.55rem 0.8rem; margin: -0.55rem 0;
+    font-size: 1.3rem; color: var(--brown-mid); cursor: pointer;
+    transition: transform 0.18s ease;
   }
+  .discover-caret.open { transform: rotate(90deg); }
+
+  /* flyout (pages filles) replié par défaut, ouvert via .open */
+  .flyout {
+    display: none;
+    position: static; opacity: 1; visibility: visible; transform: none;
+    min-width: 0; max-height: none; overflow: visible;
+    box-shadow: none; border: none; background: transparent;
+    margin-left: 0; padding: 0.2rem 0 0.4rem 0.8rem;
+  }
+  .flyout.open { display: block; }
+  .flyout::before { display: none; }
 
   .hero { padding: 3rem 0 2.5rem; }
   .section { padding: 2.8rem 0; }

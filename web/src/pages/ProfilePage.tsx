@@ -262,20 +262,14 @@ export default function ProfilePage() {
                   {!h.delivered && (
                     <div style={{ fontSize: 13, color: "#8a7d73", textAlign: "right" }}>
                       En préparation
-                      {h.deliverAt
-                        ? ` — disponible le ${new Date(h.deliverAt).toLocaleString()}`
-                        : ""}
                     </div>
                   )}
 
                   {h.delivered && (
                     <button
                       type="button"
-                      className="auth-btn"
-                      style={{
-                        padding: "8px 12px",
-                        width: "fit-content",
-                      }}
+                      className="btn btn-primary btn-sm"
+                      style={{ width: "fit-content" }}
                       onClick={async () => {
                         const gen = await getGeneration(h.id);
                         downloadPDF(
@@ -284,7 +278,7 @@ export default function ProfilePage() {
                         );
                       }}
                     >
-                      Télécharger (PDF)
+                      Télécharger le PDF
                     </button>
                   )}
                 </div>

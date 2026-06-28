@@ -65,6 +65,50 @@ export default function App() {
     };
   }, []);
 
+  // Menu mobile en accordéon : flèche niveau 0 (toggle dropdown) + caret niveau 1
+  // (toggle pages filles). Les titres restent cliquables (navigation).
+  useEffect(() => {
+    const isMobile = () => window.matchMedia("(max-width: 768px)").matches;
+    const arrows: HTMLElement[] = [];
+    document.querySelectorAll(".nav-links > li.has-dropdown").forEach((li) => {
+      const dd = li.querySelector<HTMLElement>(":scope > .dropdown");
+      if (!dd || li.querySelector(":scope > .nav-acc-arrow")) return;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "nav-acc-arrow";
+      btn.setAttribute("aria-label", "Afficher le sous-menu");
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const op = dd.classList.toggle("open");
+        btn.classList.toggle("open", op);
+      });
+      const a = li.querySelector(":scope > a");
+      if (a) a.insertAdjacentElement("afterend", btn);
+      else li.insertBefore(btn, dd);
+      arrows.push(btn);
+    });
+    const caretHandlers: Array<[Element, (e: Event) => void]> = [];
+    document.querySelectorAll(".dropdown--discover .discover-item").forEach((it) => {
+      const caret = it.querySelector<HTMLElement>(":scope > .discover-link > .discover-caret");
+      const fly = it.querySelector<HTMLElement>(":scope > .flyout");
+      if (!caret || !fly) return;
+      const h = (e: Event) => {
+        if (!isMobile()) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const op = fly.classList.toggle("open");
+        caret.classList.toggle("open", op);
+      };
+      caret.addEventListener("click", h);
+      caretHandlers.push([caret, h]);
+    });
+    return () => {
+      arrows.forEach((b) => b.remove());
+      caretHandlers.forEach(([el, h]) => el.removeEventListener("click", h));
+    };
+  }, []);
+
   return (
     <div className="app-root">
       <header className="site-header">
@@ -319,7 +363,7 @@ export default function App() {
                 </div>
               </li>
               <li className="has-dropdown">
-                <a href="/decors-de-vie/">Les Grands Axes</a>
+                <a className="nav-static">Les Grands Axes</a>
                 <div className="dropdown dropdown--axes">
                   <a href="/decors-de-vie/" className="dropdown-title">Décors de Vie — Les Cycles</a>
                   <div className="dropdown-grid dropdown-grid--col">

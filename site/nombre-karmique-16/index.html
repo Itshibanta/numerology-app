@@ -6,6 +6,7 @@
   <title>Nombre Karmique 16, La Dette de l'Ego | Numérologie</title>
   <meta name="description" content="Nombre karmique 16 (dette karmique) : signification, leçon de vie et comment la dépasser. De l'ego à la renaissance spirituelle.">
   <link rel="canonical" href="https://clesdesnombres.com/nombre-karmique-16/">
+  <meta property="og:image" content="https://clesdesnombres.com/og-image.jpg">
   <meta property="og:title" content="Nombre Karmique 16, La Dette de l'Ego | Numérologie">
   <meta property="og:description" content="Nombre karmique 16 (dette karmique) : signification, leçon de vie et comment la dépasser. De l'ego à la renaissance spirituelle.">
   <meta property="og:url" content="https://clesdesnombres.com/nombre-karmique-16/">
@@ -296,7 +297,7 @@
           </div>
         </li>
         <li class="has-dropdown">
-          <a href="/decors-de-vie/">Les Grands Axes</a>
+          <a class="nav-static">Les Grands Axes</a>
           <div class="dropdown dropdown--axes">
             <a href="/decors-de-vie/" class="dropdown-title">Décors de Vie — Les Cycles</a>
             <div class="dropdown-grid dropdown-grid--col">
@@ -555,6 +556,7 @@ document.querySelectorAll('.faq-question').forEach(btn => {
 <script data-flyout-pos>
 (function(){
   function pos(item){
+    if(window.matchMedia('(max-width: 768px)').matches) return;
     var fly=item.querySelector('.flyout'); if(!fly) return;
     var menu=item.closest('.dropdown--discover'); if(!menu) return;
     fly.style.maxHeight=''; fly.style.overflowY='';
@@ -582,6 +584,34 @@ document.querySelectorAll('.faq-question').forEach(btn => {
   document.querySelectorAll('.dropdown--discover .discover-item').forEach(function(it){
     it.addEventListener('mouseenter', function(){ pos(it); });
     it.addEventListener('focusin', function(){ pos(it); });
+  });
+})();
+</script>
+<script data-mobile-menu>
+(function(){
+  function isMobile(){ return window.matchMedia('(max-width: 768px)').matches; }
+  document.querySelectorAll('.nav-links > li.has-dropdown').forEach(function(li){
+    var dd = li.querySelector(':scope > .dropdown');
+    if(!dd || li.querySelector(':scope > .nav-acc-arrow')) return;
+    var btn = document.createElement('button');
+    btn.type='button'; btn.className='nav-acc-arrow';
+    btn.setAttribute('aria-label','Afficher le sous-menu');
+    btn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var op = dd.classList.toggle('open'); btn.classList.toggle('open', op);
+    });
+    var a = li.querySelector(':scope > a');
+    if(a){ a.insertAdjacentElement('afterend', btn); } else { li.insertBefore(btn, dd); }
+  });
+  document.querySelectorAll('.dropdown--discover .discover-item').forEach(function(it){
+    var caret = it.querySelector(':scope > .discover-link > .discover-caret');
+    var fly = it.querySelector(':scope > .flyout');
+    if(!caret || !fly) return;
+    caret.addEventListener('click', function(e){
+      if(!isMobile()) return;
+      e.preventDefault(); e.stopPropagation();
+      var op = fly.classList.toggle('open'); caret.classList.toggle('open', op);
+    });
   });
 })();
 </script>
