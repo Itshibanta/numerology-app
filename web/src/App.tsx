@@ -24,20 +24,31 @@ export default function App() {
       if (!fly || !menu) return;
       fly.style.maxHeight = "";
       fly.style.overflowY = "";
-      const vh = window.innerHeight;
-      const margin = 12;
-      const menuTop = menu.getBoundingClientRect().top;
-      const itemTop = item.getBoundingClientRect().top;
+      const menuRect = menu.getBoundingClientRect();
+      const itemRect = (item as HTMLElement).getBoundingClientRect();
+      const OFFSET = 12;
       const natural = fly.scrollHeight;
-      const maxH = vh - 2 * margin;
-      const flyH = Math.min(natural, maxH);
-      if (natural > maxH) {
+      const menuH = menu.clientHeight;
+      if (natural <= menuH) {
+        // le flyout tient dans le menu mère -> ne dépasse pas son bas,
+        // et est placé un peu plus haut que la carte (tolérance de survol)
+        const maxTop = menuH - natural;
+        let top = itemRect.top - menuRect.top - OFFSET;
+        if (top > maxTop) top = maxTop;
+        if (top < 0) top = 0;
+        fly.style.top = top + "px";
+      } else {
+        // flyout plus grand que le menu mère (ex. Guides) -> borné à l'écran
+        const vh = window.innerHeight;
+        const margin = 12;
+        const maxH = vh - 2 * margin;
         fly.style.maxHeight = maxH + "px";
         fly.style.overflowY = "auto";
+        const flyH = Math.min(natural, maxH);
+        let topVp = Math.min(itemRect.top - OFFSET, vh - margin - flyH);
+        if (topVp < margin) topVp = margin;
+        fly.style.top = topVp - menuRect.top + "px";
       }
-      let topVp = Math.min(itemTop, vh - margin - flyH);
-      if (topVp < margin) topVp = margin;
-      fly.style.top = topVp - menuTop + "px";
     }
     const items = Array.from(document.querySelectorAll(".dropdown--discover .discover-item"));
     const handlers = items.map((it) => {
@@ -51,6 +62,50 @@ export default function App() {
         it.removeEventListener("mouseenter", handlers[i]);
         it.removeEventListener("focusin", handlers[i]);
       });
+    };
+  }, []);
+
+  // Menu mobile en accordéon : flèche niveau 0 (toggle dropdown) + caret niveau 1
+  // (toggle pages filles). Les titres restent cliquables (navigation).
+  useEffect(() => {
+    const isMobile = () => window.matchMedia("(max-width: 768px)").matches;
+    const arrows: HTMLElement[] = [];
+    document.querySelectorAll(".nav-links > li.has-dropdown").forEach((li) => {
+      const dd = li.querySelector<HTMLElement>(":scope > .dropdown");
+      if (!dd || li.querySelector(":scope > .nav-acc-arrow")) return;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "nav-acc-arrow";
+      btn.setAttribute("aria-label", "Afficher le sous-menu");
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const op = dd.classList.toggle("open");
+        btn.classList.toggle("open", op);
+      });
+      const a = li.querySelector(":scope > a");
+      if (a) a.insertAdjacentElement("afterend", btn);
+      else li.insertBefore(btn, dd);
+      arrows.push(btn);
+    });
+    const caretHandlers: Array<[Element, (e: Event) => void]> = [];
+    document.querySelectorAll(".dropdown--discover .discover-item").forEach((it) => {
+      const caret = it.querySelector<HTMLElement>(":scope > .discover-link > .discover-caret");
+      const fly = it.querySelector<HTMLElement>(":scope > .flyout");
+      if (!caret || !fly) return;
+      const h = (e: Event) => {
+        if (!isMobile()) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const op = fly.classList.toggle("open");
+        caret.classList.toggle("open", op);
+      };
+      caret.addEventListener("click", h);
+      caretHandlers.push([caret, h]);
+    });
+    return () => {
+      arrows.forEach((b) => b.remove());
+      caretHandlers.forEach(([el, h]) => el.removeEventListener("click", h));
     };
   }, []);
 
@@ -308,7 +363,7 @@ export default function App() {
                 </div>
               </li>
               <li className="has-dropdown">
-                <a href="/decors-de-vie/">Les Grands Axes</a>
+                <a className="nav-static">Les Grands Axes</a>
                 <div className="dropdown dropdown--axes">
                   <a href="/decors-de-vie/" className="dropdown-title">Décors de Vie — Les Cycles</a>
                   <div className="dropdown-grid dropdown-grid--col">

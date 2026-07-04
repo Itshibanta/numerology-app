@@ -268,9 +268,12 @@ export type FreeThemePayload = {
 export async function generateFreeTheme(
   payload: FreeThemePayload
 ): Promise<{ ok: boolean; accountExists: boolean; claimToken: string | null }> {
+  const token = localStorage.getItem("auth_token");
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
   const res = await fetch(`${API_BASE_URL}/free-theme`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(payload),
   });
   const json = await res.json().catch(() => ({} as any));

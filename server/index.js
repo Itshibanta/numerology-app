@@ -196,6 +196,19 @@ app.use(
 =========================================== */
 app.get("/__ping", (_, res) => res.json({ ok: true }));
 
+// Keep-alive : ping léger qui touche Supabase pour éviter la mise en veille
+// du projet (plan gratuit Supabase : pause après ~7 jours d'inactivité).
+// À appeler une fois par jour via cron-job.org : GET /keepalive
+app.get("/keepalive", async (_req, res) => {
+  try {
+    await supabaseAdmin.from("profiles").select("id").limit(1);
+    return res.json({ ok: true, ts: new Date().toISOString() });
+  } catch (e) {
+    console.error("KEEPALIVE_FAILED", e?.message);
+    return res.status(500).json({ ok: false });
+  }
+});
+
 app.get("/plans", (_, res) =>
   res.json({ success: true, plans: getPlansPublic() })
 );
@@ -516,51 +529,55 @@ app.post("/free-theme", generateLimiter, async (req, res) => {
     }
     const emailLc = String(email).toLowerCase().trim();
 
-    // 1) Le compte existe-t-il déjà ?
-    let userId = await findUserIdByEmail(emailLc);
-    let accountExists = !!userId;
-
-    // 2) Sinon, on le crée (email confirmé, sans mot de passe pour l'instant)
-    if (!userId) {
-      const { data: created, error: createErr } =
-        await supabaseAdmin.auth.admin.createUser({
-          email: emailLc,
-          email_confirm: true,
-          user_metadata: { firstName: prenom || "", lastName: nomFamille || "" },
-        });
-      if (createErr || !created?.user) {
-        // course possible : peut déjà exister
-        userId = await findUserIdByEmail(emailLc);
-        accountExists = true;
-        if (!userId) return res.status(500).json({ error: "ACCOUNT_CREATE_FAILED" });
-      } else {
-        userId = created.user.id;
-        await ensureProfileExists(created.user);
+    // 0) Si la personne est CONNECTÉE, on attribue le thème à SON compte,
+    //    quel que soit l'email saisi dans le formulaire.
+    let userId = null;
+    let loggedIn = false;
+    const token = getBearerToken(req);
+    if (token) {
+      const { data: u } = await supabaseAdmin.auth.getUser(token);
+      if (u?.user) {
+        userId = u.user.id;
+        loggedIn = true;
+        await ensureProfileExists(u.user);
       }
     }
 
-    // 3) Génération du résumé (assistant gratuit) — fonction existante inchangée
-    const summaryText = await generateNumerologySummary({
-      prenom,
-      secondPrenom,
-      nomFamille,
-      nomMarital,
-      dateNaissance,
-      lieuNaissance,
-    });
+    // si connecté -> compte déjà existant (pas de création de mot de passe)
+    let accountExists = loggedIn;
 
-    // 4) Stockage de la génération sur le compte (PDF servi à la demande)
+    // 1) Sinon, on retrouve / crée un compte d'après l'email saisi
+    if (!userId) {
+      userId = await findUserIdByEmail(emailLc);
+      accountExists = !!userId;
+      if (!userId) {
+        const { data: created, error: createErr } =
+          await supabaseAdmin.auth.admin.createUser({
+            email: emailLc,
+            email_confirm: true,
+            user_metadata: { firstName: prenom || "", lastName: nomFamille || "" },
+          });
+        if (createErr || !created?.user) {
+          userId = await findUserIdByEmail(emailLc);
+          accountExists = true;
+          if (!userId) return res.status(500).json({ error: "ACCOUNT_CREATE_FAILED" });
+        } else {
+          userId = created.user.id;
+          await ensureProfileExists(created.user);
+        }
+      }
+    }
+
+    // 2) Génération DÉFÉRÉE au cron (réponse instantanée, pas d'attente côté
+    //    utilisateur). On insère la ligne SANS result_text, avec deliver_at =
+    //    maintenant : le cron génère le résumé, fabrique le PDF, envoie l'email
+    //    et marque "delivered". En attendant, le profil affiche "En préparation".
     const targetName = `${prenom || ""} ${nomFamille || ""}`.trim();
-    // Thème gratuit : pas d'attente -> livraison immédiate par le cron
-    // (deliver_at = maintenant). Le texte est déjà généré ; le cron se charge
-    // du PDF + email et marque "delivered". Tant que ce n'est pas fait, le
-    // profil affiche "En préparation" (comme le thème payant).
     await supabaseAdmin.from("generations").insert({
       user_id: userId,
       type: "summary",
       label: targetName ? `Résumé thème ${targetName}` : "Résumé thème gratuit",
       payload: req.body || {},
-      result_text: summaryText,
       deliver_at: new Date().toISOString(),
       delivered: false,
     });
@@ -1030,25 +1047,31 @@ async function deliverOneGeneration(gen) {
   const payload = gen.payload || {};
   const targetName = `${payload.prenom || ""} ${payload.nomFamille || ""}`.trim();
 
-  // 1) Génère le texte si absent (logique de génération inchangée, réutilisée)
+  const isSummary = gen.type === "summary";
+
+  // 1) Génère le texte si absent — réutilise les générateurs existants
+  //    (résumé pour le gratuit, thème complet pour le payant), inchangés.
   let text = gen.result_text;
   if (!text) {
-    text = await generateNumerologyTheme({
+    const input = {
       prenom: payload.prenom,
       secondPrenom: payload.secondPrenom,
       nomFamille: payload.nomFamille,
       nomMarital: payload.nomMarital,
       dateNaissance: payload.dateNaissance,
       lieuNaissance: payload.lieuNaissance,
-    });
+    };
+    text = isSummary
+      ? await generateNumerologySummary(input)
+      : await generateNumerologyTheme(input);
     await supabaseAdmin.from("generations").update({ result_text: text }).eq("id", gen.id);
   }
 
   // 2) PDF -> Storage
-  const pdfBuffer = await buildThemePdfBuffer(
-    targetName ? `Thème numérologique — ${targetName}` : "Thème numérologique",
-    text
-  );
+  const docTitle = isSummary
+    ? (targetName ? `Résumé numérologique — ${targetName}` : "Résumé numérologique")
+    : (targetName ? `Thème numérologique — ${targetName}` : "Thème numérologique");
+  const pdfBuffer = await buildThemePdfBuffer(docTitle, text);
   const pdfPath = `${gen.user_id}/${gen.id}.pdf`;
   const { error: upErr } = await supabaseAdmin.storage
     .from("themes")
@@ -1066,14 +1089,17 @@ async function deliverOneGeneration(gen) {
     const { data: u } = await supabaseAdmin.auth.admin.getUserById(gen.user_id);
     const email = u?.user?.email;
     if (email) {
+      const titre = isSummary
+        ? "Votre résumé numérologique est prêt"
+        : "Votre thème numérologique est prêt";
       const html = emailLayout(
-        "Votre thème numérologique est prêt",
+        titre,
         `<p style="line-height:1.6;">Votre analyse personnalisée est disponible dans votre espace personnel.</p>
-         <p style="line-height:1.6;"><a href="${FRONTEND_URL}/signin" style="color:#6f8f72;">Accéder à mon thème</a></p>`
+         <p style="line-height:1.6;"><a href="${FRONTEND_URL}/signin" style="color:#6f8f72;">Accéder à mon espace</a></p>`
       );
       await sendEmail({
         to: email,
-        subject: "Votre thème numérologique est prêt — Clés Des Nombres",
+        subject: `${titre} — Clés Des Nombres`,
         html,
       });
     }
@@ -1091,7 +1117,7 @@ app.all("/cron/deliver", async (req, res) => {
     const nowIso = new Date().toISOString();
     const { data: due, error } = await supabaseAdmin
       .from("generations")
-      .select("id, user_id, payload, result_text")
+      .select("id, user_id, payload, result_text, type")
       .eq("delivered", false)
       .not("deliver_at", "is", null)
       .lte("deliver_at", nowIso)
@@ -1101,15 +1127,17 @@ app.all("/cron/deliver", async (req, res) => {
     if (error) return res.status(500).json({ error: "QUERY_FAILED", detail: error.message });
 
     let delivered = 0;
+    const errors = [];
     for (const gen of due || []) {
       try {
         await deliverOneGeneration(gen);
         delivered++;
       } catch (e) {
         console.error("DELIVER_ITEM_FAILED", gen.id, e?.message);
+        errors.push({ id: gen.id, error: e?.message || String(e) });
       }
     }
-    return res.json({ ok: true, due: (due || []).length, delivered });
+    return res.json({ ok: true, due: (due || []).length, delivered, errors });
   } catch (e) {
     console.error("CRON_DELIVER_FAILED", e);
     return res.status(500).json({ error: "INTERNAL" });

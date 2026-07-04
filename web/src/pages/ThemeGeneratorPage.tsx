@@ -63,6 +63,9 @@ export default function ThemeGeneratorPage() {
     // Si l'acheteur est déjà connecté, on n'affiche pas la création de mot de passe.
     supabase.auth.getSession().then(({ data }) => {
       setIsLoggedIn(!!data.session);
+      // Connecté : on impose l'email du compte (achat rattaché au bon compte)
+      const mail = data.session?.user?.email;
+      if (mail) setEmail(mail);
     });
   }, []);
 
@@ -306,7 +309,7 @@ export default function ThemeGeneratorPage() {
                 </div>
                 <div className="form-group">
                   <label htmlFor="email">Adresse email <span style={{ color: "#b04747" }}>*</span></label>
-                  <input id="email" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="votre@email.fr" autoComplete="email" />
+                  <input id="email" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="votre@email.fr" autoComplete="email" disabled={isLoggedIn} style={isLoggedIn ? { background: "var(--cream-warm)", color: "var(--brown-muted)", cursor: "not-allowed" } : undefined} />
                 </div>
               </div>
 

@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chemin de Vie 33, Le Maître de l'Amour, le Guide | Numérologie</title>
+  <title>Chemin de Vie 33, Le Maître de l'Amour, le Guide</title>
   <meta name="description" content="Chemin de vie 33 (nombre maître) : signification, traits, défis, mission de vie, amour et travail. Amour inconditionnel, guérison et enseignement.">
   <link rel="canonical" href="https://clesdesnombres.com/chemin-de-vie-33/">
+  <meta property="og:image" content="https://clesdesnombres.com/og-image.jpg">
   <meta property="og:title" content="Chemin de Vie 33, Le Maître de l'Amour, le Guide | Numérologie">
   <meta property="og:description" content="Chemin de vie 33 (nombre maître) : signification, traits, défis, mission de vie, amour et travail. Amour inconditionnel, guérison et enseignement.">
   <meta property="og:url" content="https://clesdesnombres.com/chemin-de-vie-33/">
@@ -297,7 +298,7 @@
           </div>
         </li>
         <li class="has-dropdown">
-          <a href="/decors-de-vie/">Les Grands Axes</a>
+          <a class="nav-static">Les Grands Axes</a>
           <div class="dropdown dropdown--axes">
             <a href="/decors-de-vie/" class="dropdown-title">Décors de Vie — Les Cycles</a>
             <div class="dropdown-grid dropdown-grid--col">
@@ -575,23 +576,62 @@ document.querySelectorAll('.faq-question').forEach(btn => {
 <script data-flyout-pos>
 (function(){
   function pos(item){
+    if(window.matchMedia('(max-width: 768px)').matches) return;
     var fly=item.querySelector('.flyout'); if(!fly) return;
     var menu=item.closest('.dropdown--discover'); if(!menu) return;
     fly.style.maxHeight=''; fly.style.overflowY='';
-    var vh=window.innerHeight, margin=12;
-    var menuTop=menu.getBoundingClientRect().top;
-    var itemTop=item.getBoundingClientRect().top;
+    var menuRect=menu.getBoundingClientRect();
+    var itemRect=item.getBoundingClientRect();
+    var OFFSET=12;
     var natural=fly.scrollHeight;
-    var maxH=vh-2*margin;
-    var flyH=Math.min(natural,maxH);
-    if(natural>maxH){ fly.style.maxHeight=maxH+'px'; fly.style.overflowY='auto'; }
-    var topVp=Math.min(itemTop, vh-margin-flyH);
-    if(topVp<margin) topVp=margin;
-    fly.style.top=(topVp-menuTop)+'px';
+    var menuH=menu.clientHeight;
+    if(natural<=menuH){
+      var maxTop=menuH-natural;
+      var top=(itemRect.top-menuRect.top)-OFFSET;
+      if(top>maxTop) top=maxTop;
+      if(top<0) top=0;
+      fly.style.top=top+'px';
+    } else {
+      var vh=window.innerHeight, margin=12;
+      var maxH=vh-2*margin;
+      fly.style.maxHeight=maxH+'px'; fly.style.overflowY='auto';
+      var flyH=Math.min(natural,maxH);
+      var topVp=Math.min(itemRect.top-OFFSET, vh-margin-flyH);
+      if(topVp<margin) topVp=margin;
+      fly.style.top=(topVp-menuRect.top)+'px';
+    }
   }
   document.querySelectorAll('.dropdown--discover .discover-item').forEach(function(it){
     it.addEventListener('mouseenter', function(){ pos(it); });
     it.addEventListener('focusin', function(){ pos(it); });
+  });
+})();
+</script>
+<script data-mobile-menu>
+(function(){
+  function isMobile(){ return window.matchMedia('(max-width: 768px)').matches; }
+  document.querySelectorAll('.nav-links > li.has-dropdown').forEach(function(li){
+    var dd = li.querySelector(':scope > .dropdown');
+    if(!dd || li.querySelector(':scope > .nav-acc-arrow')) return;
+    var btn = document.createElement('button');
+    btn.type='button'; btn.className='nav-acc-arrow';
+    btn.setAttribute('aria-label','Afficher le sous-menu');
+    btn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var op = dd.classList.toggle('open'); btn.classList.toggle('open', op);
+    });
+    var a = li.querySelector(':scope > a');
+    if(a){ a.insertAdjacentElement('afterend', btn); } else { li.insertBefore(btn, dd); }
+  });
+  document.querySelectorAll('.dropdown--discover .discover-item').forEach(function(it){
+    var caret = it.querySelector(':scope > .discover-link > .discover-caret');
+    var fly = it.querySelector(':scope > .flyout');
+    if(!caret || !fly) return;
+    caret.addEventListener('click', function(e){
+      if(!isMobile()) return;
+      e.preventDefault(); e.stopPropagation();
+      var op = fly.classList.toggle('open'); caret.classList.toggle('open', op);
+    });
   });
 })();
 </script>
