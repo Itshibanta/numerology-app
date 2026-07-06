@@ -14,3 +14,6 @@ server/dist
 
 # OS
 .DS_Store
+
+# one-off scripts
+scripts_gen_blog.py
