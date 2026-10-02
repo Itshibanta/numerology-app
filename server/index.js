@@ -386,9 +386,11 @@ app.post("/account/set-password", async (req, res) => {
       return res.status(400).json({ error: "INVALID_INPUT" });
     }
 
-    // 1) Vérifie que la session existe et est payée
+    // 1) Vérifie que la session existe et est payée.
+    //    Une commande à 0 € (code promo 100 %) arrive en "no_payment_required".
     const session = await stripe.checkout.sessions.retrieve(session_id);
-    if (!session || session.payment_status !== "paid") {
+    const regle = ["paid", "no_payment_required"].includes(session?.payment_status);
+    if (!session || !regle) {
       return res.status(402).json({ error: "PAYMENT_NOT_CONFIRMED" });
     }
 
