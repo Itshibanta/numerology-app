@@ -1110,40 +1110,57 @@ async function deliverOneGeneration(gen) {
   }
 }
 
-app.all("/cron/deliver", async (req, res) => {
+// Livraison en arrière-plan : la rédaction d'un thème prend plusieurs minutes,
+// bien plus que le délai d'attente de cron-job.org (30 s). On répond tout de
+// suite, sinon chaque appel compte comme un échec et cron-job.org finit par
+// désactiver la tâche (arrivé en juillet 2026).
+let deliveryRunning = false;
+
+async function deliverDueGenerations() {
+  const nowIso = new Date().toISOString();
+  const { data: due, error } = await supabaseAdmin
+    .from("generations")
+    .select("id, user_id, payload, result_text, type")
+    .eq("delivered", false)
+    .not("deliver_at", "is", null)
+    .lte("deliver_at", nowIso)
+    .order("deliver_at", { ascending: true })
+    .limit(5);
+
+  if (error) {
+    console.error("CRON_DELIVER_QUERY_FAILED", error.message);
+    return;
+  }
+
+  let delivered = 0;
+  for (const gen of due || []) {
+    try {
+      await deliverOneGeneration(gen);
+      delivered++;
+    } catch (e) {
+      console.error("DELIVER_ITEM_FAILED", gen.id, e?.message);
+    }
+  }
+  console.log("CRON_DELIVER_DONE", { due: (due || []).length, delivered });
+}
+
+app.all("/cron/deliver", (req, res) => {
   const secret = req.query.secret || req.headers["x-cron-secret"];
   if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
     return res.status(401).json({ error: "UNAUTHORIZED" });
   }
-  try {
-    const nowIso = new Date().toISOString();
-    const { data: due, error } = await supabaseAdmin
-      .from("generations")
-      .select("id, user_id, payload, result_text, type")
-      .eq("delivered", false)
-      .not("deliver_at", "is", null)
-      .lte("deliver_at", nowIso)
-      .order("deliver_at", { ascending: true })
-      .limit(5);
-
-    if (error) return res.status(500).json({ error: "QUERY_FAILED", detail: error.message });
-
-    let delivered = 0;
-    const errors = [];
-    for (const gen of due || []) {
-      try {
-        await deliverOneGeneration(gen);
-        delivered++;
-      } catch (e) {
-        console.error("DELIVER_ITEM_FAILED", gen.id, e?.message);
-        errors.push({ id: gen.id, error: e?.message || String(e) });
-      }
-    }
-    return res.json({ ok: true, due: (due || []).length, delivered, errors });
-  } catch (e) {
-    console.error("CRON_DELIVER_FAILED", e);
-    return res.status(500).json({ error: "INTERNAL" });
+  if (deliveryRunning) {
+    return res.json({ ok: true, started: false, reason: "ALREADY_RUNNING" });
   }
+
+  deliveryRunning = true;
+  deliverDueGenerations()
+    .catch((e) => console.error("CRON_DELIVER_FAILED", e))
+    .finally(() => {
+      deliveryRunning = false;
+    });
+
+  return res.json({ ok: true, started: true });
 });
 
 /* ===========================================

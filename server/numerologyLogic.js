@@ -4,14 +4,26 @@ require("dotenv").config();
 const { computeNumerology } = require("./numerologyCalc");
 const { getDefinitionByKey } = require("./definitionsCatalog");
 
-// IDs d'assistants (doivent être dans server/.env)
-const NUMEROLOGY_ASSISTANT_ID = process.env.NUMEROLOGY_ASSISTANT_ID;
-const NUMEROLOGY_SUMMARY_ASSISTANT_ID = process.env.NUMEROLOGY_SUMMARY_ASSISTANT_ID;
+// L'API Assistants d'OpenAI a été fermée le 26/08/2026 : les thèmes passent
+// par l'API Responses. Les consignes de rédaction (ex-« instructions » des
+// assistants, stockées chez OpenAI) vivent désormais dans server/prompts/.
+const fs = require("fs");
+const path = require("path");
 
-if (!NUMEROLOGY_ASSISTANT_ID || !NUMEROLOGY_SUMMARY_ASSISTANT_ID) {
-  throw new Error(
-    "IDs assistants manquants. Vérifie server/.env : NUMEROLOGY_ASSISTANT_ID et NUMEROLOGY_SUMMARY_ASSISTANT_ID"
-  );
+// Modèle utilisé pour la rédaction (surcharge possible sur Render).
+const NUMEROLOGY_MODEL = process.env.NUMEROLOGY_MODEL || "gpt-5.5";
+
+// Base documentaire de l'ancien assistant (outil file_search), si elle existait.
+const NUMEROLOGY_VECTOR_STORE_ID = process.env.NUMEROLOGY_VECTOR_STORE_ID || null;
+
+// Lit les consignes au moment de la rédaction. Fichier absent ou vide =
+// erreur : la génération reste "non livrée" et sera retentée, plutôt que de
+// livrer un thème rédigé sans consignes.
+function readInstructions(fileName) {
+  const filePath = path.join(__dirname, "prompts", fileName);
+  const text = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8").trim() : "";
+  if (!text) throw new Error(`INSTRUCTIONS_MANQUANTES: server/prompts/${fileName}`);
+  return text;
 }
 
 // ⚡ client OpenAI créé à la première utilisation seulement
@@ -26,19 +38,26 @@ function getOpenAIClient() {
   return client;
 }
 
-// Utilitaire : extrait le texte d'un message assistant
-function extractTextFromMessages(messages) {
-  const assistants = (messages?.data || []).filter((m) => m.role === "assistant");
-  if (!assistants.length) throw new Error("Aucun message assistant trouvé.");
+// Appel unique à l'API Responses : consignes + message utilisateur -> texte.
+async function runResponse(instructionsFile, userMessage) {
+  const openai = getOpenAIClient();
+  const request = {
+    model: NUMEROLOGY_MODEL,
+    instructions: readInstructions(instructionsFile),
+    input: userMessage,
+    store: false,
+  };
+  if (NUMEROLOGY_VECTOR_STORE_ID) {
+    request.tools = [{ type: "file_search", vector_store_ids: [NUMEROLOGY_VECTOR_STORE_ID] }];
+  }
 
-  // prend le plus récent (created_at le plus grand)
-  const assistantMessage = assistants.sort((a, b) => (b.created_at || 0) - (a.created_at || 0))[0];
-
-  const textPart = (assistantMessage.content || []).find((part) => part.type === "text");
-  const value = textPart?.text?.value;
-
-  if (!value) throw new Error("Contenu texte vide dans la réponse assistant.");
-  return value;
+  const response = await openai.responses.create(request);
+  if (response.status !== "completed") {
+    throw new Error(`Réponse OpenAI terminée avec le statut: ${response.status}`);
+  }
+  const text = (response.output_text || "").trim();
+  if (!text) throw new Error("Contenu texte vide dans la réponse OpenAI.");
+  return text;
 }
 
 function injectDefinitionsInText(text) {
@@ -150,8 +169,6 @@ function buildCalcPayload(input) {
 
 // ========================== THÈME COMPLET ==========================
 async function generateNumerologyTheme(input) {
-  const openai = getOpenAIClient();
-  const thread = await openai.beta.threads.create();
 
   const calcPayload = buildCalcPayload(input);
 
@@ -180,29 +197,13 @@ CONTRAINTE IMPORTANTE :
     console.log("[NUM_THEME] userMessage:", userMessage);
   }
 
-  await openai.beta.threads.messages.create(thread.id, {
-    role: "user",
-    content: userMessage,
-  });
-
-  const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
-    assistant_id: NUMEROLOGY_ASSISTANT_ID,
-  });
-
-  if (run.status !== "completed") {
-    throw new Error(`Run (thème complet) terminé avec le statut: ${run.status}`);
-  }
-
-  const messages = await openai.beta.threads.messages.list(run.thread_id);
-  let text = extractTextFromMessages(messages);
+  let text = await runResponse("theme-instructions.md", userMessage);
   text = injectDefinitionsInText(text);
   return text;
 }
 
 // ========================== RÉSUMÉ (FREE PLAN) ==========================
 async function generateNumerologySummary(input) {
-  const openai = getOpenAIClient();
-  const thread = await openai.beta.threads.create();
 
   const calcPayload = buildCalcPayload(input);
 
@@ -254,21 +255,7 @@ ${OUTPUT_FORMAT_RULES}
     console.log("[NUM_SUMMARY] userMessage:", userMessage);
   }
 
-  await openai.beta.threads.messages.create(thread.id, {
-    role: "user",
-    content: userMessage,
-  });
-
-  const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
-    assistant_id: NUMEROLOGY_SUMMARY_ASSISTANT_ID,
-  });
-
-  if (run.status !== "completed") {
-    throw new Error(`Run (résumé) terminé avec le statut: ${run.status}`);
-  }
-
-  const messages = await openai.beta.threads.messages.list(run.thread_id);
-  return extractTextFromMessages(messages);
+  return runResponse("summary-instructions.md", userMessage);
 }
 
 module.exports = {
