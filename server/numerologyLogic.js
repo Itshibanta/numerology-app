@@ -13,8 +13,10 @@ const path = require("path");
 // Modèle utilisé pour la rédaction (surcharge possible sur Render).
 const NUMEROLOGY_MODEL = process.env.NUMEROLOGY_MODEL || "gpt-5.5";
 
-// Base documentaire de l'ancien assistant (outil file_search), si elle existait.
-const NUMEROLOGY_VECTOR_STORE_ID = process.env.NUMEROLOGY_VECTOR_STORE_ID || null;
+// Base documentaire de l'ancien assistant (corpus La Numérologie Autrement,
+// cycles, consignes), toujours hébergée chez OpenAI et lue par file_search.
+const NUMEROLOGY_VECTOR_STORE_ID =
+  process.env.NUMEROLOGY_VECTOR_STORE_ID || "vs_6919c9dc97b08191a902e8c4d8b54ce5";
 
 // Lit les consignes au moment de la rédaction. Fichier absent ou vide =
 // erreur : la génération reste "non livrée" et sera retentée, plutôt que de
