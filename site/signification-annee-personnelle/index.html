@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Année Personnelle 2026, Calcul & Signification</title>
-  <meta name="description" content="L'année personnelle en numérologie : définition, calcul en 2026 et signification des années 1 à 9. Découvrez l'énergie de votre cycle.">
+  <title>Année Personnelle 2026 et 2027, Calcul & Signification</title>
+  <meta name="description" content="L'année personnelle en numérologie : définition, calcul en 2026 et 2027 et signification des années 1 à 9. Découvrez l'énergie de votre cycle.">
   <link rel="canonical" href="https://clesdesnombres.com/signification-annee-personnelle/">
   <meta property="og:image" content="https://clesdesnombres.com/og-image.jpg">
-  <meta property="og:title" content="Année Personnelle en Numérologie 2026, Calcul & Signification | Clés Des Nombres">
-  <meta property="og:description" content="L'année personnelle en numérologie : définition, calcul en 2026 et signification des années 1 à 9. Découvrez l'énergie de votre cycle.">
+  <meta property="og:title" content="Année Personnelle en Numérologie 2026 et 2027, Calcul & Signification | Clés Des Nombres">
+  <meta property="og:description" content="L'année personnelle en numérologie : définition, calcul en 2026 et 2027 et signification des années 1 à 9. Découvrez l'énergie de votre cycle.">
   <meta property="og:url" content="https://clesdesnombres.com/signification-annee-personnelle/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Clés Des Nombres">
@@ -450,11 +450,12 @@
     </section>
 
     <section class="content-section calcul-section">
-      <h2>Calculez votre année personnelle 2026</h2>
-      <p>Entrez votre jour et votre mois de naissance pour découvrir votre année personnelle :</p>
+      <h2>Calculez votre année personnelle</h2>
+      <p>Entrez votre jour et votre mois de naissance, puis choisissez l'année à lire :</p>
       <div class="calcul-form">
         <input type="text" id="jour" class="calcul-input" inputmode="numeric" maxlength="2" placeholder="JJ" aria-label="Jour de naissance" style="max-width:90px;text-align:center;">
         <input type="text" id="mois" class="calcul-input" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="Mois de naissance" style="max-width:90px;text-align:center;">
+        <select id="anneeLue" class="calcul-input" aria-label="Année à calculer" style="max-width:110px;text-align:center;"></select>
         <button class="btn-primary" onclick="calculerAnnee()">Calculer mon année personnelle</button>
       </div>
       <div id="resultatAnnee" class="calcul-resultat" style="display:none;"></div>
@@ -602,17 +603,21 @@ document.querySelectorAll('.faq-question').forEach(btn => {
 });
 </script>
 <script>
+(function(){
+  var y = new Date().getFullYear(), sel = document.getElementById('anneeLue');
+  [y, y + 1].forEach(function(a){ var o = document.createElement('option'); o.value = o.textContent = a; sel.appendChild(o); });
+})();
 function calculerAnnee() {
   const j = parseInt(document.getElementById('jour').value);
   const m = parseInt(document.getElementById('mois').value);
   if (!j || !m) { alert('Veuillez entrer votre jour et votre mois de naissance.'); return; }
-  const annee = 2026;
+  const annee = parseInt(document.getElementById('anneeLue').value);
   let sum = (''+j+m+annee).split('').map(Number).reduce((a,b)=>a+b,0);
   while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33 && sum !== 44) { sum = (''+sum).split('').map(Number).reduce((a,b)=>a+b,0); }
   const noms = {1:'Nouveau Départ',2:'Patience et Coopération',3:'Expression et Créativité',4:'Travail et Fondations',5:'Changement et Liberté',6:'Amour et Responsabilité',7:'Introspection et Spiritualité',8:'Réussite et Pouvoir',9:'Achèvement et Bilan',11:'Intuition et Révélations (Maître Nombre)',22:'Grande Construction (Maître Nombre)',33:'Amour et Service (Maître Nombre)',44:'Maîtrise Matérielle (Maître Nombre)'};
   const div = document.getElementById('resultatAnnee');
   div.style.display = 'block';
-  div.innerHTML = `<p>En 2026, vous vivez une année personnelle <strong>${sum}</strong>, ${noms[sum]}. <a href="/annee-personnelle-${sum}/">Découvrir la signification complète →</a></p>`;
+  div.innerHTML = `<p>En ${annee}, vous vivez une année personnelle <strong>${sum}</strong>, ${noms[sum]}. <a href="/annee-personnelle-${sum}/">Découvrir la signification complète →</a></p>`;
 }
 </script>
 <script data-flyout-pos>

@@ -1705,5 +1705,6 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   h1 { font-size: 1.9rem; }
   .hero-actions { flex-direction: column; align-items: center; }
   .btn-lg { width: 100%; text-align: center; }
-  .silo-links { grid-template-columns: 1fr 1fr; }
+  .silo-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .silo-links .silo-card { overflow-wrap: break-word; }
 }

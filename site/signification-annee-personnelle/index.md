@@ -1,5 +1,5 @@
 ---
-title: Année Personnelle en Numérologie 2026, Calcul & Signification | Clés Des Nombres
+title: Année Personnelle en Numérologie 2026 et 2027, Calcul & Signification | Clés Des Nombres
 description: Qu'est-ce que l'année personnelle en numérologie ? Comment la calculer en 2026 ? Découvrez la signification des années personnelles 1 à 9 et l'énergie de votre cycle.
 url: https://clesdesnombres.com/signification-annee-personnelle/
 ---
@@ -34,7 +34,7 @@ Le calcul est simple : additionnez le jour et le mois de votre naissance avec l'
 
 Note : l'année personnelle suit l'année civile et se calcule de manière approchée à partir du 1ᵉʳ janvier, avec une transition qui s'affine autour de votre date d'anniversaire. Pour une lecture précise tenant compte de vos mois personnels, votre thème numérologique complet détaille l'ensemble de vos cycles.
 
-## Calculez votre année personnelle 2026
+## Calculez votre année personnelle
 
 Entrez votre jour et votre mois de naissance pour découvrir votre année personnelle :
 
