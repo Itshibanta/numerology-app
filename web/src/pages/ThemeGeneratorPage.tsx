@@ -9,6 +9,7 @@ import {
 import { createOneShotCheckout, setPasswordFromSession, accountExists } from "../api";
 import { supabase } from "../supabaseClient";
 import "../theme-page.css";
+import salesContent from "../content/theme-vente.html?raw";
 
 type FormData = {
   prenom: string;
@@ -19,6 +20,24 @@ type FormData = {
   villeNaissance: string;
   paysNaissance: string;
 };
+
+// Page qui a amené le visiteur, gardée pour le suivi des ventes dans Stripe.
+function getSourcePage(): string {
+  const key = "cdn_source_page";
+  const saved = sessionStorage.getItem(key);
+  if (saved) return saved;
+  let source = "direct";
+  try {
+    const referrer = document.referrer ? new URL(document.referrer) : null;
+    if (referrer) {
+      source = referrer.origin === window.location.origin ? referrer.pathname : referrer.hostname;
+    }
+  } catch {
+    source = "direct";
+  }
+  sessionStorage.setItem(key, source);
+  return source;
+}
 
 const STRIPE_PK = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
 const stripePromise = STRIPE_PK ? loadStripe(STRIPE_PK) : null;
@@ -53,6 +72,7 @@ export default function ThemeGeneratorPage() {
 
   // Retour depuis le paiement Stripe (return_url)
   useEffect(() => {
+    getSourcePage();
     const p = new URLSearchParams(window.location.search);
     if (p.get("purchase") === "success") {
       setPurchased(true);
@@ -121,6 +141,7 @@ export default function ThemeGeneratorPage() {
         dateNaissance: form.dateNaissance,
         lieuNaissance,
         email,
+        sourcePage: getSourcePage(),
       });
 
       setClientSecret(secret);
@@ -342,6 +363,7 @@ export default function ThemeGeneratorPage() {
 
         <ThemeSidebar showExample={!stepPaying} />
       </div>
+      <div dangerouslySetInnerHTML={{ __html: salesContent }} />
     </>
   );
 }

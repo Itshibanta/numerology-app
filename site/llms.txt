@@ -39,7 +39,7 @@
 - [Nombre Héréditaire en Numérologie, Signification & Calcul](https://clesdesnombres.com/signification-nombre-hereditaire/): Le nombre héréditaire en numérologie : définition, calcul à partir du nom de famille et signification des nombres 1 à 9. L'héritage de votre lignée.
 - [Nombres Karmiques en Numérologie, Dettes 13, 14, 16, 19](https://clesdesnombres.com/nombres-karmiques/): Qu'est-ce qu'un nombre karmique en numérologie ? Découvrez les dettes karmiques 13, 14, 16 et 19, leur signification et comment les transformer en forces.
 - [Les Nombres Maîtres 11, 22, 33, 44, Signification](https://clesdesnombres.com/nombres-maitres/): Qu'est-ce qu'un nombre maître en numérologie ? Découvrez la signification des nombres maîtres 11, 22, 33 et 44 : leurs dons, leur puissance et leurs défis.
-- [Signification du Chemin de Vie, Calcul & Interprétation](https://clesdesnombres.com/signification-chemin-de-vie/): Le chemin de vie en numérologie : définition, calcul et signification des chemins 1 à 9. Découvrez ce qu'il révèle de votre mission.
+- [Chemin de Vie : Calcul Gratuit et Signification des Nombres](https://clesdesnombres.com/signification-chemin-de-vie/): Calculez gratuitement votre chemin de vie avec votre date de naissance, puis découvrez la signification des nombres 1 à 9, 11, 22, 33 et 44.
 - [Nombre d'Équilibre en Numérologie, Signification & Calcul](https://clesdesnombres.com/signification-nombre-equilibre/): Le nombre d'équilibre en numérologie : définition, calcul à partir des initiales et signification des nombres 1 à 9. Votre posture pour revenir au centre.
 - [Nombre de Réalisation en Numérologie, Signification & Calcul](https://clesdesnombres.com/signification-nombre-realisation/): Le nombre de réalisation en numérologie : définition, calcul depuis le jour et le mois de naissance et signification des nombres 1 à 9. Votre accomplissement.
 - [Nombre Moi Intime en Numérologie, Signification & Calcul](https://clesdesnombres.com/signification-nombre-moi-intime/): Le nombre Moi Intime en numérologie : définition, calcul depuis les consonnes du nom et signification des nombres 1 à 9. Vos besoins affectifs profonds.
@@ -165,19 +165,19 @@
 - [Année Personnelle 8 en 2026, Réussite et Pouvoir](https://clesdesnombres.com/annee-personnelle-8/)
 - [Année Personnelle 9 en 2026, Achèvement et Bilan](https://clesdesnombres.com/annee-personnelle-9/)
 - [Conditions Générales de Vente (CGV), Clés Des Nombres](https://clesdesnombres.com/cgv/)
-- [Chemin de Vie 1, Signification, Traits & Mission](https://clesdesnombres.com/chemin-de-vie-1/)
-- [Chemin de Vie 11, Le Visionnaire, l'Inspirateur](https://clesdesnombres.com/chemin-de-vie-11/)
+- [Chemin de Vie 1 : Signification, Mission, Amour et Travail](https://clesdesnombres.com/chemin-de-vie-1/)
+- [Chemin de Vie 11 : Signification, Mission et Nombre Maître](https://clesdesnombres.com/chemin-de-vie-11/)
 - [Chemin de Vie 2, Signification, Traits & Mission](https://clesdesnombres.com/chemin-de-vie-2/)
 - [Chemin de Vie 22, Le Maître Bâtisseur](https://clesdesnombres.com/chemin-de-vie-22/)
 - [Chemin de Vie 3, Le Créatif, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-3/)
-- [Chemin de Vie 33, Le Maître de l'Amour, le Guide](https://clesdesnombres.com/chemin-de-vie-33/)
+- [Chemin de Vie 33 : Signification, Mission et Nombre Maître](https://clesdesnombres.com/chemin-de-vie-33/)
 - [Chemin de Vie 4, Le Bâtisseur, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-4/)
 - [Chemin de Vie 44, le Maître de la Matière](https://clesdesnombres.com/chemin-de-vie-44/)
 - [Chemin de Vie 5, L'Aventurier, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-5/)
 - [Chemin de Vie 6, Le Nourricier, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-6/)
 - [Chemin de Vie 7, L'Analyste, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-7/)
-- [Chemin de Vie 8, L'Ambitieux, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-8/)
-- [Chemin de Vie 9, Le Sage, Signification & Mission](https://clesdesnombres.com/chemin-de-vie-9/)
+- [Chemin de Vie 8 : Signification, Mission, Amour et Travail](https://clesdesnombres.com/chemin-de-vie-8/)
+- [Chemin de Vie 9 : Signification, Mission, Amour et Travail](https://clesdesnombres.com/chemin-de-vie-9/)
 - [Contact, Clés Des Nombres](https://clesdesnombres.com/contact/)
 - [Mentions Légales, Clés Des Nombres](https://clesdesnombres.com/mentions-legales/)
 - [Nombre Karmique 13, La Dette du Travail](https://clesdesnombres.com/nombre-karmique-13/)
@@ -189,6 +189,7 @@
 - [Nombre Maître 33, Le Maître Enseignant, le Guérisseur](https://clesdesnombres.com/nombre-maitre-33/)
 - [Nombre Maître 44, le Maître de la Matière](https://clesdesnombres.com/nombre-maitre-44/)
 - [Politique de Confidentialité, Clés Des Nombres](https://clesdesnombres.com/politique-confidentialite/)
+- [Thème Numérologique Gratuit](https://clesdesnombres.com/theme-numerologique-gratuit/)
 - [Nombre d'Équilibre 1, Signification & Posture](https://clesdesnombres.com/nombre-equilibre-1/)
 - [Nombre d'Équilibre 2, Signification & Posture](https://clesdesnombres.com/nombre-equilibre-2/)
 - [Nombre d'Équilibre 3, Signification & Posture](https://clesdesnombres.com/nombre-equilibre-3/)

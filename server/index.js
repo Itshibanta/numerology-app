@@ -323,6 +323,7 @@ app.post("/stripe/create-oneshot-session", async (req, res) => {
       dateNaissance,
       lieuNaissance,
       email,
+      sourcePage,
     } = req.body || {};
 
     if (!prenom || !nomFamille || !dateNaissance || !email) {
@@ -335,7 +336,7 @@ app.post("/stripe/create-oneshot-session", async (req, res) => {
       customer_email: email,
       allow_promotion_codes: true, // champ "code promo" dans le checkout
       line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
-      return_url: `${FRONTEND_URL}/theme-numerologique?purchase=success&session_id={CHECKOUT_SESSION_ID}`,
+      return_url: `${FRONTEND_URL}/theme-numerologique/?purchase=success&session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         kind: "oneshot_theme",
         email: String(email).slice(0, 200),
@@ -345,6 +346,7 @@ app.post("/stripe/create-oneshot-session", async (req, res) => {
         nomMarital: String(nomMarital || "").slice(0, 200),
         dateNaissance: String(dateNaissance || "").slice(0, 50),
         lieuNaissance: String(lieuNaissance || "").slice(0, 200),
+        source_page: String(sourcePage || "").slice(0, 200),
       },
     });
 
