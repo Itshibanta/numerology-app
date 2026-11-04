@@ -4,6 +4,7 @@ import type { ChangeEvent } from "react";
 import { generateFreeTheme, setFreePassword } from "../api";
 import { supabase } from "../supabaseClient";
 import "../theme-page.css";
+import freeContent from "../content/theme-gratuit.html?raw";
 
 type FormData = {
   prenom: string;
@@ -307,6 +308,7 @@ export default function FreeThemeGeneratorPage() {
 
         <FreeSidebar />
       </div>
+      <div dangerouslySetInnerHTML={{ __html: freeContent }} />
     </>
   );
 }

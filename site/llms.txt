@@ -10,7 +10,7 @@ Paiement unique de 59,90 €, sans abonnement. Livraison par email et sur le com
 - [Thème Numérologique Personnalisé en Ligne](https://clesdesnombres.com/): version markdown: https://clesdesnombres.com/index.md
 - [Qu'est-ce que la Numérologie ? Introduction Complète](https://clesdesnombres.com/decouvrir-la-numerologie/): version markdown: https://clesdesnombres.com/decouvrir-la-numerologie/index.md
 - [Nombre d'Expression (ou de Destinée), Signification & Calcul](https://clesdesnombres.com/signification-nombre-expression/): version markdown: https://clesdesnombres.com/signification-nombre-expression/index.md
-- [Obtenir Mon Thème Numérologique, Formulaire](https://clesdesnombres.com/theme-numerologique/): version markdown: https://clesdesnombres.com/theme-numerologique/index.md
+- [Thème Numérologique Complet à 59,90 €](https://clesdesnombres.com/theme-numerologique/): version markdown: https://clesdesnombres.com/theme-numerologique/index.md
 - [Exemple de Thème Numérologique Complet](https://clesdesnombres.com/exemple-theme-numerologique/): version markdown: https://clesdesnombres.com/exemple-theme-numerologique/index.md
 
 ## Guides, Chemin de vie
