@@ -6,10 +6,11 @@
 [build]
   base = ""
   publish = "dist"
+  # 0) régénère llms.txt et llms-full.txt depuis le sitemap
   # 1) build de l'app React (assets sous /app/ grâce à vite base)
   # 2) on assemble : site/ à la racine de dist, app React sous dist/app/
   # 3) on génère les pages React publiques (HTML lisible par Google) et le noindex des routes privées
-  command = "npm --prefix web install --no-audit --no-fund && npm --prefix web run build && rm -rf dist && mkdir -p dist && cp -R site/. dist/ && mkdir -p dist/app && cp -R web/dist/. dist/app/ && node web/scripts/prerender-pages.mjs"
+  command = "node scripts/generer-llms.js && npm --prefix web install --no-audit --no-fund && npm --prefix web run build && rm -rf dist && mkdir -p dist && cp -R site/. dist/ && mkdir -p dist/app && cp -R web/dist/. dist/app/ && node web/scripts/prerender-pages.mjs"
 
 [build.environment]
   NODE_VERSION = "22"
