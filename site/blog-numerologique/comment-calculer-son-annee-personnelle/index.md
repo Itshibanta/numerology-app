@@ -1,10 +1,10 @@
 ---
-title: Comment Calculer son Année Personnelle, Guide 2026 | Clés Des Nombres
-description: Comment calculer son année personnelle en numérologie en 2026 ? Méthode de calcul, exemple détaillé et signification des 9 cycles annuels. Guide pratique.
+title: Comment Calculer son Année Personnelle, Guide 2027 | Clés Des Nombres
+description: Comment calculer son année personnelle en numérologie en 2027 ? Méthode de calcul, exemple détaillé et signification des 9 cycles annuels. Guide pratique.
 url: https://clesdesnombres.com/blog-numerologique/comment-calculer-son-annee-personnelle/
 ---
 
-# Comment Calculer son Année Personnelle, Guide 2026
+# Comment Calculer son Année Personnelle, Guide 2027
 
 Votre année personnelle change chaque année et détermine votre cycle énergétique dominant. Voici comment la calculer et l'utiliser pour mieux planifier votre année.
 
@@ -26,6 +26,18 @@ L' [année personnelle](https://clesdesnombres.com/signification-annee-personnel
 
 **Résultat :** année personnelle 9 en 2026
 
+### La même personne en 2027
+
+**Jour :** 14 → 1 + 4 = 5
+
+**Mois :** mars = 3
+
+**Année en cours :** 2027 → 2 + 0 + 2 + 7 = 11 → 2
+
+**Total :** 5 + 3 + 2 = 10 → 1
+
+**Résultat :** année personnelle 1 en 2027
+
 On additionne donc le jour et le mois de naissance avec l'année civile en cours, puis on réduit à un seul chiffre.
 
 ## La signification des 9 années
@@ -36,7 +48,7 @@ Chaque année personnelle porte une énergie : la [1](https://clesdesnombres.com
 
 Lancer un grand projet en année 9 (clôture) ou se forcer à l'action en année 7 (introspection) revient à ramer à contre-sens. À l'inverse, entreprendre en année 1, consolider en année 4 ou récolter en année 8 démultiplie vos efforts. L'année personnelle est une boussole temporelle concrète.
 
-## Vivez votre année 2026 en pleine conscience
+## Vivez votre année en pleine conscience
 
 Connaître votre année personnelle est un excellent début. Votre thème numérologique complet détaille vos cycles, vos mois personnels et la manière de vivre cette année en parfait alignement avec qui vous êtes.
 

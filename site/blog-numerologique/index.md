@@ -28,7 +28,27 @@ La numérologie n'est pas de la magie, c'est un système symbolique millénaire.
 
 Le chemin de vie est le nombre le plus important de votre thème. Apprenez à le calculer étape par étape, avec des exemples concrets et la gestion des nombres maîtres 11, 22 et 33.
 
-### [Comment Calculer son Année Personnelle, Guide 2026](https://clesdesnombres.com/blog-numerologique/comment-calculer-son-annee-personnelle/)
+### [Année Universelle 2027 : l'Énergie du 11/2](https://clesdesnombres.com/blog-numerologique/annee-universelle-2027/)
+
+Après le 1 de 2026, 2027 porte l'énergie du 11/2 : coopération, patience et écoute. Le calcul, son sens et ce qu'il change selon votre année personnelle.
+
+### [Compatibilité Amoureuse : Deux Chemins de Vie ne Suffisent Pas](https://clesdesnombres.com/blog-numerologique/compatibilite-amoureuse-numerologie/)
+
+Les tableaux de compatibilité se contredisent d'un site à l'autre. Voici comment lire un couple en comparant plusieurs nombres, sans verdict ni score.
+
+### [Mois Personnel : Calcul et Sens de vos 12 Mois](https://clesdesnombres.com/blog-numerologique/calculer-son-mois-personnel/)
+
+Le mois personnel précise le tempo de votre année. La méthode de calcul, un exemple complet et la signification des mois 1 à 9.
+
+### [Nom d'Usage après le Mariage : Votre Thème Change-t-il ?](https://clesdesnombres.com/blog-numerologique/nom-usage-mariage-numerologie/)
+
+Prendre le nom de son conjoint n'efface pas votre nom de naissance. Ce qui reste, ce qui s'ajoute et comment calculer votre nom d'usage.
+
+### [Prénom de Bébé et Numérologie : s'en Servir sans se Tromper](https://clesdesnombres.com/blog-numerologique/prenom-bebe-numerologie/)
+
+Le prénom se choisit souvent avant de connaître la date de naissance. Ce qu'on peut calculer, un exemple complet et les limites de l'exercice.
+
+### [Comment Calculer son Année Personnelle, Guide 2027](https://clesdesnombres.com/blog-numerologique/comment-calculer-son-annee-personnelle/)
 
 Votre année personnelle change chaque année et détermine votre cycle énergétique dominant. Méthode de calcul, exemples et tableau des 9 cycles pour mieux planifier votre année.
 
