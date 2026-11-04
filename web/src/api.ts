@@ -204,6 +204,7 @@ export type OneShotPayload = {
   dateNaissance: string;
   lieuNaissance: string;
   email: string;
+  sourcePage?: string;
 };
 
 // Démarre un paiement unique (one-shot) sans authentification.

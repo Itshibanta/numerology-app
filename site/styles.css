@@ -1708,3 +1708,31 @@ a:focus-visible, button:focus-visible, .btn:focus-visible {
   .silo-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .silo-links .silo-card { overflow-wrap: break-word; }
 }
+
+/* Blocs de conversion et contenu des pages de vente */
+.theme-bridge {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--cream-warm);
+  border-radius: 12px;
+}
+.theme-bridge h3 { margin-bottom: 0.5rem; }
+.theme-bridge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 0.75rem;
+}
+.theme-bridge-note { margin-bottom: 0; font-size: 0.9rem; }
+.sales-seo {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem;
+}
+.sales-seo h3 { margin-top: 2rem; }
+.sales-seo h4 { margin-top: 1.25rem; margin-bottom: 0.35rem; }
+.sales-seo ul,
+.sales-seo ol { margin: 0 0 1rem 1.25rem; color: var(--brown-muted); }
+.sales-seo li { margin-bottom: 0.45rem; }
+.sales-seo a { text-decoration: underline; }
+.prerender-main .container { padding-top: 2rem; }

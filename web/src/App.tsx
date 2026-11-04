@@ -467,10 +467,10 @@ export default function App() {
                 </div>
               </li>
               <li className="has-dropdown">
-                <Link to="/theme-numerologique"><span className="nav-theme-frame">Mon Thème</span></Link>
+                <Link to="/theme-numerologique/"><span className="nav-theme-frame">Mon Thème</span></Link>
                 <div className="dropdown dropdown--compact">
                   <div className="dropdown-grid dropdown-grid--col">
-                    <Link to="/theme-numerologique">Découvrir mon thème</Link>
+                    <Link to="/theme-numerologique/">Découvrir mon thème</Link>
                     <a href="/theme-numerologique-gratuit/">Découvrir mon thème gratuit</a>
                     <Link to="/signin">Mon compte</Link>
                   </div>
